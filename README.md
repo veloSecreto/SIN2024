@@ -13,7 +13,7 @@ Welcome to the SIN2024 repository! This project is a C++ game engine designed to
 
 ### Prerequisites
 
-- **C++17**: Ensure that you have a C++14 compatible compiler.
+- **C++17**: Ensure that you have a C++17 compatible compiler.
 - **Dependencies**: The project depends on several libraries:
   - [GLFW](https://www.glfw.org/)
   - [GLAD](https://glad.dav1d.de/)
