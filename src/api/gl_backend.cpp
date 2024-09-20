@@ -5,6 +5,5 @@ namespace OpenGLBackend {
         if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
             std::cout << "Couldn't Initialize GLAD" << std::endl;
         }
-        OpenGLRenderer::init();
     }
 }

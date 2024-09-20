@@ -6,7 +6,7 @@ namespace Backend {
     GLFWmonitor* _monitor;
     API _api = API::OPENGL;
 
-    WindowMode _windowMode = WindowMode::FULLSCREEN;
+    WindowMode _windowMode = WindowMode::WINDOWED;
 
     int _width = 1200;
     int _height = 665;
@@ -15,7 +15,7 @@ namespace Backend {
 
     void init() {
         glfwInit();
-        glfwSetErrorCallback([](int error, const char* description) { std::cout << "GLFW Error (" << std::to_string(error) << "): " << description << "\n";});
+        glfwSetErrorCallback([](int error, const char* description) { std::cout << "GLFW Error (" << std::to_string(error) << "): " << description << "\n"; });
 
 
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
@@ -31,7 +31,8 @@ namespace Backend {
 
         if (_api == API::OPENGL) {
             OpenGLBackend::initMinimum();
-            std::cout << glGetString(GL_VERSION) << std::endl;
+            std::cout << "OpenGL Version =>=> " << glGetString(GL_VERSION) << std::endl;
+            OpenGLRenderer::init();
             glViewport(0, 0, _width, _height);
             glfwSetFramebufferSizeCallback(_window, frameBufferSizeCallback);
         }
