@@ -15,7 +15,7 @@
 #pragma warning(pop)
 
 
-#define ROOT_DIR '../'
+#define ROOT_DIR '../../'
 
 enum class API { UNDEFINED, OPENGL, VULKAN };
 enum class WindowMode { WINDOWED, FULLSCREEN };

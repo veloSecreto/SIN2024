@@ -2,17 +2,20 @@
 
 
 namespace OpenGLRenderer {
-    GLuint _vao, _vbo;
-    struct Shaders {} g_shaders;
     
     void init() {
-        glGenVertexArrays(1, &_vao);
-        glBindVertexArray(_vao);
+        std::cout << "OpenGL Renderer initialized" << std::endl;
     }
 
     void render() {
-        glBindVertexArray(_vao);
-        glDrawArrays(GL_TRIANGLES, 0, 36);
-        glBindVertexArray(_vao);
+        // std::cout << "Rendering" << std::endl;
+
+        // These are depreciated
+
+        // glBegin(GL_TRIANGLES);
+        // glVertex2f(-0.5f, -0.5f);
+        // glVertex2f(0.5f, -0.5f);
+        // glVertex2f(0.0f, 0.5f);
+        // glEnd();
     }
 };

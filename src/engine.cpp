@@ -11,7 +11,12 @@ namespace Engine {
             Backend::beginFrame();
             Input::update();
 
-            OpenGLRenderer::render();
+            if (Backend::getAPI() == API::OPENGL) {
+                OpenGLRenderer::render();
+            }
+            else if (Backend::getAPI() == API::VULKAN) {
+                // Render for VULKAN System, not made yet
+            }
 
             Backend::endFrame();
         }

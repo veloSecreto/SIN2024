@@ -6,7 +6,7 @@ namespace Backend {
     GLFWmonitor* _monitor;
     API _api = API::OPENGL;
 
-    WindowMode _windowedMode = WindowMode::WINDOWED;
+    WindowMode _windowMode = WindowMode::FULLSCREEN;
 
     int _width = 1200;
     int _height = 665;
@@ -24,18 +24,22 @@ namespace Backend {
 
         _monitor = glfwGetPrimaryMonitor();
 
-        createWindow(_windowedMode);
+        createWindow(_windowMode);
 
         glfwMakeContextCurrent(_window);
-        
+
+
         if (_api == API::OPENGL) {
             OpenGLBackend::initMinimum();
+            std::cout << glGetString(GL_VERSION) << std::endl;
+            glViewport(0, 0, _width, _height);
+            glfwSetFramebufferSizeCallback(_window, frameBufferSizeCallback);
         }
         else if (_api == API::VULKAN) {
-            cout << "No initialization for Vulkan right now, fix this later" << endl;
+            std::cout << "No initialization for Vulkan right now, fix this later" << std::endl;
         }
         else {
-            cout << "No API defined, perhaps you forgot to define it." << endl;
+            std::cout << "No API defined, perhaps you forgot to define it." << std::endl;
             return;
         }
     }
@@ -50,13 +54,17 @@ namespace Backend {
     }
 
     void beginFrame() {
-        glClear(GL_COLOR_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
         glfwPollEvents();
     }
 
     void endFrame() {
         glfwSwapBuffers(_window);
+    }
+
+    void frameBufferSizeCallback(GLFWwindow* window, int width, int height) {
+        glViewport(0, 0, width, height);
     }
 
     GLFWwindow* getWindowPointer() {
@@ -69,5 +77,13 @@ namespace Backend {
 
     bool windowIsOpen() {
         return !glfwWindowShouldClose(_window) && !_forceClose;
+    }
+
+    API& getAPI() {
+        return _api;
+    }
+
+    WindowMode& getWindowMode() {
+        return _windowMode;
     }
 }
