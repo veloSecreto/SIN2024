@@ -10,6 +10,8 @@ namespace Input {
         _window = Backend::getWindowPointer();
     }
 
+    // Updates the Input system itself
+    // -------------------------------
     void update() {
         for (int key = 32; key < 349; key++) {
             if (glfwGetKey(_window, key) == GLFW_PRESS) {
@@ -33,10 +35,12 @@ namespace Input {
         }
     }
 
+    // Returns if a key is just pressed @result bool
     bool keyPressed(unsigned int key) {
         return _keyPressed[key];
     }
 
+    // Returns if a key is down or pressed @result bool
     bool keyDown(unsigned int key) {
         return _keyDown[key];
     }

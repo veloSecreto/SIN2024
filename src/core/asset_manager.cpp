@@ -1,15 +1,15 @@
 #include "asset_manager.h"
 
 namespace AssetManager {
-    GLuint _vao, _vbo, _ebo;
 
+    // Loads all the assets
+    // --------------------
     void loadAll() {
         loadForTesting();
     }
 
+    // For Testing
     void loadForTesting() {
-        std::vector<GLfloat> vertices = {
-            
-        };
+        
     }
 };

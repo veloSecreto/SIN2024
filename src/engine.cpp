@@ -1,11 +1,16 @@
 #include "engine.h"
 
 namespace Engine {
+
+    // Initializes the BackEnd and all other subsytems along with modifications
+    // ------------------------------------------------------------------------
     void init() {
         Backend::init();
         Input::init();
     }
 
+    // Starts running the main Engine itself
+    // -------------------------------------
     void run() {
         while (Backend::windowIsOpen()) {
             Backend::beginFrame();

@@ -1,5 +1,5 @@
 # Gather all the source files manually
-SRC = $(wildcard ../../src/*.cpp ../../src/*/*.cpp)
+SRC = $(wildcard ../../src/*.cpp ../../src/*/*.cpp ../../src/*/*/*.cpp ../../src/*/*/*/*.cpp)
 OBJ = $(SRC:.cpp=.o)
 
 # Include and library directories

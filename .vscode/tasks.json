@@ -1,20 +1,19 @@
 {
-    "version": "2.0.0",
-    "tasks": [
-      {
-        "label": "build and run",
-        "type": "shell",
-        "command": "powershell.exe",
-        "args": [
-          "-Command",
-          "cd vendor\\bin; mingw32-make; ./main.exe"
-        ],
-        "group": {
-          "kind": "build",
-          "isDefault": true
-        },
-        "problemMatcher": []
-      }
-    ]
-  }
-  
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "build and run",
+      "type": "shell",
+      "command": "powershell.exe",
+      "args": [
+        "-Command",
+        "cd vendor\\bin; mingw32-make; cls; ./main.exe"
+      ],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "problemMatcher": []
+    }
+  ]
+}
