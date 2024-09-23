@@ -7,4 +7,5 @@ namespace OpenGLRenderer {
     void init();
     void uploadVertexDataToGPU();
     void render();
+    void beginFrame();
 };

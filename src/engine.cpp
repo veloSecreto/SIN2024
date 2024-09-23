@@ -13,6 +13,7 @@ namespace Engine {
     // -------------------------------------
     void run() {
         while (Backend::windowIsOpen()) {
+            OpenGLRenderer::beginFrame();
             Backend::beginFrame();
             Input::update();
 

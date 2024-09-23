@@ -3,13 +3,17 @@
 #include "../../common.h"
 #include <fstream>
 #include <sstream>
+#include <unordered_map>
 
-class Shader {
+void checkCompileErrors();
+
+struct Shader {
     private:
-        uint32_t ID;
+        uint32_t m_ID;
+        std::unordered_map<std::string, int> uniformLocs;
 
     public:
-        Shader(std::string& name) {
+        void load(std::string& name) {
             std::string vertPath = ROOT_DIR + "res/shaders/" + name + ".vert";
             std::string fragPath = ROOT_DIR + "res/shaders/" + name + ".frag";
             std::ifstream vShaderFile, fShaderFile;
@@ -44,35 +48,53 @@ class Shader {
             glCompileShader(fragment);
             // todo: call check compile errors
 
-            ID = glCreateProgram();
-            glAttachShader(ID, vertex);
-            glAttachShader(ID, fragment);
-            glLinkProgram(ID);
+            int temp_ID = glCreateProgram();
+            glAttachShader(temp_ID, vertex);
+            glAttachShader(temp_ID, fragment);
+            glLinkProgram(temp_ID);
+
+            if (m_ID != -1) {
+                glDeleteProgram(m_ID);
+            }
+
+            m_ID = temp_ID;
 
             glDeleteShader(vertex);
             glDeleteShader(fragment);
         }
 
         void use() {
-            glUseProgram(ID);
+            glUseProgram(m_ID);
         }
         uint32_t getID() {
-            return ID;
+            return m_ID;
         }
 
         void setInt(std::string& name, int value) {
-            glUniform1i(glGetUniformLocation(ID, name.c_str()), value);
+            if (uniformLocs.find(name) == uniformLocs.end()) {
+                uniformLocs[name] = glGetUniformLocation(m_ID, name.c_str());
+            }
+            glUniform1i(uniformLocs[name], value);
         }
 
         void setFloat(std::string& name, float value) {
-            glUniform1f(glGetUniformLocation(ID, name.c_str()), value);
+            if (uniformLocs.find(name) == uniformLocs.end()) {
+                uniformLocs[name] = glGetUniformLocation(m_ID, name.c_str());
+            }
+            glUniform1f(uniformLocs[name], value);
         }
 
         void setBool(std::string& name, bool value) {
-            glUniform1i(glGetUniformLocation(ID, name.c_str()), ( int )value);
+            if (uniformLocs.find(name) == uniformLocs.end()) {
+                uniformLocs[name] = glGetUniformLocation(m_ID, name.c_str());
+            }
+            glUniform1i(uniformLocs[name], ( int )value);
         }
 
         void setVec3(std::string& name, glm::vec3& value) {
-            glUniform3fv(glGetUniformLocation(ID, name.c_str()), 1, &value[0]);
+            if (uniformLocs.find(name) == uniformLocs.end()) {
+                uniformLocs[name] = glGetUniformLocation(m_ID, name.c_str());
+            }
+            glUniform3fv(uniformLocs[name], 1, &value[0]);
         }
 };
