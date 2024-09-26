@@ -5,6 +5,8 @@
 #include <stb_image/stb_image.h>
 
 
+// todo: need more improvement
+
 struct Vertex {
     glm::vec3 position;
     glm::vec3 normal;
@@ -33,52 +35,74 @@ struct Vertex {
 };
 
 struct Texture {
-    uint32_t ID;
-    std::string type;
-    std::string path;
+    private:
+        uint32_t ID;
+        std::string type;
+        std::string path;
 
-    Texture(std::string& directory, std::string type, std::string path) {
-        this->type = type;
-        this->path = path;
+    public:
+        Texture(const std::string& directory, std::string type, std::string path) {
+            this->type = type;
+            this->path = path;
 
-        int width, height, nrComponents;
-        unsigned char* data = stbi_load(directory.c_str(), &width, &height, &nrComponents, 0);
-        
-        if (Backend::getAPI() == API::OPENGL) {
+            int width, height, nrComponents;
+            unsigned char* data = stbi_load(directory.c_str(), &width, &height, &nrComponents, 0);
+            
+            if (Backend::getAPI() == API::OPENGL) {
 
-            glGenTextures(1, &this->ID);
+                glGenTextures(1, &this->ID);
 
-            if (data) {
-                GLenum format;
-                if (nrComponents == 1) {
-                    format = GL_RED;
+                if (data) {
+                    GLenum format;
+                    if (nrComponents == 1) {
+                        format = GL_RED;
+                    }
+                    else if (nrComponents == 3) {
+                        format = GL_RGB;
+                    }
+                    else if (nrComponents == 4) {
+                        format = GL_RGBA;
+                    }
+
+                    glBindTexture(GL_TEXTURE_2D, ID);
+                    glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+                    glGenerateMipmap(GL_TEXTURE_2D);
+
+                    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+                    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+                    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+                    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+                    stbi_image_free(data);
                 }
-                else if (nrComponents == 3) {
-                    format = GL_RGB;
+                else {
+                    std::cout << "Failed to load texture at directory" << directory << std::endl;
+                    stbi_image_free(data);
                 }
-                else if (nrComponents == 4) {
-                    format = GL_RGBA;
-                }
-
-                glBindTexture(GL_TEXTURE_2D, ID);
-                glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
-                glGenerateMipmap(GL_TEXTURE_2D);
-
-                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-                stbi_image_free(data);
             }
-            else {
-                std::cout << "Failed to load texture at directory" << directory << std::endl;
-                stbi_image_free(data);
+            else if (Backend::getAPI() == API::VULKAN) {
+                // todo: Implement Texture loading for Vulkan
+                std::cout << "You did not implement Texture loading for Vulkan" << std::endl;
             }
         }
-        else if (Backend::getAPI() == API::VULKAN) {
-            // todo: Implement Texture loading for Vulkan
-            std::cout << "You did not implement Texture loading for Vulkan" << std::endl;
+
+        uint32_t& getID() {
+            return ID;
         }
-    }
+
+        std::string& getPath() {
+            return this->path;
+        }
+
+        std::string& getType() {
+            return this->type;
+        }
+};
+
+struct DrawElementsIndirectCommand {
+    uint32_t indexCount;
+    uint32_t instancedCount;
+    uint32_t firstIndex;
+    uint32_t baseVertex;
+    uint32_t baseInstance;
 };

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../common.h"
+#include "../../../common.h"
 #include <fstream>
 #include <sstream>
 #include <unordered_map>
@@ -13,7 +13,7 @@ struct Shader {
         std::unordered_map<std::string, int> uniformLocs;
 
     public:
-        void load(std::string& name) {
+        void load(const std::string& name) {
             std::string vertPath = ROOT_DIR + "res/shaders/" + name + ".vert";
             std::string fragPath = ROOT_DIR + "res/shaders/" + name + ".frag";
             std::ifstream vShaderFile, fShaderFile;
@@ -52,6 +52,7 @@ struct Shader {
             glAttachShader(temp_ID, vertex);
             glAttachShader(temp_ID, fragment);
             glLinkProgram(temp_ID);
+            // todo: call check compile errors
 
             if (m_ID != -1) {
                 glDeleteProgram(m_ID);
@@ -70,28 +71,28 @@ struct Shader {
             return m_ID;
         }
 
-        void setInt(std::string& name, int value) {
+        void setInt(const std::string& name, int value) {
             if (uniformLocs.find(name) == uniformLocs.end()) {
                 uniformLocs[name] = glGetUniformLocation(m_ID, name.c_str());
             }
             glUniform1i(uniformLocs[name], value);
         }
 
-        void setFloat(std::string& name, float value) {
+        void setFloat(const std::string& name, float value) {
             if (uniformLocs.find(name) == uniformLocs.end()) {
                 uniformLocs[name] = glGetUniformLocation(m_ID, name.c_str());
             }
             glUniform1f(uniformLocs[name], value);
         }
 
-        void setBool(std::string& name, bool value) {
+        void setBool(const std::string& name, bool value) {
             if (uniformLocs.find(name) == uniformLocs.end()) {
                 uniformLocs[name] = glGetUniformLocation(m_ID, name.c_str());
             }
             glUniform1i(uniformLocs[name], ( int )value);
         }
 
-        void setVec3(std::string& name, glm::vec3& value) {
+        void setVec3(const std::string& name, glm::vec3& value) {
             if (uniformLocs.find(name) == uniformLocs.end()) {
                 uniformLocs[name] = glGetUniformLocation(m_ID, name.c_str());
             }

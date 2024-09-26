@@ -14,7 +14,7 @@
 #pragma warning(pop)
 
 
-#define ROOT_DIR '../../'
+const std::string ROOT_DIR = "../../";
 
 enum class API { UNDEFINED, OPENGL, VULKAN };
 enum class WindowMode { WINDOWED, FULLSCREEN };
