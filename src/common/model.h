@@ -1,20 +1,19 @@
 #pragma once
 
+#include "../core/asset_manager.h"
 #include "mesh.h"
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 
+namespace AssetManager {
+    Texture& getTextureByName(const std::string& name);
+};
+
 class Model {
     public:
         Model(const std::string& path) {
             loadModel(path);
-        }
-
-        void draw(Shader& shader) {
-            for (int i = 0; i < meshes.size(); i++) {
-                meshes[i].draw(shader);
-            }
         }
 
         std::vector<Mesh>& getMeshes() {
@@ -26,7 +25,7 @@ class Model {
         std::vector<Mesh> meshes;
         std::vector<Texture> textures_loaded;
         
-        void loadModel(std::string path) {
+        void loadModel(const std::string& path) {
             Assimp::Importer importer;
             const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs);
 
@@ -103,7 +102,7 @@ class Model {
                     }
                 }
                 if (!skip) {
-                    Texture texture(directory + str.C_Str(), typeName, str.C_Str());
+                    Texture texture = AssetManager::getTextureByName(str.C_Str());
                     textures.push_back(texture);
                     textures_loaded.push_back(texture);
                 }

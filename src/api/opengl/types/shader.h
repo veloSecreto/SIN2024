@@ -5,7 +5,7 @@
 #include <sstream>
 #include <unordered_map>
 
-void checkCompileErrors();
+int checkCompileErrors(unsigned int shader, std::string type);
 
 struct Shader {
     private:
@@ -41,24 +41,30 @@ struct Shader {
             vertex = glCreateShader(GL_VERTEX_SHADER);
             glShaderSource(vertex, 1, &vertexCode, NULL);
             glCompileShader(vertex);
-            // todo: call check compile errors
+            checkCompileErrors(vertex, "VERTEX");
 
             fragment = glCreateShader(GL_FRAGMENT_SHADER);
             glShaderSource(fragment, 1,  &fragmentCode, NULL);
             glCompileShader(fragment);
-            // todo: call check compile errors
+            checkCompileErrors(fragment, "FRAGMENT");
 
             int temp_ID = glCreateProgram();
             glAttachShader(temp_ID, vertex);
             glAttachShader(temp_ID, fragment);
             glLinkProgram(temp_ID);
-            // todo: call check compile errors
+            
 
-            if (m_ID != -1) {
-                glDeleteProgram(m_ID);
+            if (checkCompileErrors(temp_ID, "PROGRAM")) {
+                if (m_ID != -1) {
+                    glDeleteProgram(m_ID);
+                }
+
+                m_ID = temp_ID;
+                uniformLocs.clear();
             }
-
-            m_ID = temp_ID;
+            else {
+                std::cout << "shader failed to compile " << name << ".vert" << " and " << name << ".frag\n";
+            }
 
             glDeleteShader(vertex);
             glDeleteShader(fragment);

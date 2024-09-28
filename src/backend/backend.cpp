@@ -45,6 +45,9 @@ namespace Backend {
             std::cout << "No API defined, perhaps you forgot to define it." << std::endl;
             return;
         }
+
+        AssetManager::loadAll();
+        OpenGLRenderer::uploadBuffersToGPU();
     }
 
     void createWindow(const WindowMode& mode) {

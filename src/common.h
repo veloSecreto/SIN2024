@@ -15,6 +15,7 @@
 
 
 const std::string ROOT_DIR = "../../";
+#define BG_COLOR 0.2f, 0.2f, 0.2f
 
 enum class API { UNDEFINED, OPENGL, VULKAN };
 enum class WindowMode { WINDOWED, FULLSCREEN };

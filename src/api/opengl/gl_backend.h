@@ -1,13 +1,13 @@
 #pragma once
 
 #include "gl_renderer.h"
-#include "../common/rendererCommon.h"
+#include "../../common/rendererCommon.h"
 
 namespace OpenGLBackend {
-    std::vector<uint32_t> globalVertices;
-    std::vector<uint32_t> globalIndices;
-    std::vector<DrawElementsIndirectCommand> drawCommands;
+    extern std::vector<Vertex> globalVertices;
+    extern std::vector<uint32_t> globalIndices;
+    extern std::vector<DrawElementsIndirectCommand> drawCommands;
 
     void initMinimum();
-    void uploadVertexData();
+    void uploadVertexData(std::vector<Vertex>& vertices, std::vector<uint32_t>& indices, DrawElementsIndirectCommand& drawCommand);
 };

@@ -1,7 +1,6 @@
 #pragma once
 
 #include "../common.h"
-#include "../backend/backend.h"
 #include <stb_image/stb_image.h>
 
 
@@ -47,42 +46,35 @@ struct Texture {
 
             int width, height, nrComponents;
             unsigned char* data = stbi_load(directory.c_str(), &width, &height, &nrComponents, 0);
-            
-            if (Backend::getAPI() == API::OPENGL) {
 
-                glGenTextures(1, &this->ID);
+            glGenTextures(1, &this->ID);
 
-                if (data) {
-                    GLenum format;
-                    if (nrComponents == 1) {
-                        format = GL_RED;
-                    }
-                    else if (nrComponents == 3) {
-                        format = GL_RGB;
-                    }
-                    else if (nrComponents == 4) {
-                        format = GL_RGBA;
-                    }
-
-                    glBindTexture(GL_TEXTURE_2D, ID);
-                    glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
-                    glGenerateMipmap(GL_TEXTURE_2D);
-
-                    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-                    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-                    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-                    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-                    stbi_image_free(data);
+            if (data) {
+                GLenum format;
+                if (nrComponents == 1) {
+                    format = GL_RED;
                 }
-                else {
-                    std::cout << "Failed to load texture at directory" << directory << std::endl;
-                    stbi_image_free(data);
+                else if (nrComponents == 3) {
+                    format = GL_RGB;
                 }
+                else if (nrComponents == 4) {
+                    format = GL_RGBA;
+                }
+
+                glBindTexture(GL_TEXTURE_2D, ID);
+                glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+                glGenerateMipmap(GL_TEXTURE_2D);
+
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+                stbi_image_free(data);
             }
-            else if (Backend::getAPI() == API::VULKAN) {
-                // todo: Implement Texture loading for Vulkan
-                std::cout << "You did not implement Texture loading for Vulkan" << std::endl;
+            else {
+                std::cout << "Failed to load texture at directory" << directory << std::endl;
+                stbi_image_free(data);
             }
         }
 

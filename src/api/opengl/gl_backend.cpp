@@ -1,14 +1,4 @@
 #include "gl_backend.h"
-#include "../../core/asset_manager.cpp"
-
-namespace OpenGLBackend {
-    std::vector<uint32_t> globalVertices;
-    std::vector<uint32_t> globalIndices;
-    std::vector<DrawElementsIndirectCommand> drawCommands;
-
-    void initMinimum();
-    void uploadVertexData();
-}
 
 void APIENTRY glDebugOutput(GLenum source, GLenum type, unsigned int id, GLenum severity, GLsizei /*length*/, const char* message, const void* /*userParam*/) {
     if (id == 131169 || id == 131185 || id == 131218 || id == 131204) return; // ignore these non-significant error codes
@@ -43,6 +33,10 @@ void APIENTRY glDebugOutput(GLenum source, GLenum type, unsigned int id, GLenum 
     }    std::cout << "\n\n\n";
 }
 
+std::vector<Vertex> OpenGLBackend::globalVertices;
+std::vector<uint32_t> OpenGLBackend::globalIndices;
+std::vector<DrawElementsIndirectCommand> OpenGLBackend::drawCommands;
+
 void OpenGLBackend::initMinimum() {
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
         std::cout << "Failed to initialize GLAD\n";
@@ -71,11 +65,8 @@ void OpenGLBackend::initMinimum() {
     glClear(GL_COLOR_BUFFER_BIT);
 }
 
-void OpenGLBackend::uploadVertexData() {
-    for (auto& map : AssetManager::g_models) {
-        Model* model = map.second;
-        for (Mesh& mesh : model->getMeshes()) {
-            
-        } 
-    }
+void OpenGLBackend::uploadVertexData(std::vector<Vertex>& vertices, std::vector<uint32_t>& indices, DrawElementsIndirectCommand& drawCommand) {
+    globalVertices.insert(globalVertices.end(), vertices.begin(), vertices.end());
+    globalIndices.insert(globalIndices.end(), indices.begin(), indices.end());
+    drawCommands.push_back(drawCommand);
 }

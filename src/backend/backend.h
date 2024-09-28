@@ -3,6 +3,7 @@
 #include "../common.h"
 #include "../api/opengl/gl_backend.h"
 #include "../input/input.h"
+#include "../core/asset_manager.h"
 
 namespace Backend {
     void init();
