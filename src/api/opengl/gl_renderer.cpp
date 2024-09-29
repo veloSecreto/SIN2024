@@ -19,7 +19,6 @@ void OpenGLRenderer::hotLoadShaders() {
     std::cout << "Hot Loading Shaders..." << std::endl;
     for (auto& obj : g_shaders) {
         obj.second.load(obj.first);
-        std::cout << "Loaded '" << obj.first << "' shader" << std::endl;
     }
 }
 
@@ -56,9 +55,9 @@ void OpenGLRenderer::uploadBuffersToGPU() {
 void OpenGLRenderer::render() {
     // bruh it's causing error
     // glBindBuffer(GL_DRAW_INDIRECT_BUFFER, globalIBO);
-    // glBindVertexArray(globalVAO);
-    // glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, ( GLvoid* )0, OpenGLBackend::drawCommands.size(), 0);
-    // glBindVertexArray(0);
+    glBindVertexArray(globalVAO);
+    glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, ( GLvoid* )0, OpenGLBackend::drawCommands.size(), 0);
+    glBindVertexArray(0);
 }
 
 void OpenGLRenderer::beginFrame() {

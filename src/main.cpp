@@ -1,3 +1,13 @@
+
+
+// Prevent accidently selecting integrated GPU
+#ifdef _MSC_VER
+extern "C" {
+    __declspec(dllexport) unsigned __int32 AmdPowerXpressRequestHighPerformance = 0x1;
+    __declspec(dllexport) unsigned __int32 NvOptimusEnablement = 0x1;
+}
+#endif
+
 #include "engine.h"
 
 using namespace std;

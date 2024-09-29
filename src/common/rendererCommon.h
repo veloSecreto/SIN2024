@@ -37,12 +37,12 @@ struct Texture {
     private:
         uint32_t ID;
         std::string type;
-        std::string path;
+        std::string name;
 
     public:
-        Texture(const std::string& directory, std::string type, std::string path) {
+        Texture(const std::string& directory, std::string type, std::string name) {
             this->type = type;
-            this->path = path;
+            this->name = name;
 
             int width, height, nrComponents;
             unsigned char* data = stbi_load(directory.c_str(), &width, &height, &nrComponents, 0);
@@ -82,8 +82,8 @@ struct Texture {
             return ID;
         }
 
-        std::string& getPath() {
-            return this->path;
+        std::string& getName() {
+            return this->name;
         }
 
         std::string& getType() {

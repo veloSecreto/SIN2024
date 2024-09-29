@@ -17,6 +17,10 @@ namespace Engine {
             Backend::beginFrame();
             Input::update();
 
+            if (Input::keyPressed(SIN_KEY_INSERT)) {
+                OpenGLRenderer::hotLoadShaders();
+            }
+
             if (Backend::getAPI() == API::OPENGL) {
                 OpenGLRenderer::render();
             }

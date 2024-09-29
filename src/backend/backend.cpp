@@ -38,7 +38,6 @@ namespace Backend {
             glfwSetFramebufferSizeCallback(_window, frameBufferSizeCallback);
         }
         else if (_api == API::VULKAN) {
-            // todo: Implement Vulkan initialization
             std::cout << "No initialization for Vulkan right now, fix this later" << std::endl;
         }
         else {

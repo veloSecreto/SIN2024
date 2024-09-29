@@ -9,7 +9,7 @@ int checkCompileErrors(unsigned int shader, std::string type);
 
 struct Shader {
     private:
-        uint32_t m_ID;
+        uint32_t m_ID = -1;
         std::unordered_map<std::string, int> uniformLocs;
 
     public:
@@ -61,6 +61,7 @@ struct Shader {
 
                 m_ID = temp_ID;
                 uniformLocs.clear();
+                std::cout << "Loaded '" << name << "' shader\n";
             }
             else {
                 std::cout << "shader failed to compile " << name << ".vert" << " and " << name << ".frag\n";

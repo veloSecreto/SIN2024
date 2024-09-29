@@ -2,6 +2,7 @@
 
 #include "../common.h"
 #include "../common/model.h"
+#include "../common/rendererCommon.h"
 #include <vector>
 #include <filesystem>
 
