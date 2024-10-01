@@ -24,7 +24,7 @@ Welcome to the SIN2024 repository! This project is a C++ game engine designed to
 1. Clone the repository:
 
     ```bash
-    git clone https://github.com/Noman2009-creator/SIN2024.git
+    git clone https://github.com/veloSecreto/SIN2024.git
     cd SIN2024
     ```
 
@@ -68,7 +68,7 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 
 ## Contact
 
-If you have any questions or need further assistance, please open an issue on the GitHub repository or contact [your email] for more information.
+If you have any questions or need further assistance, please open an issue on the GitHub repository or contact nahmedkhan231@gmail.com for more information.
 
 ---
 

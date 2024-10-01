@@ -60,6 +60,7 @@ namespace Backend {
 
     void beginFrame() {
         glfwPollEvents();
+        glfwGetWindowSize(_window, &_width, &_height);
     }
 
     void endFrame() {
