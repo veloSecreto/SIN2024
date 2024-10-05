@@ -17,6 +17,9 @@ namespace Backend {
 
     void beginFrame();
     void endFrame();
+    
+    int& getWinWidth();
+    int& getWinHeight();
 
     void frameBufferSizeCallback(GLFWwindow* window, int width, int height);
 };

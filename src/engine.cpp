@@ -6,6 +6,10 @@ namespace Engine {
     // ------------------------------------------------------------------------
     void init() {
         Backend::init();
+        AssetManager::loadAll();
+        OpenGLRenderer::uploadBuffersToGPU();
+
+        // Subsystems
         Input::init();
     }
 
@@ -13,6 +17,8 @@ namespace Engine {
     // -------------------------------------
     void run() {
         while (Backend::windowIsOpen()) {
+            Clock::update();
+
             OpenGLRenderer::beginFrame();
             Backend::beginFrame();
             Input::update();

@@ -23,9 +23,7 @@ struct Mesh {
 
     Mesh(std::vector<Vertex> vertices, std::vector<uint32_t> indices, std::vector<Texture> textures) {
         this->vertices = vertices;
-        this->textures = textures;
         this->indices = indices;
-
-        setupMesh();
+        this->textures = textures;
     }
 };

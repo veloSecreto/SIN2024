@@ -53,8 +53,8 @@ void OpenGLRenderer::uploadBuffersToGPU() {
 }
 
 void OpenGLRenderer::render() {
-    // bruh it's causing error
-    // glBindBuffer(GL_DRAW_INDIRECT_BUFFER, globalIBO);
+    getDefaultShader().use();
+    glBindBuffer(GL_DRAW_INDIRECT_BUFFER, globalIBO);
     glBindVertexArray(globalVAO);
     glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, ( GLvoid* )0, OpenGLBackend::drawCommands.size(), 0);
     glBindVertexArray(0);
@@ -67,4 +67,8 @@ void OpenGLRenderer::beginFrame() {
 
 Shader& OpenGLRenderer::getDefaultShader() {
     return g_shaders.at("default");
+}
+
+Shader& OpenGLRenderer::getShaderByName(const std::string& name) {
+    return g_shaders.at(name);
 }
