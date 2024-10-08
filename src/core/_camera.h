@@ -14,11 +14,14 @@ namespace Camera {
     extern glm::mat4 m_proj;
     extern glm::mat4 m_view;
 
+    extern float pitch;
+    extern float yaw;
+
     void init();
     void update();
     void move();
     void rotate();
     void updateVecs();
-    const glm::mat4& getViewMatrix();
-    const glm::mat4& getProjMatrix();
+    const glm::mat4 getViewMatrix();
+    const glm::mat4 getProjMatrix();
 };

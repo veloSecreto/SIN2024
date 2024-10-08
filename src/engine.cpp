@@ -1,4 +1,7 @@
 #include "engine.h"
+#include "api/opengl/gl_renderer.h"
+#include "api/opengl/gl_backend.h"
+#include "core/asset_manager.h"
 
 namespace Engine {
 

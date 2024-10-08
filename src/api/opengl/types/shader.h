@@ -105,4 +105,12 @@ struct Shader {
             }
             glUniform3fv(uniformLocs[name], 1, &value[0]);
         }
+
+        void setMat4x4(const std::string& name, glm::mat4& value) {
+            if (uniformLocs.find(name) == uniformLocs.end()) {
+                uniformLocs[name] = glGetUniformLocation(m_ID, name.c_str());
+            }
+
+            glUniformMatrix4fv(uniformLocs[name], 1, GL_FALSE, &value[0][0]);
+        }
 };

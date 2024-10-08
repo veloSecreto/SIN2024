@@ -7,11 +7,13 @@ in vec2 texCoord;
 out vec4 fragColor;
 
 struct Material {
-    uniform mat4 diffuse1;
-    uniform mat4 diffuse2;
-    uniform mat4 specular1;
-    uniform mat4 specular2;
+    sampler2D diffuse1;
+    sampler2D diffuse2;
+    sampler2D specular1;
+    sampler2D specular2;
 };
+
+uniform Material material;
 
 void main()
 {

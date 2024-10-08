@@ -12,6 +12,16 @@ void AssetManager::loadAll() {
 
 void AssetManager::loadForTesting() {
     g_models.emplace("nurseGuy", new Model(ROOT_DIR + "res/models/nurseGuy.fbx"));
+    // std::vector<Vertex> vertices = {
+    //     Vertex(glm::vec3(-0.5f, -0.5f, 0.0f)),
+    //     Vertex(glm::vec3( 0.5f, -0.5f, 0.0f)),
+    //     Vertex(glm::vec3( 0.0f,  0.5f, 0.0f))
+    // };
+
+    // std::vector<uint32_t> indices = {0, 1, 2};
+    // std::vector<Texture> textures = {};
+
+    // Mesh(vertices, indices, textures);
 }
 
 void AssetManager::findAllAssetPaths() {

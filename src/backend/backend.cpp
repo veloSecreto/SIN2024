@@ -1,4 +1,7 @@
 #include "backend.h"
+#include "../api/opengl/gl_backend.h"
+#include "../input/input.h"
+#include "../core/asset_manager.h"
 
 
 namespace Backend {
@@ -22,7 +25,7 @@ namespace Backend {
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-        glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
+        glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_FALSE);
 
         _monitor = glfwGetPrimaryMonitor();
 
@@ -44,6 +47,8 @@ namespace Backend {
             std::cout << "No API defined, perhaps you forgot to define it." << std::endl;
             return;
         }
+
+        glfwShowWindow(_window);
     }
 
     void createWindow(const WindowMode& mode) {

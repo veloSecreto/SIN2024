@@ -3,6 +3,7 @@
 #include "../../common.h"
 #include "types/shader.h"
 #include "gl_backend.h"
+#include "../../core/_camera.h"
 #include <filesystem>
 
 
