@@ -2,6 +2,7 @@
 
 #include "rendererCommon.h"
 #include "../api/opengl/gl_backend.h"
+#include "../api/opengl/gl_renderer.h"
 
 struct Mesh {
     std::vector<Vertex> vertices;
@@ -17,7 +18,7 @@ struct Mesh {
         drawCommand.baseVertex = OpenGLBackend::globalVertices.size();
         drawCommand.baseInstance = 0;
 
-        OpenGLBackend::uploadVertexData(vertices, indices, drawCommand);
+        OpenGLBackend::uploadMeshData(vertices, indices, drawCommand);
     }
 
 
@@ -27,5 +28,9 @@ struct Mesh {
         this->textures = textures;
 
         setupMesh();
+    }
+
+    void render() {
+        OpenGLRenderer::render(drawCommand);
     }
 };

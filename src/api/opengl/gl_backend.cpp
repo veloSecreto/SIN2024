@@ -65,7 +65,7 @@ void OpenGLBackend::initMinimum() {
     glClear(GL_COLOR_BUFFER_BIT);
 }
 
-void OpenGLBackend::uploadVertexData(std::vector<Vertex>& vertices, std::vector<uint32_t>& indices, DrawElementsIndirectCommand& drawCommand) {
+void OpenGLBackend::uploadMeshData(std::vector<Vertex>& vertices, std::vector<uint32_t>& indices, DrawElementsIndirectCommand& drawCommand) {
     globalVertices.insert(globalVertices.end(), vertices.begin(), vertices.end());
     globalIndices.insert(globalIndices.end(), indices.begin(), indices.end());
     drawCommands.push_back(drawCommand);

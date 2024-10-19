@@ -16,7 +16,7 @@ namespace OpenGLRenderer {
 
     void init();
     void uploadBuffersToGPU();
-    void render();
+    void render(DrawElementsIndirectCommand& command);
     void beginFrame();
     void hotLoadShaders();
     void createShaders();

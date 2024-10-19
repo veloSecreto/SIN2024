@@ -30,12 +30,14 @@ namespace Engine {
                 OpenGLRenderer::hotLoadShaders();
             }
 
-            if (Backend::getAPI() == API::OPENGL) {
-                OpenGLRenderer::render();
-            }
-            else if (Backend::getAPI() == API::VULKAN) {
-                // Render for VULKAN System, not made yet
-            }
+            // if (Backend::getAPI() == API::OPENGL) {
+            //     OpenGLRenderer::render();
+            // }
+            // else if (Backend::getAPI() == API::VULKAN) {
+            //     // Render for VULKAN System, not made yet
+            // }
+
+            // todo: implement game and render with that
 
             Backend::endFrame();
         }

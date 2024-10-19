@@ -43,8 +43,8 @@ void OpenGLRenderer::uploadBuffersToGPU() {
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, globalEBO);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, OpenGLBackend::globalIndices.size() * sizeof(uint32_t), OpenGLBackend::globalIndices.data(), GL_STATIC_DRAW);
 
-    glBindBuffer(GL_DRAW_INDIRECT_BUFFER, globalIBO);
-    glBufferData(GL_DRAW_INDIRECT_BUFFER, OpenGLBackend::drawCommands.size() * sizeof(DrawElementsIndirectCommand), OpenGLBackend::drawCommands.data(), GL_STATIC_DRAW);
+    // glBindBuffer(GL_DRAW_INDIRECT_BUFFER, globalIBO);
+    // glBufferData(GL_DRAW_INDIRECT_BUFFER, OpenGLBackend::drawCommands.size() * sizeof(DrawElementsIndirectCommand), OpenGLBackend::drawCommands.data(), GL_STATIC_DRAW);
     
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), ( void* )0);
@@ -52,10 +52,9 @@ void OpenGLRenderer::uploadBuffersToGPU() {
     glBindVertexArray(0);
 }
 
-void OpenGLRenderer::render() {
-    glBindBuffer(GL_DRAW_INDIRECT_BUFFER, globalIBO);
+void OpenGLRenderer::render(DrawElementsIndirectCommand& command) {
     glBindVertexArray(globalVAO);
-    glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, ( GLvoid* )0, OpenGLBackend::drawCommands.size(), 0);
+    glDrawElementsInstancedBaseVertexBaseInstance(GL_TRIANGLES, command.indexCount, GL_UNSIGNED_INT, OpenGLBackend::globalIndices.data(), command.instancedCount, command.baseVertex, command.baseInstance);
     glBindVertexArray(0);
 }
 

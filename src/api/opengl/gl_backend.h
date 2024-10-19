@@ -9,5 +9,5 @@ namespace OpenGLBackend {
     extern std::vector<DrawElementsIndirectCommand> drawCommands;
 
     void initMinimum();
-    void uploadVertexData(std::vector<Vertex>& vertices, std::vector<uint32_t>& indices, DrawElementsIndirectCommand& drawCommand);
+    void uploadMeshData(std::vector<Vertex>& vertices, std::vector<uint32_t>& indices, DrawElementsIndirectCommand& drawCommand);
 };
