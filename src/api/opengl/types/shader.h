@@ -35,8 +35,9 @@ struct Shader {
             }
 
             uint32_t vertex, fragment;
-            const char* vertexCode = vertCode.str().c_str();
-            const char* fragmentCode = fragCode.str().c_str();
+            std::string temp_vert = vertCode.str(); std::string temp_frag = fragCode.str();
+            const char* vertexCode = temp_vert.c_str();
+            const char* fragmentCode = temp_frag.c_str();
 
             vertex = glCreateShader(GL_VERTEX_SHADER);
             glShaderSource(vertex, 1, &vertexCode, NULL);

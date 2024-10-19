@@ -3,7 +3,7 @@
 
 #define SPEED 1.0f
 
-glm::vec3 Camera::m_position = glm::vec3(6.0f);
+glm::vec3 Camera::m_position = glm::vec3(0.0f, 0.0f, 4.0f);
 glm::vec3 Camera::_forward = glm::vec3(0.0f, 0.0f, -1.0f);
 glm::vec3 Camera::_right = glm::vec3(1.0f, 0.0f, 0.0f);
 glm::vec3 Camera::_up = glm::vec3(0.0f, 1.0f, 0.0f);

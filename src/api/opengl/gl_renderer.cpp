@@ -6,10 +6,7 @@ uint32_t OpenGLRenderer::globalEBO;
 uint32_t OpenGLRenderer::globalIBO;
 std::unordered_map<std::string, Shader> OpenGLRenderer::g_shaders;
 
-glm::mat4 m_model(1.0f);
-
 void OpenGLRenderer::createShaders() {
-    m_model = glm::scale(m_model, glm::vec3(0.01f)); // remove this shit
     for (const auto& entry : std::filesystem::directory_iterator(ROOT_DIR + "res/shaders")) {
         const std::string name = entry.path().filename().string();
         const std::string key = name.substr(0, name.find_last_of('.'));
@@ -56,13 +53,6 @@ void OpenGLRenderer::uploadBuffersToGPU() {
 }
 
 void OpenGLRenderer::render() {
-    Camera::update();
-    
-    g_shaders.at("default").setMat4x4("m_proj", Camera::m_proj);
-    g_shaders.at("default").setMat4x4("m_view", Camera::m_view);
-    g_shaders.at("default").setMat4x4("m_model", m_model);
-    g_shaders.at("default").use();
-
     glBindBuffer(GL_DRAW_INDIRECT_BUFFER, globalIBO);
     glBindVertexArray(globalVAO);
     glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, ( GLvoid* )0, OpenGLBackend::drawCommands.size(), 0);
