@@ -1,18 +1,4 @@
 #include "game_object.h"
-<<<<<<< HEAD
-
-
-Model* GameObject::model = nullptr;
-Transform GameObject::transform = Transform();
-
-GameObject::GameObject(const std::string& modelName) {
-    this->model = AssetManager::getModelByName(modelName);
-}
-
-void GameObject::update() {
-    Shader shader = OpenGLRenderer::getDefaultShader();
-    transform.update();
-=======
 #include "../api/opengl/gl_renderer.h"
 
 Model* GameObject::model = nullptr;
@@ -37,5 +23,4 @@ void GameObject::render() {
 
 void GameObject::update() {
 
->>>>>>> d741c32 (Implemented Scene based rendering, has issues)
 }

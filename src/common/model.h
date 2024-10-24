@@ -13,10 +13,7 @@ class Model {
 
         Model(const std::string& path);
         std::vector<Mesh>& getMeshes();
-<<<<<<< HEAD
-=======
         void render();
->>>>>>> d741c32 (Implemented Scene based rendering, has issues)
         void loadModel(const std::string& path);
         void processNode(aiNode* node, const aiScene* scene);
         Mesh processMesh(aiMesh* mesh, const aiScene* scene);

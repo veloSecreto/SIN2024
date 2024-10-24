@@ -1,11 +1,6 @@
 #pragma once
 
 #include "../common.h"
-<<<<<<< HEAD
-
-namespace Game {
-      
-=======
 #include "scene.h"
 
 namespace Game {
@@ -16,5 +11,4 @@ namespace Game {
     void createScene(const std::string& name);
     void start();
     void render();
->>>>>>> d741c32 (Implemented Scene based rendering, has issues)
 };

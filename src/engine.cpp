@@ -1,9 +1,4 @@
 #include "engine.h"
-<<<<<<< HEAD
-#include "api/opengl/gl_renderer.h"
-#include "api/opengl/gl_backend.h"
-#include "core/asset_manager.h"
-=======
 #include "backend/backend.h"
 #include "clock.hpp"
 #include "api/opengl/gl_renderer.h"
@@ -11,7 +6,6 @@
 #include "core/asset_manager.h"
 #include "input/input.h"
 #include "game/game.h"
->>>>>>> d741c32 (Implemented Scene based rendering, has issues)
 
 namespace Engine {
 
@@ -19,13 +13,6 @@ namespace Engine {
     // ------------------------------------------------------------------------
     void init() {
         Backend::init();
-<<<<<<< HEAD
-        AssetManager::loadAll();
-        OpenGLRenderer::uploadBuffersToGPU();
-
-        // Subsystems
-        Input::init();
-=======
 
         // Subsystems
         Input::init();
@@ -34,7 +21,6 @@ namespace Engine {
     
         // buffer pass
         OpenGLRenderer::uploadBuffersToGPU();
->>>>>>> d741c32 (Implemented Scene based rendering, has issues)
     }
 
     // Starts running the main Engine itself
@@ -58,13 +44,9 @@ namespace Engine {
             //     // Render for VULKAN System, not made yet
             // }
 
-<<<<<<< HEAD
-            // todo: implement game and render with that
-=======
             OpenGLRenderer::bindVAO();
             Game::render();
             OpenGLRenderer::unbindVAO();
->>>>>>> d741c32 (Implemented Scene based rendering, has issues)
 
             Backend::endFrame();
         }

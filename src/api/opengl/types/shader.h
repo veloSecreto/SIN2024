@@ -100,22 +100,14 @@ struct Shader {
             glUniform1i(uniformLocs[name], ( int )value);
         }
 
-<<<<<<< HEAD
-        void setVec3(const std::string& name, glm::vec3& value) {
-=======
         void setVec3(const std::string& name, const glm::vec3& value) {
->>>>>>> d741c32 (Implemented Scene based rendering, has issues)
             if (uniformLocs.find(name) == uniformLocs.end()) {
                 uniformLocs[name] = glGetUniformLocation(m_ID, name.c_str());
             }
             glUniform3fv(uniformLocs[name], 1, &value[0]);
         }
 
-<<<<<<< HEAD
-        void setMat4x4(const std::string& name, glm::mat4& value) {
-=======
         void setMat4x4(const std::string& name, const glm::mat4& value) {
->>>>>>> d741c32 (Implemented Scene based rendering, has issues)
             if (uniformLocs.find(name) == uniformLocs.end()) {
                 uniformLocs[name] = glGetUniformLocation(m_ID, name.c_str());
             }

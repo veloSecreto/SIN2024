@@ -2,14 +2,7 @@
 
 #include "../../common.h"
 #include "types/shader.h"
-<<<<<<< HEAD
-#include "gl_backend.h"
-#include "../../core/_camera.h"
-#include <filesystem>
-
-=======
 #include "../../common/rendererCommon.h"
->>>>>>> d741c32 (Implemented Scene based rendering, has issues)
 
 namespace OpenGLRenderer {
     extern uint32_t globalVAO;
@@ -21,11 +14,8 @@ namespace OpenGLRenderer {
     void init();
     void uploadBuffersToGPU();
     void render(DrawElementsIndirectCommand& command);
-<<<<<<< HEAD
-=======
     void bindVAO();
     void unbindVAO();
->>>>>>> d741c32 (Implemented Scene based rendering, has issues)
     void beginFrame();
     void hotLoadShaders();
     void createShaders();

@@ -82,11 +82,7 @@ std::vector<Texture> Model::loadTextureMaterials(aiMaterial* mat, aiTextureType 
         mat->GetTexture(type, i, &str);
         bool skip = false;
         std::string name = str.C_Str();
-<<<<<<< HEAD
-        name = name.substr(name.find_last_of('\\') + 1, name.length()); // I can't do this in one line
-=======
         name = name.substr((name.find('/') != std::string::npos ? name.find_last_of('/') : name.find_last_of('\\')) + 1, name.length()); // I can't do this in one line
->>>>>>> d741c32 (Implemented Scene based rendering, has issues)
         name = name.substr(0, name.find_last_of('.')); // fuck, literally find_last_of is buggy
         for (int j = 0; j < textures_loaded.size(); j++) {
             if (std::strcmp(textures_loaded[j].getName().data(), name.c_str()) == 0) {
@@ -103,13 +99,10 @@ std::vector<Texture> Model::loadTextureMaterials(aiMaterial* mat, aiTextureType 
     }
 
     return textures;
-<<<<<<< HEAD
-=======
 }
 
 void Model::render() {
     for (auto& mesh : meshes) {
         mesh.render();
     }
->>>>>>> d741c32 (Implemented Scene based rendering, has issues)
 }

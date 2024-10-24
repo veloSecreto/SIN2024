@@ -1,6 +1,4 @@
 
-<<<<<<< HEAD
-=======
 /*
 ███    █▄  ███▄▄▄▄    ▄█        ▄██████▄   ▄█    █▄     ▄████████ ████████▄  
 ███    ███ ███▀▀▀██▄ ███       ███    ███ ███    ███   ███    ███ ███   ▀███ 
@@ -13,7 +11,6 @@
                      ▀                                                       
 */
 
->>>>>>> d741c32 (Implemented Scene based rendering, has issues)
 
 // Prevent accidently selecting integrated GPU
 #ifdef _MSC_VER
@@ -23,13 +20,9 @@ extern "C" {
 }
 #endif
 
-<<<<<<< HEAD
-#include "engine.h"
-=======
 
 #include "engine.h"
 #include <iostream>
->>>>>>> d741c32 (Implemented Scene based rendering, has issues)
 
 using namespace std;
 
