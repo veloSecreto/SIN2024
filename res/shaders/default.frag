@@ -17,5 +17,9 @@ uniform Material material;
 
 void main()
 {
+<<<<<<< HEAD
     fragColor = vec4(1.0);
+=======
+    fragColor = vec4(1.0f);
+>>>>>>> d741c32 (Implemented Scene based rendering, has issues)
 }

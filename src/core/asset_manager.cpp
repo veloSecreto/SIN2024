@@ -12,6 +12,10 @@ void AssetManager::loadAll() {
 
 void AssetManager::loadForTesting() {
     g_models.emplace("nurseGuy", new Model(ROOT_DIR + "res/models/nurseGuy.fbx"));
+<<<<<<< HEAD
+=======
+    g_models.emplace("mushroom", new Model(ROOT_DIR + "res/models/mushroom.obj"));
+>>>>>>> d741c32 (Implemented Scene based rendering, has issues)
     // std::vector<Vertex> vertices = {
     //     Vertex(glm::vec3(-0.5f, -0.5f, 0.0f)),
     //     Vertex(glm::vec3( 0.5f, -0.5f, 0.0f)),

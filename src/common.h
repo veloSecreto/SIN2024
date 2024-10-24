@@ -10,7 +10,12 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+<<<<<<< HEAD
 #include "glm/gtx/hash.hpp"
+=======
+#include <glm/gtx/hash.hpp>
+#include <glm/gtx/string_cast.hpp>
+>>>>>>> d741c32 (Implemented Scene based rendering, has issues)
 #pragma warning(pop)
 
 // definations here
