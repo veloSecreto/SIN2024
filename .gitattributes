@@ -14,5 +14,8 @@ vendor/** text eol=lf
 *.cc linguist-language=C++
 *.cxx linguist-language=C++
 
+# Explicitly mark .c files as C++ if they contain C++ code
+*.c linguist-language=C++
+
 # Ignore vendor directory for language stats if it includes C code
 vendor/** linguist-vendored
