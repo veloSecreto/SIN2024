@@ -1,6 +1,5 @@
 #include "gl_renderer.h"
 #include "gl_backend.h"
-#include "../../game/_camera.h"
 #include <filesystem>
 
 // Raw Array and Buffers
@@ -41,7 +40,7 @@ void OpenGLRenderer::uploadBuffersToGPU() {
 
     glGenBuffers(1, &globalVBO);
     glBindBuffer(GL_ARRAY_BUFFER, globalVBO);
-    glBufferData(GL_ARRAY_BUFFER, OpenGLBackend::globalVertices.size() * sizeof(Vertex), OpenGLBackend::globalVertices.data(), GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, OpenGLBackend::globalVertices.size() * sizeof(Vertex), OpenGLBackend::globalVertices.data(), GL_DYNAMIC_DRAW);
     
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), ( void* )0);
@@ -54,18 +53,19 @@ void OpenGLRenderer::uploadBuffersToGPU() {
 
     glGenBuffers(1, &globalEBO);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, globalEBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, OpenGLBackend::globalIndices.size() * sizeof(uint32_t), OpenGLBackend::globalIndices.data(), GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, OpenGLBackend::globalIndices.size() * sizeof(uint32_t), OpenGLBackend::globalIndices.data(), GL_DYNAMIC_DRAW);
 
-    glGenBuffers(1, &globalIBO);
-    glBindBuffer(GL_DRAW_INDIRECT_BUFFER, globalIBO);
-    glBufferData(GL_DRAW_INDIRECT_BUFFER, OpenGLBackend::drawCommands.size() * sizeof(DrawElementsIndirectCommand), OpenGLBackend::drawCommands.data(), GL_STATIC_DRAW);
+    // glGenBuffers(1, &globalIBO);
+    // glBindBuffer(GL_DRAW_INDIRECT_BUFFER, globalIBO);
+    // glBufferData(GL_DRAW_INDIRECT_BUFFER, OpenGLBackend::drawCommands.size() * sizeof(DrawElementsIndirectCommand), OpenGLBackend::drawCommands.data(), GL_DYNAMIC_DRAW);
     
     unbindVAO();
 }
 
 void OpenGLRenderer::render(DrawElementsIndirectCommand& command) {
-    glDrawElementsInstancedBaseVertex(GL_TRIANGLES, command.indexCount, GL_UNSIGNED_INT, (void*)(command.firstIndex * sizeof(uint32_t)), command.instancedCount, command.baseVertex);
-    // glDrawElementsInstancedBaseVertexBaseInstance(GL_TRIANGLES, command.indexCount, GL_UNSIGNED_INT, (void*)(command.firstIndex * sizeof(uint32_t)), command.instancedCount, command.baseVertex, command.baseInstance);
+    // glDrawElementsInstancedBaseVertex(GL_TRIANGLES, command.indexCount, GL_UNSIGNED_INT, (void*)(command.firstIndex * sizeof(uint32_t)), command.instancedCount, command.baseVertex);
+    // glDrawElementsInstancedBaseVertexBaseInstance(GL_TRIANGLES, command.indexCount, GL_UNSIGNED_INT, (void*)(sizeof(uint32_t) * command.firstIndex), 1, command.baseVertex, 0);
+    glDrawElementsInstancedBaseVertexBaseInstance(GL_TRIANGLES, command.indexCount, GL_UNSIGNED_INT, (void*)(sizeof(uint32_t) * command.firstIndex), 1, command.baseVertex, 0);
 }
 
 void OpenGLRenderer::beginFrame() {

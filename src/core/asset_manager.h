@@ -7,7 +7,7 @@
 #include <filesystem>
 
 namespace AssetManager {
-    extern std::unordered_map<std::string, Model*> g_models;
+    extern std::unordered_map<std::string, Model> g_models;
     extern std::unordered_map<std::string, Texture> g_textures;
 
     void loadAll();
@@ -15,6 +15,6 @@ namespace AssetManager {
     void loadForTesting();
     void loadModel();
     void loadTexture();
-    Model* getModelByName(const std::string& name);
+    Model& getModelByName(const std::string& name);
     Texture& getTextureByName(const std::string& name);
 };

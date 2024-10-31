@@ -11,9 +11,10 @@ class Model {
         static std::vector<Mesh> meshes;
         static std::vector<Texture> textures_loaded;
 
+        Model();
         Model(const std::string& path);
         std::vector<Mesh>& getMeshes();
-        void render();
+        void render(Shader& shader);
         void loadModel(const std::string& path);
         void processNode(aiNode* node, const aiScene* scene);
         Mesh processMesh(aiMesh* mesh, const aiScene* scene);

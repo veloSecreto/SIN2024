@@ -5,6 +5,7 @@
 namespace Backend {
     void init();
     void createWindow(const WindowMode& mode);
+    void show();
 
     GLFWwindow* getWindowPointer();
     API& getAPI();

@@ -5,8 +5,11 @@
 std::vector<Mesh> Model::meshes;
 std::vector<Texture> Model::textures_loaded;
 
+Model::Model() = default;
+
 Model::Model(const std::string& path) {
     loadModel(path);
+    std::cout << "From " << path << ": " << meshes.size() << std::endl;
 }
 
 std::vector<Mesh>& Model::getMeshes() {
@@ -101,8 +104,8 @@ std::vector<Texture> Model::loadTextureMaterials(aiMaterial* mat, aiTextureType 
     return textures;
 }
 
-void Model::render() {
+void Model::render(Shader& shader) {
     for (auto& mesh : meshes) {
-        mesh.render();
+        mesh.render(shader);
     }
 }

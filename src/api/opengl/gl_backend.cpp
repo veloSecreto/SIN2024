@@ -1,4 +1,5 @@
 #include "gl_backend.h"
+#include "../../backend/backend.h"
 
 void APIENTRY glDebugOutput(GLenum source, GLenum type, unsigned int id, GLenum severity, GLsizei /*length*/, const char* message, const void* /*userParam*/) {
     if (id == 131169 || id == 131185 || id == 131218 || id == 131204) return; // ignore these non-significant error codes
@@ -42,6 +43,7 @@ void OpenGLBackend::initMinimum() {
         std::cout << "Failed to initialize GLAD\n";
         return;
     }
+    glViewport(0, 0, Backend::getWinWidth(), Backend::getWinHeight());
     GLint major, minor;
     glGetIntegerv(GL_MAJOR_VERSION, &major);
     glGetIntegerv(GL_MINOR_VERSION, &minor);
@@ -62,6 +64,7 @@ void OpenGLBackend::initMinimum() {
         std::cout << "Debug GL context not available\n";
     }
 
+    glEnable(GL_DEPTH_TEST);
     glClear(GL_COLOR_BUFFER_BIT);
 }
 

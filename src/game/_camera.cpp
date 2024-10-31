@@ -7,14 +7,14 @@ glm::vec3 Camera::_forward = glm::vec3(0.0f, 0.0f, -1.0f);
 glm::vec3 Camera::_right = glm::vec3(1.0f, 0.0f, 0.0f);
 glm::vec3 Camera::_up = glm::vec3(0.0f, 1.0f, 0.0f);
 
-glm::mat4 Camera::m_proj = glm::perspective(FOVY, (float)(Backend::getWinWidth() / Backend::getWinHeight()), NEAR_PLANE, FAR_PLANE);
+glm::mat4 Camera::m_proj = getProjMatrix();
 glm::mat4 Camera::m_view = Camera::getViewMatrix();
 
 float Camera::pitch = 0;
 float Camera::yaw = 0;
 
 void Camera::init() {
-    m_proj = glm::perspective(FOVY, (float)(Backend::getWinWidth() / Backend::getWinHeight()), NEAR_PLANE, FAR_PLANE);
+    m_proj = getProjMatrix();
 }
 
 void Camera::move() {

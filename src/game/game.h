@@ -6,8 +6,8 @@
 namespace Game {
     extern std::unordered_map<std::string, Scene> scenes;
     extern bool loaded;
-
-    void init();
+    extern GameObject object, object2;
+    
     void createScene(const std::string& name);
     void start();
     void render();

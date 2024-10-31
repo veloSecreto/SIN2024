@@ -16,11 +16,11 @@ namespace Engine {
 
         // Subsystems
         Input::init();
-        Game::init();
         Game::start();
     
         // buffer pass
         OpenGLRenderer::uploadBuffersToGPU();
+        Backend::show();
     }
 
     // Starts running the main Engine itself

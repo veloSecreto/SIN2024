@@ -2,7 +2,7 @@
 
 // todo: need more improvement
 
-std::unordered_map<std::string, Model*> AssetManager::g_models;
+std::unordered_map<std::string, Model> AssetManager::g_models;
 std::unordered_map<std::string, Texture> AssetManager::g_textures;
 
 void AssetManager::loadAll() {
@@ -11,18 +11,8 @@ void AssetManager::loadAll() {
 }
 
 void AssetManager::loadForTesting() {
-    g_models.emplace("nurseGuy", new Model(ROOT_DIR + "res/models/nurseGuy.fbx"));
-    g_models.emplace("mushroom", new Model(ROOT_DIR + "res/models/mushroom.obj"));
-    // std::vector<Vertex> vertices = {
-    //     Vertex(glm::vec3(-0.5f, -0.5f, 0.0f)),
-    //     Vertex(glm::vec3( 0.5f, -0.5f, 0.0f)),
-    //     Vertex(glm::vec3( 0.0f,  0.5f, 0.0f))
-    // };
-
-    // std::vector<uint32_t> indices = {0, 1, 2};
-    // std::vector<Texture> textures = {};
-
-    // Mesh(vertices, indices, textures);
+    g_models.emplace("mushroom", Model(ROOT_DIR + "res/models/mushroom.obj"));
+    g_models.emplace("nurseGuy", Model(ROOT_DIR + "res/models/nurseGuy.obj"));
 }
 
 void AssetManager::findAllAssetPaths() {
@@ -49,13 +39,13 @@ void AssetManager::findAllAssetPaths() {
     }
 }
 
-Model* AssetManager::getModelByName(const std::string& name) {
+Model& AssetManager::getModelByName(const std::string& name) {
     auto it = g_models.find(name);
     if (it != g_models.end()) {
         return it->second;
     } else {
         std::cerr << "Model '" << name << "' not found!" << std::endl;
-        return nullptr;
+        throw std::runtime_error("Model not found");
     }
 }
 

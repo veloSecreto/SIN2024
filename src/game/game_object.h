@@ -7,7 +7,7 @@
 
 struct GameObject {
     public:
-        static Model* model;
+        static Model model;
         static Transform transform;
         static Shader shader;
 
