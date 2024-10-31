@@ -6,3 +6,13 @@
 
 # Vendor libraries (optional): Ensure vendor files use LF
 vendor/** text eol=lf
+
+# Language overrides to show more C++ in stats
+*.cpp linguist-language=C++
+*.hpp linguist-language=C++
+*.h linguist-language=C++
+*.cc linguist-language=C++
+*.cxx linguist-language=C++
+
+# Ignore vendor directory for language stats if it includes C code
+vendor/** linguist-vendored
