@@ -1,10 +1,6 @@
 #include "game_object.h"
 #include "../api/opengl/gl_renderer.h"
 
-Model GameObject::model = Model();
-Transform GameObject::transform = Transform();
-Shader GameObject::shader = Shader();
-
 GameObject::GameObject(const std::string& modelName, const std::string& shaderName) {
     this->model = AssetManager::getModelByName(modelName);
     this->shader = OpenGLRenderer::getShaderByName(shaderName);

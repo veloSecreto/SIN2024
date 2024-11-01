@@ -17,8 +17,7 @@ struct Mesh {
         drawCommand.firstIndex = OpenGLBackend::globalIndices.size();
         drawCommand.baseVertex = OpenGLBackend::globalVertices.size();
         drawCommand.baseInstance = 0;
-
-        std::cout << "indexCount: " << drawCommand.indexCount << " instanceCount: " << drawCommand.instancedCount << " firstIndex: " << drawCommand.firstIndex << " baseVertex: " << drawCommand.baseVertex << " baseInstance: " << drawCommand.baseInstance << std::endl;
+        
         OpenGLBackend::uploadMeshData(vertices, indices, drawCommand);
     }
 

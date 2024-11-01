@@ -11,8 +11,8 @@ void AssetManager::loadAll() {
 }
 
 void AssetManager::loadForTesting() {
-    g_models.emplace("mushroom", Model(ROOT_DIR + "res/models/mushroom.obj"));
-    g_models.emplace("nurseGuy", Model(ROOT_DIR + "res/models/nurseGuy.obj"));
+    g_models["mushroom"] =  Model(ROOT_DIR + "res/models/mushroom.obj");
+    g_models["nurseGuy"] =  Model(ROOT_DIR + "res/models/nurseGuy.obj");
 }
 
 void AssetManager::findAllAssetPaths() {

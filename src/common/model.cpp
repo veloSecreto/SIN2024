@@ -2,14 +2,10 @@
 #include "../core/asset_manager.h"
 
 
-std::vector<Mesh> Model::meshes;
-std::vector<Texture> Model::textures_loaded;
-
 Model::Model() = default;
 
 Model::Model(const std::string& path) {
     loadModel(path);
-    std::cout << "From " << path << ": " << meshes.size() << std::endl;
 }
 
 std::vector<Mesh>& Model::getMeshes() {
@@ -22,7 +18,7 @@ void Model::loadModel(const std::string& path) {
 
     if (!scene || (scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE) != 0 || !scene->mRootNode) {
         std::cout << "ASSIMP ERROR: " << importer.GetErrorString() << std::endl;
-        return; 
+        return;
     }
 
     processNode(scene->mRootNode, scene);
@@ -50,8 +46,7 @@ Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene) {
         vertex.normal = glm::vec3(mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z);
         if (mesh->mTextureCoords[0]) {
             vertex.texCoord = glm::vec2(mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y);
-        }
-        else {
+        } else {
             vertex.texCoord = glm::vec2(0.0f);
         }
         vertices.push_back(vertex);
@@ -66,7 +61,6 @@ Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene) {
 
     if (mesh->mMaterialIndex >= 0) {
         aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
-
         std::vector<Texture> diffuseMaps = loadTextureMaterials(material, aiTextureType_DIFFUSE, "diffuse");
         textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
 
@@ -85,8 +79,9 @@ std::vector<Texture> Model::loadTextureMaterials(aiMaterial* mat, aiTextureType 
         mat->GetTexture(type, i, &str);
         bool skip = false;
         std::string name = str.C_Str();
-        name = name.substr((name.find('/') != std::string::npos ? name.find_last_of('/') : name.find_last_of('\\')) + 1, name.length()); // I can't do this in one line
-        name = name.substr(0, name.find_last_of('.')); // fuck, literally find_last_of is buggy
+        name = name.substr((name.find('/') != std::string::npos ? name.find_last_of('/') : name.find_last_of('\\')) + 1, name.length());
+        name = name.substr(0, name.find_last_of('.'));
+
         for (int j = 0; j < textures_loaded.size(); j++) {
             if (std::strcmp(textures_loaded[j].getName().data(), name.c_str()) == 0) {
                 textures.push_back(textures_loaded[j]);
@@ -94,6 +89,7 @@ std::vector<Texture> Model::loadTextureMaterials(aiMaterial* mat, aiTextureType 
                 break;
             }
         }
+
         if (!skip) {
             Texture texture = AssetManager::getTextureByName(name);
             textures.push_back(texture);
