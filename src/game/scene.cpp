@@ -1,11 +1,7 @@
 #include "scene.h"
 #include "_camera.h"
 
-std::vector<GameObject> Scene::gameObjects;
-
-Scene::Scene() {
-    Camera::init();
-}
+Scene::Scene() = default;
 
 void Scene::add(const GameObject& object) {
     gameObjects.push_back(object);

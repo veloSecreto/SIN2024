@@ -1,20 +1,25 @@
 #include "_camera.h"
 #include "../backend/backend.h"
+#include "util.hpp"
 
+glm::vec3 Camera::m_position;
+glm::vec3 Camera::_forward;
+glm::vec3 Camera::_right;
+glm::vec3 Camera::_up;
 
-glm::vec3 Camera::m_position = glm::vec3(0.0f);
-glm::vec3 Camera::_forward = glm::vec3(0.0f, 0.0f, -1.0f);
-glm::vec3 Camera::_right = glm::vec3(1.0f, 0.0f, 0.0f);
-glm::vec3 Camera::_up = glm::vec3(0.0f, 1.0f, 0.0f);
+glm::mat4 Camera::m_proj;
+glm::mat4 Camera::m_view;
 
-glm::mat4 Camera::m_proj = getProjMatrix();
-glm::mat4 Camera::m_view = Camera::getViewMatrix();
-
-float Camera::pitch = 0;
-float Camera::yaw = 0;
+float Camera::pitch;
+float Camera::yaw;
 
 void Camera::init() {
+    pitch = 0.0f;
+    yaw = 90.0f;
+    m_position = glm::vec3(0.0f);
+    updateVecs();
     m_proj = getProjMatrix();
+    m_view = getViewMatrix();
 }
 
 void Camera::move() {
@@ -24,14 +29,12 @@ void Camera::move() {
     if (Input::keyDown(SIN_KEY_S)) {
         m_position -= _forward * Clock::dt * SPEED;
     }
-
     if (Input::keyDown(SIN_KEY_D)) {
-        m_position -= _right * Clock::dt * SPEED;
+        m_position -= _right * Clock::dt * SPEED; // matter to fix
     }
     if (Input::keyDown(SIN_KEY_A)) {
-        m_position += _right * Clock::dt * SPEED;
+        m_position += _right * Clock::dt * SPEED; // also this one
     }
-
     if (Input::keyDown(SIN_KEY_Q)) {
         m_position -= _up * Clock::dt * SPEED;
     }
@@ -41,9 +44,9 @@ void Camera::move() {
 }
 
 void Camera::rotate() {
-    glm::vec2 mouseRel = Input::getMouseOffset();
-    yaw -= mouseRel.x * Input::getMouseSensitivity();
-    pitch += mouseRel.y * Input::getMouseSensitivity();
+    glm::vec2 mouseRel = Input::getMouseOffset() * Input::getMouseSensitivity();
+    yaw -= mouseRel.x;
+    pitch += mouseRel.y;
     pitch = std::min(89.0f, std::max(-89.0f, pitch));
     updateVecs();
 }
@@ -55,12 +58,12 @@ void Camera::update() {
 }
 
 void Camera::updateVecs() {
-    float _yaw = glm::radians(yaw); 
+    float _yaw = glm::radians(yaw);
     float _pitch = glm::radians(pitch);
 
-    _forward.x = glm::cos(_pitch) * glm::cos(_yaw);
+    _forward.x = glm::cos(_yaw) * glm::cos(_pitch);
     _forward.y = glm::sin(_pitch);
-    _forward.z = glm::cos(_pitch) * glm::sin(_yaw);
+    _forward.z = glm::sin(_yaw) * glm::cos(_pitch);
     _forward = glm::normalize(_forward);
 
     _right = glm::normalize(glm::cross(_forward, glm::vec3(0.0f, 1.0f, 0.0f)));
@@ -72,5 +75,5 @@ const glm::mat4 Camera::getViewMatrix() {
 }
 
 const glm::mat4 Camera::getProjMatrix() {
-    return glm::perspective(FOVY, (float)(Backend::getWinWidth() / Backend::getWinHeight()), NEAR_PLANE, FAR_PLANE);
+    return glm::perspective(FOVY, (float)Backend::getWinWidth() / (float)Backend::getWinHeight(), NEAR_PLANE, FAR_PLANE);
 }

@@ -8,14 +8,15 @@ void Game::createScene(const std::string& name) {
 }
 
 void Game::start() {
+    Camera::init();
     createScene("main");
     AssetManager::loadAll();
 
     GameObject obj("nurseGuy", "default");
-    obj.transform.position = glm::vec3(2.0f, 0.0f, 0.0f);
+    obj.transform.position = glm::vec3(0.0f, 0.0f, 2.0f);
     scenes["main"].add(obj);
     GameObject a("mushroom", "default");
-    a.transform.position = glm::vec3(-2.0f, 0.0f, 0.0f);
+    a.transform.position = glm::vec3(0.0f, 0.0f, -2.0f);
     scenes["main"].add(a);
 }
 

@@ -7,7 +7,7 @@
 
 class Scene {
     public:
-        static std::vector<GameObject> gameObjects;
+        std::vector<GameObject> gameObjects;
         
         Scene();
         void add(const GameObject& object);

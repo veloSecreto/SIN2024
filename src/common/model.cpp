@@ -61,40 +61,27 @@ Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene) {
 
     if (mesh->mMaterialIndex >= 0) {
         aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
-        std::vector<Texture> diffuseMaps = loadTextureMaterials(material, aiTextureType_DIFFUSE, "diffuse");
+        std::vector<Texture> diffuseMaps = loadTextureMaterials(material, aiTextureType_DIFFUSE);
         textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
 
-        std::vector<Texture> specularMaps = loadTextureMaterials(material, aiTextureType_SPECULAR, "specular");
+        std::vector<Texture> specularMaps = loadTextureMaterials(material, aiTextureType_SPECULAR);
         textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
     }
 
     return Mesh(vertices, indices, textures);
 }
 
-std::vector<Texture> Model::loadTextureMaterials(aiMaterial* mat, aiTextureType type, std::string typeName) {
+std::vector<Texture> Model::loadTextureMaterials(aiMaterial* mat, aiTextureType type) {
     std::vector<Texture> textures;
 
     for (int i = 0; i < mat->GetTextureCount(type); i++) {
         aiString str;
         mat->GetTexture(type, i, &str);
-        bool skip = false;
         std::string name = str.C_Str();
         name = name.substr((name.find('/') != std::string::npos ? name.find_last_of('/') : name.find_last_of('\\')) + 1, name.length());
         name = name.substr(0, name.find_last_of('.'));
-
-        for (int j = 0; j < textures_loaded.size(); j++) {
-            if (std::strcmp(textures_loaded[j].getName().data(), name.c_str()) == 0) {
-                textures.push_back(textures_loaded[j]);
-                skip = true;
-                break;
-            }
-        }
-
-        if (!skip) {
-            Texture texture = AssetManager::getTextureByName(name);
-            textures.push_back(texture);
-            textures_loaded.push_back(texture);
-        }
+        Texture& tex = AssetManager::getTextureByName(name);
+        textures.push_back(tex);
     }
 
     return textures;

@@ -34,15 +34,15 @@ struct Mesh {
         int diffuseNr = 1;
         for (int i = 0; i < textures.size(); i++) {
             glActiveTexture(GL_TEXTURE0 + i);
-            std::string number;
-            std::string name = textures[i].getType();
-            if (name == "diffuse") {
-                number = std::to_string(diffuseNr++);
+            std::string name;
+            TextureType type = textures[i].getType();
+            if (type == TextureType::DIFFUSE) {
+                name = "diffuse" + std::to_string(diffuseNr++);
             }
-            else if (name == "specular") {
-                number = std::to_string(specularNr++);
+            else if (type == TextureType::SPECULAR) {
+                name = "specular" + std::to_string(specularNr++);
             }
-            shader.setInt("material." + name + number, i);
+            shader.setInt("material." + name, i);
             glBindTexture(GL_TEXTURE_2D, textures[i].getID());
         }
         OpenGLRenderer::render(drawCommand);

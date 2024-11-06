@@ -7,34 +7,30 @@ namespace Input {
     bool _keyDownLastFrame[372];
     glm::vec2 _mousePosOffset, _mousePos;
     int _scrollWheelYoffset;
-    float _mouseSensitivity = 0.1;
+    float _mouseSensitivity = 0.1f;
 
     void init() {
         double x, y;
         _window = Backend::getWindowPointer();
         glfwSetScrollCallback(_window, _scroll_callback);
         glfwGetCursorPos(_window, &x, &y);
-        disableCursor();
-        _mousePosOffset.x = (float)x; _mousePosOffset.y = (float)y;
-        _mousePos.x = (float)x; _mousePos.y = (float)y;
+        _mousePos.x = (float)x;
+        _mousePos.y = (float)y;
+        _mousePosOffset = glm::vec2(0.0f, 0.0f); // Initialize mouse offset
     }
 
-    // Updates the Input system itself
-    // -------------------------------
     void update() {
         // Keyboard
         for (int key = 32; key < 349; key++) {
             if (glfwGetKey(_window, key) == GLFW_PRESS) {
                 _keyDown[key] = true;
-            }
-            else {
+            } else {
                 _keyDown[key] = false;
             }
 
             if (_keyDown[key] && !_keyDownLastFrame[key]) {
                 _keyPressed[key] = true;
-            }
-            else {
+            } else {
                 _keyPressed[key] = false;
             }
             _keyDownLastFrame[key] = _keyDown[key];
@@ -43,20 +39,20 @@ namespace Input {
         // Mouse
         double x, y;
         glfwGetCursorPos(_window, &x, &y);
-        _mousePosOffset.x = (float)x - _mousePos.x; _mousePosOffset.y = (float)y - _mousePos.y;
-        _mousePos.x = (float)x; _mousePos.y = (float)y;
+        _mousePosOffset.x = (float)x - _mousePos.x;
+        _mousePosOffset.y = (float)y - _mousePos.y;
+        _mousePos.x = (float)x;
+        _mousePos.y = (float)y;
 
         if (keyPressed(SIN_KEY_ESCAPE)) {
             Backend::forceCloseWindow();
         }
     }
 
-    // Returns if a key is just pressed @result bool
     bool keyPressed(unsigned int key) {
         return _keyPressed[key];
     }
 
-    // Returns if a key is down or pressed @result bool
     bool keyDown(unsigned int key) {
         return _keyDown[key];
     }

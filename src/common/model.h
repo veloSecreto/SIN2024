@@ -1,6 +1,7 @@
 #pragma once
 
 #include "mesh.h"
+#include "../common.h"
 #include <vector>
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
@@ -16,10 +17,9 @@ class Model {
 
     private:
         std::vector<Mesh> meshes;
-        std::vector<Texture> textures_loaded;
 
         void loadModel(const std::string& path);
         void processNode(aiNode* node, const aiScene* scene);
         Mesh processMesh(aiMesh* mesh, const aiScene* scene);
-        std::vector<Texture> loadTextureMaterials(aiMaterial* mat, aiTextureType type, std::string typeName);
+        std::vector<Texture> loadTextureMaterials(aiMaterial* mat, aiTextureType type);
 };

@@ -36,11 +36,11 @@ struct Vertex {
 struct Texture {
     private:
         uint32_t ID;
-        std::string type;
+        TextureType type;
         std::string name;
 
     public:
-        Texture(const std::string& directory, std::string type, std::string name) {
+        Texture(const std::string& directory, TextureType type, std::string name) {
             this->type = type;
             this->name = name;
 
@@ -86,7 +86,7 @@ struct Texture {
             return this->name;
         }
 
-        std::string& getType() {
+        TextureType& getType() {
             return this->type;
         }
 };
