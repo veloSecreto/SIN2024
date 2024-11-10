@@ -87,7 +87,7 @@ std::vector<Texture> Model::loadTextureMaterials(aiMaterial* mat, aiTextureType 
     return textures;
 }
 
-void Model::render(Shader& shader) {
+void Model::render(Shader* shader) {
     for (auto& mesh : meshes) {
         mesh.render(shader);
     }

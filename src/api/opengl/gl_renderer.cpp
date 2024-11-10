@@ -7,7 +7,7 @@ uint32_t OpenGLRenderer::globalVAO;
 uint32_t OpenGLRenderer::globalVBO;
 uint32_t OpenGLRenderer::globalEBO;
 uint32_t OpenGLRenderer::globalIBO;
-std::unordered_map<std::string, Shader> OpenGLRenderer::g_shaders;
+std::unordered_map<std::string, Shader*> OpenGLRenderer::g_shaders;
 
 void OpenGLRenderer::createShaders() {
     for (const auto& entry : std::filesystem::directory_iterator(ROOT_DIR + "res/shaders")) {
@@ -15,8 +15,7 @@ void OpenGLRenderer::createShaders() {
         const std::string key = name.substr(0, name.find_last_of('.'));
         
         if (g_shaders.find(key) == g_shaders.end()) {
-            g_shaders.emplace(key, Shader());
-            g_shaders[key].load(key);
+            g_shaders.emplace(key, new Shader(key));
         }
     }
 }
@@ -24,7 +23,7 @@ void OpenGLRenderer::createShaders() {
 void OpenGLRenderer::hotLoadShaders() {
     std::cout << "Hot Loading Shaders..." << std::endl;
     for (auto& obj : g_shaders) {
-        obj.second.load(obj.first);
+        obj.second->load(obj.first);
     }
 }
 
@@ -73,11 +72,11 @@ void OpenGLRenderer::beginFrame() {
     glClearColor(BG_COLOR, 1.0f);
 }
 
-Shader& OpenGLRenderer::getDefaultShader() {
+Shader* OpenGLRenderer::getDefaultShader() {
     return g_shaders.at("default");
 }
 
-Shader& OpenGLRenderer::getShaderByName(const std::string& name) {
+Shader* OpenGLRenderer::getShaderByName(const std::string& name) {
     return g_shaders.at(name);
 }
 

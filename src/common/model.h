@@ -13,7 +13,7 @@ class Model {
         Model(const std::string& path);
 
         std::vector<Mesh>& getMeshes();
-        void render(Shader& shader);
+        void render(Shader* shader);
 
     private:
         std::vector<Mesh> meshes;

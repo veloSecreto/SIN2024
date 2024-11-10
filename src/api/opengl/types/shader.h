@@ -7,12 +7,18 @@
 
 int checkCompileErrors(unsigned int shader, std::string type);
 
-struct Shader {
+class Shader {
     private:
         uint32_t m_ID = -1;
         std::unordered_map<std::string, int> uniformLocs;
 
     public:
+        Shader() = default;
+        
+        Shader(const std::string& name) {
+            load(name);
+        }
+
         void load(const std::string& name) {
             std::string vertPath = ROOT_DIR + "res/shaders/" + name + ".vert";
             std::string fragPath = ROOT_DIR + "res/shaders/" + name + ".frag";
@@ -49,7 +55,7 @@ struct Shader {
             glCompileShader(fragment);
             checkCompileErrors(fragment, "FRAGMENT");
 
-            int temp_ID = glCreateProgram();
+            uint32_t temp_ID = glCreateProgram();
             glAttachShader(temp_ID, vertex);
             glAttachShader(temp_ID, fragment);
             glLinkProgram(temp_ID);

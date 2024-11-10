@@ -4,12 +4,13 @@
 #include "../common/types.h"
 #include "_camera.h"
 #include "../api/opengl/types/shader.h"
+#include <functional>
 
 struct GameObject {
     public:
         Model model;
         Transform transform;
-        Shader shader;
+        Shader* shader;
 
         GameObject() = default;
         GameObject(const std::string& modelName, const std::string& shaderName);

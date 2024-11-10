@@ -9,7 +9,7 @@ namespace OpenGLRenderer {
     extern uint32_t globalVBO;
     extern uint32_t globalEBO;
     extern uint32_t globalIBO;
-    extern std::unordered_map<std::string, Shader> g_shaders;
+    extern std::unordered_map<std::string, Shader*> g_shaders;
 
     void init();
     void uploadBuffersToGPU();
@@ -19,6 +19,6 @@ namespace OpenGLRenderer {
     void beginFrame();
     void hotLoadShaders();
     void createShaders();
-    Shader& getDefaultShader();
-    Shader& getShaderByName(const std::string& name);
+    Shader* getDefaultShader();
+    Shader* getShaderByName(const std::string& name);
 };

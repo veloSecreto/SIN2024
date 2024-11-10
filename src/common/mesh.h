@@ -29,7 +29,7 @@ struct Mesh {
         setup();
     }
 
-    void render(Shader& shader) {
+    void render(Shader* shader) {
         int specularNr = 1;
         int diffuseNr = 1;
         for (int i = 0; i < textures.size(); i++) {
@@ -42,7 +42,7 @@ struct Mesh {
             else if (type == TextureType::SPECULAR) {
                 name = "specular" + std::to_string(specularNr++);
             }
-            shader.setInt("material." + name, i);
+            shader->setInt("material." + name, i);
             glBindTexture(GL_TEXTURE_2D, textures[i].getID());
         }
         OpenGLRenderer::render(drawCommand);

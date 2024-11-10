@@ -13,8 +13,6 @@ void AssetManager::loadAll() {
 void AssetManager::loadForTesting() {
     g_models["mushroom"] =  Model(ROOT_DIR + "res/models/mushroom.obj");
     g_models["nurseGuy"] =  Model(ROOT_DIR + "res/models/nurseGuy.obj");
-    g_models["point_light_core"] = Model(ROOT_DIR + "res/models/point_light_core.obj");
-    g_models["point_light_blend"] = Model(ROOT_DIR + "res/models/point_light_blend.obj");
 }
 
 void AssetManager::findAllAssetPaths() {
