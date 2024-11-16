@@ -1,4 +1,5 @@
 #include "input.h"
+#include "../backend/backend.h"
 
 namespace Input {
     GLFWwindow* _window = nullptr;
@@ -7,16 +8,14 @@ namespace Input {
     bool _keyDownLastFrame[372];
     glm::vec2 _mousePosOffset, _mousePos;
     int _scrollWheelYoffset;
-    float _mouseSensitivity = 0.1f;
+    float _mouseSensitivity = 0.05f;
 
     void init() {
-        double x, y;
         _window = Backend::getWindowPointer();
         glfwSetScrollCallback(_window, _scroll_callback);
-        glfwGetCursorPos(_window, &x, &y);
-        _mousePos.x = (float)x;
-        _mousePos.y = (float)y;
-        _mousePosOffset = glm::vec2(0.0f, 0.0f); // Initialize mouse offset
+        _mousePos.x = 0;
+        _mousePos.y = 0;
+        _mousePosOffset = glm::vec2(0); // Initialize mouse offset
     }
 
     void update() {
