@@ -1,5 +1,6 @@
 #include "gl_backend.h"
 #include "../../backend/backend.h"
+#include "../../game/game.h"
 
 void APIENTRY glDebugOutput(GLenum source, GLenum type, unsigned int id, GLenum severity, GLsizei /*length*/, const char* message, const void* /*userParam*/) {
     if (id == 131169 || id == 131185 || id == 131218 || id == 131204) return; // ignore these non-significant error codes
@@ -34,9 +35,12 @@ void APIENTRY glDebugOutput(GLenum source, GLenum type, unsigned int id, GLenum 
     }    std::cout << "\n\n\n";
 }
 
-std::vector<Vertex> OpenGLBackend::globalVertices;
-std::vector<uint32_t> OpenGLBackend::globalIndices;
-std::vector<DrawElementsIndirectCommand> OpenGLBackend::drawCommands;
+std::vector<Vertex>                         OpenGLBackend::globalVertices;
+std::vector<uint32_t>                       OpenGLBackend::globalIndices;
+std::vector<DrawElementsIndirectCommand>    OpenGLBackend::drawCommands;
+std::unordered_map<std::string, SSBO>       OpenGLBackend::g_ssbos;
+
+
 
 void OpenGLBackend::initMinimum() {
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
@@ -72,4 +76,17 @@ void OpenGLBackend::uploadMeshData(std::vector<Vertex>& vertices, std::vector<ui
     globalVertices.insert(globalVertices.end(), vertices.begin(), vertices.end());
     globalIndices.insert(globalIndices.end(), indices.begin(), indices.end());
     drawCommands.push_back(drawCommand);
+}
+
+void OpenGLBackend::createSSBOs() {
+    g_ssbos["lights"] = SSBO();
+    std::cout << "SSBO creation process has been completed\n";
+}
+
+void OpenGLBackend::uploadSSBOsToGPU() {
+    g_ssbos["lights"].create(Game::scenes["main"].lights.data(), (GLsizeiptr)(Game::scenes["main"].lights.size() * sizeof(Light)), 0);
+}
+
+void OpenGLBackend::updateSSBObyName(const std::string& name, const void* data, GLsizeiptr size) {
+    g_ssbos[name].update(data, size);
 }

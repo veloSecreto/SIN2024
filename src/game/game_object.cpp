@@ -12,7 +12,9 @@ void GameObject::render() {
     shader->use();
     shader->setMat4x4("m_proj", Camera::m_proj);
     shader->setMat4x4("m_view", Camera::m_view);
+    shader->setVec3("camPos", Camera::m_position);
     shader->setMat4x4("m_model", transform.to_mat4());
+    shader->setFloat("material.shininess", 32.0f);
     model.render(shader);
 }
 

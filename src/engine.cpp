@@ -20,6 +20,8 @@ namespace Engine {
         Game::start();
         // buffer pass
         OpenGLRenderer::uploadBuffersToGPU();
+        OpenGLBackend::createSSBOs();
+        OpenGLBackend::uploadSSBOsToGPU();
         Backend::show();
         Input::disableCursor();
     }

@@ -11,10 +11,12 @@ namespace Input {
     float _mouseSensitivity = 0.05f;
 
     void init() {
+        double x, y;
         _window = Backend::getWindowPointer();
         glfwSetScrollCallback(_window, _scroll_callback);
-        _mousePos.x = 0;
-        _mousePos.y = 0;
+        glfwGetCursorPos(_window, &x, &y);
+        _mousePos.x = (float)x;
+        _mousePos.y = (float)y;
         _mousePosOffset = glm::vec2(0); // Initialize mouse offset
     }
 

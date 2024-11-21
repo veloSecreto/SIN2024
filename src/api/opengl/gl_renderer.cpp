@@ -54,11 +54,13 @@ void OpenGLRenderer::uploadBuffersToGPU() {
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, globalEBO);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, OpenGLBackend::globalIndices.size() * sizeof(uint32_t), OpenGLBackend::globalIndices.data(), GL_DYNAMIC_DRAW);
 
-    // glGenBuffers(1, &globalIBO);
-    // glBindBuffer(GL_DRAW_INDIRECT_BUFFER, globalIBO);
-    // glBufferData(GL_DRAW_INDIRECT_BUFFER, OpenGLBackend::drawCommands.size() * sizeof(DrawElementsIndirectCommand), OpenGLBackend::drawCommands.data(), GL_DYNAMIC_DRAW);
+    glGenBuffers(1, &globalIBO);
+    glBindBuffer(GL_DRAW_INDIRECT_BUFFER, globalIBO);
+    glBufferData(GL_DRAW_INDIRECT_BUFFER, OpenGLBackend::drawCommands.size() * sizeof(DrawElementsIndirectCommand), OpenGLBackend::drawCommands.data(), GL_DYNAMIC_DRAW);
     
     unbindVAO();
+
+    std::cout << "All global buffers and Global Vertex Array has been uploaded to the GPU\n"; 
 }
 
 void OpenGLRenderer::render(DrawElementsIndirectCommand& command) {

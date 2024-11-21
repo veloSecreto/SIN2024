@@ -18,6 +18,10 @@ void Game::start() {
     GameObject a("mushroom", "default");
     a.transform.position = glm::vec3(0.0f, 0.0f, -2.0f);
     scenes["main"].add(a);
+
+    Light light(glm::vec3(0.0f, 2.0f, 0.0f)), light2(glm::vec3(-1.0f, 0.0f, 2.0f));
+    scenes["main"].addLight(light);
+    scenes["main"].addLight(light2);
 }
 
 void Game::render() {

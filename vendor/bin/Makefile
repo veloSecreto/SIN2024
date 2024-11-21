@@ -10,7 +10,7 @@ LIBS = -L../lib -lglfw3dll -lassimp
 all: main
 
 main: $(SRC)
-	g++ -g --std=c++17 $(INCLUDE) $(SRC) ../../src/glad.c -o main $(LIBS)
+	g++ -g --std=c++20 $(INCLUDE) $(SRC) ../../src/glad.c -o main $(LIBS)
 
 # Clean up object files and the executable
 clean:
