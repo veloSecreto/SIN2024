@@ -89,4 +89,8 @@ namespace Input {
     void setMouseSensitivity(float sensitivity) {
         _mouseSensitivity = sensitivity;
     }
+
+    float getMouseWheelYoffset() {
+        return 0;
+    }
 }

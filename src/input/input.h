@@ -15,5 +15,6 @@ namespace Input {
     void disableCursor();
     float getMouseSensitivity();
     void setMouseSensitivity(float sensitivity);
+    float getMouseWheelYoffset();
     void update();
 }

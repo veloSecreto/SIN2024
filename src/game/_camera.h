@@ -4,7 +4,6 @@
 #include "../input/input.h"
 #include "../clock.hpp"
 
-#define SPEED 2.5f
 
 namespace Camera {
     extern glm::vec3 m_position;
@@ -17,6 +16,8 @@ namespace Camera {
 
     extern float pitch;
     extern float yaw;
+
+    extern float speed;
 
     void init();
     void update();

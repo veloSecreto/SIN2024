@@ -13,9 +13,12 @@ glm::mat4 Camera::m_view;
 float Camera::pitch;
 float Camera::yaw;
 
+float Camera::speed;
+
 void Camera::init() {
     pitch = 0.0f;
     yaw = 90.0f;
+    speed = 2.5f;
     m_position = glm::vec3(0.0f);
     updateVecs();
     m_proj = getProjMatrix();
@@ -24,22 +27,22 @@ void Camera::init() {
 
 void Camera::move() {
     if (Input::keyDown(SIN_KEY_W)) {
-        m_position += _forward * Clock::dt * SPEED;
+        m_position += _forward * Clock::dt * speed;
     }
     if (Input::keyDown(SIN_KEY_S)) {
-        m_position -= _forward * Clock::dt * SPEED;
+        m_position -= _forward * Clock::dt * speed;
     }
     if (Input::keyDown(SIN_KEY_D)) {
-        m_position -= _right * Clock::dt * SPEED; // matter to fix
+        m_position -= _right * Clock::dt * speed; // matter to fix
     }
     if (Input::keyDown(SIN_KEY_A)) {
-        m_position += _right * Clock::dt * SPEED; // also this one
+        m_position += _right * Clock::dt * speed; // also this one
     }
     if (Input::keyDown(SIN_KEY_Q)) {
-        m_position -= _up * Clock::dt * SPEED;
+        m_position -= _up * Clock::dt * speed;
     }
     if (Input::keyDown(SIN_KEY_E)) {
-        m_position += _up * Clock::dt * SPEED;
+        m_position += _up * Clock::dt * speed;
     }
 }
 
