@@ -14,9 +14,8 @@ uniform mat4 m_model;
 
 void main()
 {
-    // don't forget to update that
-    position = in_position;
-    normal = in_normal;
+    position = vec3(m_model * vec4(in_position, 1.0));
+    normal = normalize(mat3(transpose(inverse(m_model))) * in_normal);
     texCoord = in_texCoord;
     gl_Position = m_proj * m_view * m_model * vec4(in_position, 1.0);
 }

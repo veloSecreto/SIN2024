@@ -17,4 +17,6 @@ struct alignas(16) Light {
     Light(const glm::vec3& position) {
         this->position = position;
     }
+
+    void render();
 };
