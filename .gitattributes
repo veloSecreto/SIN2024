@@ -6,3 +6,10 @@
 
 # Vendor libraries (optional): Ensure vendor files use LF
 vendor/** text eol=lf
+
+# Mark vendor files and glad.c as vendored (exclude from language stats)
+vendor/** linguist-vendored
+src/glad.c linguist-vendored
+
+# Optional: Treat header files as C++ (if required)
+*.h linguist-language=C++
