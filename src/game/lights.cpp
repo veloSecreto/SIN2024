@@ -10,7 +10,6 @@ void Light::render() {
     Shader* shader = OpenGLRenderer::getShaderByName("pass_through");
     Transform transform(position);
     transform.scale = glm::vec3(0.2f);
-    color = glm::vec3(1, 0.7799999713897705, 0.5289999842643738) * glm::cos(Clock::time);
     shader->use();
     shader->setMat4x4("m_proj", Camera::m_proj);
     shader->setMat4x4("m_view", Camera::m_view);

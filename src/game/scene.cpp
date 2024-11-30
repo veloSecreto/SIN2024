@@ -14,11 +14,12 @@ void Scene::addLight(const Light& light) {
 
 void Scene::render() {
     update();
-    for (int i = 0; i < gameObjects.size(); ++i) {
-        gameObjects[i].render();
-        if (i < lights.size()) {
-            lights[i].render();
-        }
+    for (auto& obj : gameObjects) {
+        obj.render();
+    }
+
+    for (auto& light : lights) {
+        light.render();
     }
 }
 

@@ -18,5 +18,10 @@ struct alignas(16) Light {
         this->position = position;
     }
 
+    Light(const glm::vec3& position, const glm::vec3& color) {
+        this->position = position;
+        this->color = color;
+    }
+
     void render();
 };
