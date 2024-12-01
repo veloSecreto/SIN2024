@@ -25,5 +25,5 @@ void Scene::render() {
 
 void Scene::update() {
     Camera::update();
-    OpenGLBackend::updateSSBObyName("lights", lights.data(), (GLsizeiptr)(lights.size() * sizeof(Light)));
+    OpenGLBackend::updateSSBObyName("lights", lights.data(), lights.size() * sizeof(Light));
 }

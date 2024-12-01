@@ -1,6 +1,5 @@
 #include "_camera.h"
 #include "../backend/backend.h"
-#include "util.hpp"
 
 glm::vec3 Camera::m_position;
 glm::vec3 Camera::_forward;
