@@ -13,16 +13,17 @@ namespace Engine {
     // ------------------------------------------------------------------------
     void init() {
         Backend::init();
-
-        // Subsystems
-        Input::init();
-
         Game::start();
+
         // buffer pass
         OpenGLRenderer::uploadBuffersToGPU();
         OpenGLBackend::createSSBOs();
         OpenGLBackend::uploadSSBOsToGPU();
+        
+        // final injection
         Backend::show();
+        // subsystems
+        Input::init();
         Input::disableCursor();
     }
 
