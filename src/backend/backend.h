@@ -12,6 +12,7 @@ namespace Backend {
     WindowMode& getWindowMode();
     bool windowIsOpen();
     void forceCloseWindow();
+    void kill();
 
     void beginFrame();
     void endFrame();

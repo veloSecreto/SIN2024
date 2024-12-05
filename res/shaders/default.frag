@@ -38,7 +38,7 @@ void main()
     vec3 specularColor = texture(material.specular1, texCoord).rgb;
 
     vec3 finalColor = vec3(0.0);
-    vec3 GI = diffuseColor * 0.15;
+    vec3 GI = vec3(0);
 
     for (int i = 0; i < lights.length(); ++i) {
         Light light = lights[i];
@@ -59,5 +59,5 @@ void main()
 
         finalColor += lightContribution;
     }
-    fragColor = vec4(finalColor, 1.0);
+    fragColor = vec4(finalColor + GI, 1.0);
 }

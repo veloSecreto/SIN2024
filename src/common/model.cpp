@@ -22,6 +22,7 @@ void Model::loadModel(const std::string& path) {
     }
 
     processNode(scene->mRootNode, scene);
+    std::cout << "Loaded Model from path: " << path << std::endl;
 }
 
 void Model::processNode(aiNode* node, const aiScene* scene) {

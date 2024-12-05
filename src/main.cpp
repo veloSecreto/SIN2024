@@ -28,15 +28,15 @@ using namespace std;
 
 int main()
 {
-    // that's for ease of debugging, remove this
-    // cout << "\n\n\n<===============================================================================================>\n\n\n" << endl;
 
-    cout << "We are all alone on life's journey, held captive by the limitations of human consciousness." << endl << endl << endl;
+    cout << endl << endl << "We are all alone on life's journey, held captive by the limitations of human consciousness." << endl << endl << endl;
     Engine::init();
     Engine::run();
 
-    // that's for ease of debugging, remove this
-    // cout << "\n\n\n<===============================================================================================>\n\n\n" << endl;
+    // that's for ease of debugging
+    std::cout << "\n\nSIN Engine Version: 1.0.0" << endl;
+    std::cout << "Press any key to close the window...";
+    std::cin.get();
 
     return 0;
 }

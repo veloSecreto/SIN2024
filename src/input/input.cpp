@@ -44,10 +44,6 @@ namespace Input {
         _mousePosOffset.y = (float)y - _mousePos.y;
         _mousePos.x = (float)x;
         _mousePos.y = (float)y;
-
-        if (keyPressed(SIN_KEY_ESCAPE)) {
-            Backend::forceCloseWindow();
-        }
     }
 
     bool keyPressed(unsigned int key) {

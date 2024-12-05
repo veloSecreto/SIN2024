@@ -18,10 +18,10 @@ struct Transform {
     }
 
     Transform()
-        : position(0.0f), rotation(-180.0f, 0.0f, 0.0f), scale(1.0f) {}
+        : position(0.0f), rotation(0), scale(1.0f) {}
 
     Transform(const glm::vec3& position)
-        : position(position), rotation(-180.0f, 0.0f, 0.0f), scale(1.0f) {}
+        : position(position), rotation(0), scale(1.0f) {}
 
     Transform(const glm::vec3& position, const glm::vec3& rotation)
         : position(position), rotation(rotation), scale(1.0f) {}

@@ -99,4 +99,11 @@ namespace Backend {
     void show() {
         glfwShowWindow(_window);
     }
+
+    void kill() {
+        if (_window != nullptr) {
+            glfwDestroyWindow(_window);
+        }
+        glfwTerminate();
+    }
 }

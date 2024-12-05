@@ -37,6 +37,10 @@ namespace Engine {
             Backend::beginFrame();
             Input::update();
 
+            if (Input::keyPressed(SIN_KEY_ESCAPE)) {
+                Backend::forceCloseWindow();
+            }
+
             if (Input::keyPressed(SIN_KEY_INSERT)) {
                 OpenGLRenderer::hotLoadShaders();
             }
@@ -54,5 +58,6 @@ namespace Engine {
 
             Backend::endFrame();
         }
+        Backend::kill();
     }
 };

@@ -12,16 +12,11 @@ void Game::start() {
     createScene("main");
     AssetManager::loadAll();
 
-    GameObject obj("nurseGuy", "default");
-    obj.transform.position = glm::vec3(0.0f, 0.0f, 2.0f);
-    scenes["main"].add(obj);
-    GameObject a("mushroom", "default");
-    a.transform.position = glm::vec3(0.0f, 0.0f, -2.0f);
-    scenes["main"].add(a);
+    GameObject house("house", "default");
+    house.transform.scale = glm::vec3(0.2);
+    scenes["main"].add(house);
 
-    Light light(glm::vec3(0.0f, -2.0f, 0.0f), glm::vec3(1.0f)), light2(glm::vec3(-2.0f, -2.0f, -2.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-    scenes["main"].addLight(light);
-    scenes["main"].addLight(light2);
+    scenes["main"].addLight(Light(glm::vec3(0.0f, 3.0f, 0.0f)));
 }
 
 void Game::render() {

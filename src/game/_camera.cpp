@@ -32,23 +32,23 @@ void Camera::move() {
         m_position -= _forward * Clock::dt * speed;
     }
     if (Input::keyDown(SIN_KEY_D)) {
-        m_position -= _right * Clock::dt * speed; // matter to fix
+        m_position += _right * Clock::dt * speed;
     }
     if (Input::keyDown(SIN_KEY_A)) {
-        m_position += _right * Clock::dt * speed; // also this one
+        m_position -= _right * Clock::dt * speed;
     }
     if (Input::keyDown(SIN_KEY_Q)) {
-        m_position -= _up * Clock::dt * speed;
+        m_position += _up * Clock::dt * speed;
     }
     if (Input::keyDown(SIN_KEY_E)) {
-        m_position += _up * Clock::dt * speed;
+        m_position -= _up * Clock::dt * speed;
     }
 }
 
 void Camera::rotate() {
     glm::vec2 mouseRel = Input::getMouseOffset() * Input::getMouseSensitivity();
-    yaw -= mouseRel.x;
-    pitch += mouseRel.y;
+    yaw += mouseRel.x;
+    pitch -= mouseRel.y;
     pitch = std::min(89.0f, std::max(-89.0f, pitch));
     updateVecs();
 }
@@ -77,5 +77,5 @@ const glm::mat4 Camera::getViewMatrix() {
 }
 
 const glm::mat4 Camera::getProjMatrix() {
-    return glm::perspective(FOVY, (float)Backend::getWinWidth() / (float)Backend::getWinHeight(), NEAR_PLANE, FAR_PLANE);
+    return glm::perspective(glm::radians(FOVY), (float)Backend::getWinWidth() / (float)Backend::getWinHeight(), NEAR_PLANE, FAR_PLANE);
 }
