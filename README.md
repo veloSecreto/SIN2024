@@ -13,8 +13,8 @@ Welcome to the SIN2024 repository! This project is a C++ game engine designed to
 
 ### Prerequisites
 
-- **C++17**: Ensure that you have a C++17 compatible compiler.
-- **Dependencies**: The project depends on several libraries:
+- **C++20**: Ensure that you have a C++20 compatible compiler.
+- **Dependencies**: The project depends on several libraries (note that all the dependencies are included in the project):
   - [GLFW](https://www.glfw.org/)
   - [GLAD](https://glad.dav1d.de/)
   - [Assimp](http://assimp.sourceforge.net/)
@@ -28,39 +28,29 @@ Welcome to the SIN2024 repository! This project is a C++ game engine designed to
     cd SIN2024
     ```
 
-2. Install dependencies if you haven't already.
-
-3. Build the project using `MinGW` or another suitable toolchain:
+2. Build the project using `MinGW` or another suitable toolchain:
 
     ```bash
     # For MinGW
+    cd vendor/bin
     mingw32-make
-    ```
-
-    If you are using CMake, ensure you have CMake installed, then run:
-
-    ```bash
-    mkdir build
-    cd build
-    cmake ..
-    cmake --build .
     ```
 
 ## Usage
 
-1. Compile your source code files along with the SIN2024 engine.
+1. Edit the `Game::start()` function in `src/game.cpp` for setting up the scene
 
-2. Link against the SIN2024 libraries.
+2. Build the project
 
-3. Run your compiled application to see the engine in action.
+3. Run the `main.exe` application in the `vendor/bin` path
 
 ## Contributing
 
-We welcome contributions to improve the SIN2024 engine. If you'd like to contribute:
+We welcome contributions to improve the SIN2024 engine. You need to be a member of the SIN Development Department of Enigma Publishers Ltd for Contribution. If you'd like to contribute:
 
-1. Fork the repository.
-2. Create a new branch for your feature or bug fix.
-3. Submit a pull request with a clear description of your changes.
+1. Request the Boss for Collaborattion in the repository.
+2. Make your desired changes.
+3. Submit a copy of your changes to the Boss and then push your changes if allowed by Boss.
 
 ## License
 
