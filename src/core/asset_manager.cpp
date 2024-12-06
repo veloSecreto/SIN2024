@@ -16,6 +16,7 @@ void AssetManager::loadForTesting() {
     g_models["sphere"] = Model(ROOT_DIR + "res/models/sphere.obj");
     g_models["cube"] = Model(ROOT_DIR + "res/models/cube.obj");
     g_models["house"] = Model(ROOT_DIR + "res/models/house.obj");
+    g_models["room"] = Model(ROOT_DIR + "res/models/room.obj");
 }
 
 void AssetManager::findAllAssetPaths() {

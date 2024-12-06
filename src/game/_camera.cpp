@@ -16,7 +16,7 @@ float Camera::speed;
 
 void Camera::init() {
     pitch = 0.0f;
-    yaw = 90.0f;
+    yaw = -90.0f;
     speed = 2.5f;
     m_position = glm::vec3(0.0f);
     updateVecs();

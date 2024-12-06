@@ -15,8 +15,13 @@ void Game::start() {
     GameObject house("house", "default");
     house.transform.scale = glm::vec3(0.2);
     scenes["main"].add(house);
+    GameObject man("nurseGuy", "default");
+    man.transform.position = glm::vec3(0, 0, 4);
+    scenes["main"].add(man);
 
-    scenes["main"].addLight(Light(glm::vec3(0.0f, 3.0f, 0.0f)));
+    scenes["main"].addLight(Light(glm::vec3(4, 3, 0))); // room on the left
+    scenes["main"].addLight(Light(glm::vec3(0, 3, 0), glm::vec3(1, 0, 0))); // dinning room light, should be red like my one
+    scenes["main"].addLight(Light(glm::vec3(0, 3, 4))); // forward side bed room
 }
 
 void Game::render() {
