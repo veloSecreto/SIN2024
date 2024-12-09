@@ -39,7 +39,7 @@ std::vector<Vertex>                         OpenGLBackend::globalVertices;
 std::vector<uint32_t>                       OpenGLBackend::globalIndices;
 std::vector<DrawElementsIndirectCommand>    OpenGLBackend::drawCommands;
 std::unordered_map<std::string, SSBO>       OpenGLBackend::g_ssbos;
-OpenGLBackend::Framebuffers                 OpenGLBackend::g_FBOs;
+GBuffer                                     OpenGLBackend::gbuffer;
 
 
 
@@ -69,7 +69,8 @@ void OpenGLBackend::initMinimum() {
         std::cout << "Debug GL context not available\n";
     }
 
-    glClear(GL_COLOR_BUFFER_BIT);
+    glEnable(GL_DEPTH_TEST);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
 void OpenGLBackend::uploadMeshData(std::vector<Vertex>& vertices, std::vector<uint32_t>& indices, DrawElementsIndirectCommand& drawCommand) {
@@ -92,5 +93,5 @@ void OpenGLBackend::updateSSBObyName(const std::string& name, const void* data, 
 }
 
 void OpenGLBackend::configureFBOs() {
-    g_FBOs.gbuffer.configure(800, 600);
+    gbuffer.configure(800, 600);
 }

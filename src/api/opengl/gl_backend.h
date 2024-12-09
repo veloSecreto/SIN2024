@@ -10,10 +10,7 @@ namespace OpenGLBackend {
     extern std::vector<uint32_t> globalIndices;
     extern std::vector<DrawElementsIndirectCommand> drawCommands;
     extern std::unordered_map<std::string, SSBO> g_ssbos;
-    
-    struct Framebuffers {
-        GBuffer gbuffer;
-    } extern g_FBOs;
+    extern GBuffer gbuffer;
 
     void initMinimum();
     void createSSBOs();

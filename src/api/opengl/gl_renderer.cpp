@@ -91,7 +91,7 @@ void OpenGLRenderer::unbindVAO() {
 }
 
 void OpenGLRenderer::render() {
-    OpenGLBackend::g_FBOs.gbuffer.bind();
+    OpenGLBackend::gbuffer.bind();
     beginFrame();
     glEnable(GL_DEPTH_TEST);
     bindVAO();
@@ -99,5 +99,5 @@ void OpenGLRenderer::render() {
     unbindVAO();
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-    OpenGLBackend::g_FBOs.gbuffer.draw();
+    OpenGLBackend::gbuffer.draw();
 }

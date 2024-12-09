@@ -38,17 +38,33 @@ Welcome to the SIN2024 repository! This project is a C++ game engine designed to
 
 ## Usage
 
-1. Edit the `Game::start()` function in `src/game.cpp` for setting up the scene
+1. Edit the `Game::start()` function in `src/game.cpp` for setting up the scene.
 
-2. Build the project
+2. Build the project.
 
-3. Run the `main.exe` application in the `vendor/bin` path
+3. Run the `main.exe` application in the `vendor/bin` path.
+
+## Screenshots
+
+Captured some enthusiastic moments while developing the engine. The engine is growing very fast.
+
+### Kernel Visualization
+![Kernel](res/_screenshots/kernal.png)
+
+### Old-School Grain Effect
+![Old School Grain Effect](res/_screenshots/old%20school%20grain%20effect.png)
+
+### Enhanced Grain Effect
+![Old School Grain Effect 2](res/_screenshots/old%20school%20grain%20effect%202.png)
+
+### G-Buffer Rendering
+![G-Buffer](res/_screenshots/gbuffer.png)
 
 ## Contributing
 
 We welcome contributions to improve the SIN2024 engine. You need to be a member of the SIN Development Department of Enigma Publishers Ltd for Contribution. If you'd like to contribute:
 
-1. Request the Boss for Collaborattion in the repository.
+1. Request the Boss for Collaboration in the repository.
 2. Make your desired changes.
 3. Submit a copy of your changes to the Boss and then push your changes if allowed by Boss.
 
