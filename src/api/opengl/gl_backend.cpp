@@ -93,5 +93,5 @@ void OpenGLBackend::updateSSBObyName(const std::string& name, const void* data, 
 }
 
 void OpenGLBackend::configureFBOs() {
-    gbuffer.configure(800, 600);
+    gbuffer.configure(Backend::getWinWidth(), Backend::getWinHeight());
 }
