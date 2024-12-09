@@ -1,5 +1,4 @@
-First of all, setup the ssbo organization in the OpenGL Backend
-create the buffers
-update the ssbos in the scene
-then go to the shader and start ssbo implementation
-see if it works
+Create a framebuffer struct
+setup the gbuffer in the OpenGLBackend
+render everything from the OpenGLRenderer
+apply post-processing

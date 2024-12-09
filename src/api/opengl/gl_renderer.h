@@ -21,4 +21,5 @@ namespace OpenGLRenderer {
     void createShaders();
     Shader* getDefaultShader();
     Shader* getShaderByName(const std::string& name);
+    void render();
 };

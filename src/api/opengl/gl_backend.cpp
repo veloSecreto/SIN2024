@@ -39,6 +39,7 @@ std::vector<Vertex>                         OpenGLBackend::globalVertices;
 std::vector<uint32_t>                       OpenGLBackend::globalIndices;
 std::vector<DrawElementsIndirectCommand>    OpenGLBackend::drawCommands;
 std::unordered_map<std::string, SSBO>       OpenGLBackend::g_ssbos;
+OpenGLBackend::Framebuffers                 OpenGLBackend::g_FBOs;
 
 
 
@@ -59,16 +60,15 @@ void OpenGLBackend::initMinimum() {
     int flags;
     glGetIntegerv(GL_CONTEXT_FLAGS, &flags);
     if (flags & GL_CONTEXT_FLAG_DEBUG_BIT) {
-        std::cout << "Debug GL context enabled\n";
         glEnable(GL_DEBUG_OUTPUT);
         glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
         glDebugMessageCallback(glDebugOutput, nullptr);
+        std::cout << "Debug GL context enabled\n";
     }
     else {
         std::cout << "Debug GL context not available\n";
     }
 
-    glEnable(GL_DEPTH_TEST);
     glClear(GL_COLOR_BUFFER_BIT);
 }
 
@@ -89,4 +89,8 @@ void OpenGLBackend::uploadSSBOsToGPU() {
 
 void OpenGLBackend::updateSSBObyName(const std::string& name, const void* data, GLsizeiptr size) {
     g_ssbos[name].update(data, size);
+}
+
+void OpenGLBackend::configureFBOs() {
+    g_FBOs.gbuffer.configure(800, 600);
 }

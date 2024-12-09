@@ -1,5 +1,6 @@
 #include "gl_renderer.h"
 #include "gl_backend.h"
+#include "../../game/game.h"
 #include <filesystem>
 
 // Raw Array and Buffers
@@ -59,7 +60,6 @@ void OpenGLRenderer::uploadBuffersToGPU() {
     glBufferData(GL_DRAW_INDIRECT_BUFFER, OpenGLBackend::drawCommands.size() * sizeof(DrawElementsIndirectCommand), OpenGLBackend::drawCommands.data(), GL_DYNAMIC_DRAW);
     
     unbindVAO();
-
     std::cout << "All global buffers and Global Vertex Array has been uploaded to the GPU\n"; 
 }
 
@@ -70,8 +70,8 @@ void OpenGLRenderer::render(DrawElementsIndirectCommand& command) {
 }
 
 void OpenGLRenderer::beginFrame() {
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glClearColor(BG_COLOR, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
 Shader* OpenGLRenderer::getDefaultShader() {
@@ -88,4 +88,16 @@ void OpenGLRenderer::bindVAO() {
 
 void OpenGLRenderer::unbindVAO() {
     glBindVertexArray(0);
+}
+
+void OpenGLRenderer::render() {
+    OpenGLBackend::g_FBOs.gbuffer.bind();
+    beginFrame();
+    glEnable(GL_DEPTH_TEST);
+    bindVAO();
+    Game::render();
+    unbindVAO();
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+    OpenGLBackend::g_FBOs.gbuffer.draw();
 }

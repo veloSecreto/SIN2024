@@ -19,6 +19,7 @@ namespace Engine {
         OpenGLRenderer::uploadBuffersToGPU();
         OpenGLBackend::createSSBOs();
         OpenGLBackend::uploadSSBOsToGPU();
+        OpenGLBackend::configureFBOs();
         
         // final injection
         Backend::show();
@@ -32,8 +33,7 @@ namespace Engine {
     void run() {
         while (Backend::windowIsOpen()) {
             Clock::update();
-
-            OpenGLRenderer::beginFrame();
+            // OpenGLRenderer::beginFrame();
             Backend::beginFrame();
             Input::update();
 
@@ -45,16 +45,16 @@ namespace Engine {
                 OpenGLRenderer::hotLoadShaders();
             }
 
-            // if (Backend::getAPI() == API::OPENGL) {
-            //     OpenGLRenderer::render();
-            // }
-            // else if (Backend::getAPI() == API::VULKAN) {
-            //     // Render for VULKAN System, not made yet
-            // }
+            if (Backend::getAPI() == API::OPENGL) {
+                OpenGLRenderer::render();
+            }
+            else if (Backend::getAPI() == API::VULKAN) {
+                // Render for VULKAN System, not made yet
+            }
 
-            OpenGLRenderer::bindVAO();
-            Game::render();
-            OpenGLRenderer::unbindVAO();
+            // OpenGLRenderer::bindVAO();
+            // Game::render();
+            // OpenGLRenderer::unbindVAO();
 
             Backend::endFrame();
         }

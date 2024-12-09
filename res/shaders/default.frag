@@ -1,4 +1,4 @@
-#version 460 core
+# version 460 core
 
 struct Light {
     vec3 position;
@@ -38,7 +38,7 @@ void main()
     vec3 specularColor = texture(material.specular1, texCoord).rgb;
 
     vec3 finalColor = vec3(0.0);
-    vec3 GI = vec3(0);
+    vec3 GI = diffuseColor * 0.15;
 
     for (int i = 0; i < lights.length(); ++i) {
         Light light = lights[i];

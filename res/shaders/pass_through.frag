@@ -1,4 +1,4 @@
-#version 460 core
+# version 460 core
 
 in vec3 position;
 in vec3 normal;
@@ -11,7 +11,7 @@ uniform float time;
 
 void main()
 {
-    fragColor = vec4(light_color, 0.0);
+    fragColor = vec4(light_color, 1.0);
 }
 
 /*
