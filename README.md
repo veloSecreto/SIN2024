@@ -52,13 +52,13 @@ Captured some enthusiastic moments while developing the engine. The engine is gr
 ![Kernel](res/screenshots/kernal.jpg)
 
 ### Old-School Grain Effect
-![Old School Grain Effect](res/screenshots/old-school-grain-effect.jpg)
+![Old School Grain Effect](res/screenshots/effect.jpg)
 
 ### Enhanced Grain Effect
-![Old School Grain Effect Black and White](res/screenshots/old-school-grain-effect2.jpg)
+![Old School Grain Effect Black and White](res/screenshots/effect2.jpg)
 
 ### G-Buffer Rendering
-![G-Buffer](res/screenshots/gbuffer.jpg)
+![G-Buffer](res/screenshots/lighting.jpg)
 
 ## Contributing
 
