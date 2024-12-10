@@ -1,12 +1,3 @@
-# Force LF for all text files
-* text eol=lf
-
-# For Windows-specific files that need CRLF, use:
-*.bat text eol=crlf
-
-# Vendor libraries (optional): Ensure vendor files use LF
-vendor/** text eol=lf
-
 # Mark vendor files and glad.c as vendored (exclude from language stats)
 vendor/** linguist-vendored
 src/glad.c linguist-vendored
