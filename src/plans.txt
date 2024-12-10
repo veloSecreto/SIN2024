@@ -1,4 +1,1 @@
-Create a framebuffer struct
-setup the gbuffer in the OpenGLBackend
-render everything from the OpenGLRenderer
-apply post-processing
+chill

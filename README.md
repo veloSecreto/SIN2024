@@ -49,16 +49,16 @@ Welcome to the SIN2024 repository! This project is a C++ game engine designed to
 Captured some enthusiastic moments while developing the engine. The engine is growing very fast.
 
 ### Kernel Visualization
-![Kernel](res/screenshots/kernal.png)
+![Kernel](res/screenshots/kernal.jpg)
 
 ### Old-School Grain Effect
-![Old School Grain Effect](res/screenshots/old-school-grain-effect.png)
+![Old School Grain Effect](res/screenshots/old-school-grain-effect.jpg)
 
 ### Enhanced Grain Effect
-![Old School Grain Effect Black and White](res/screenshots/old-school-grain-effect2.png)
+![Old School Grain Effect Black and White](res/screenshots/old-school-grain-effect2.jpg)
 
 ### G-Buffer Rendering
-![G-Buffer](res/screenshots/gbuffer.png)
+![G-Buffer](res/screenshots/gbuffer.jpg)
 
 ## Contributing
 
