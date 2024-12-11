@@ -1,3 +1,10 @@
+# Force LF for all text files
+* text eol=lf
+# For Windows-specific files that need CRLF, use:
+*.bat text eol=crlf
+# Vendor libraries (optional): Ensure vendor files use LF
+vendor/** text eol=lf
+
 *.png binary
 *.jpg binary
 *.jpeg binary
