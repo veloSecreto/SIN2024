@@ -15,7 +15,7 @@ in vec3 position;
 in vec3 normal;
 in vec2 texCoord;
 
-out vec4 fragColor;
+layout (location = 0) out vec4 albedo;
 
 struct Material {
     sampler2D diffuse1;
@@ -38,7 +38,7 @@ void main()
     vec3 specularColor = texture(material.specular1, texCoord).rgb;
 
     vec3 finalColor = vec3(0.0);
-    vec3 GI = diffuseColor * 0.15;
+    vec3 GI = vec3(0.0);
 
     for (int i = 0; i < lights.length(); ++i) {
         Light light = lights[i];
@@ -59,5 +59,6 @@ void main()
 
         finalColor += lightContribution;
     }
-    fragColor = vec4(finalColor + GI, 1.0);
+
+    albedo = vec4(finalColor + GI, 1.0);
 }

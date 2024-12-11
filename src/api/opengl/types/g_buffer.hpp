@@ -14,10 +14,7 @@ struct GBuffer {
 
     public:
         uint32_t albedo = { 0 };
-        uint32_t normal = { 0 };
-        uint32_t rma    = { 0 };
-        uint32_t rbo    = { 0 };
-        std::unordered_map<uint32_t, GLenum> attachments;
+        uint32_t depth = { 0 };
 
         void configure(const unsigned int& width, const unsigned int& height);
 

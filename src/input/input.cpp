@@ -1,5 +1,6 @@
 #include "input.h"
 #include "../backend/backend.h"
+#include <iostream>
 
 namespace Input {
     GLFWwindow* _window = nullptr;
@@ -10,6 +11,12 @@ namespace Input {
     int _scrollWheelYoffset;
     float _mouseSensitivity = 0.05f;
 
+    const int NUM_MOUSE_BUTTONS = 8;
+    bool _mouseButtonDown[NUM_MOUSE_BUTTONS];
+    bool _mouseButtonPressed[NUM_MOUSE_BUTTONS];
+    bool _mouseButtonDownLastFrame[NUM_MOUSE_BUTTONS];
+
+
     void init() {
         double x, y;
         _window = Backend::getWindowPointer();
@@ -18,22 +25,24 @@ namespace Input {
         _mousePos.x = (float)x;
         _mousePos.y = (float)y;
         _mousePosOffset = glm::vec2(0); // Initialize mouse offset
+
+        // initialize mouse button connfigurations
+        for (int button = 0; button < NUM_MOUSE_BUTTONS; button++) {
+            _mouseButtonDown[button] = false;
+            _mouseButtonPressed[button] = false;
+            _mouseButtonDownLastFrame[button] = false;
+        }
     }
 
     void update() {
+        if (keyDown(SIN_KEY_ESCAPE)) {
+            Backend::forceCloseWindow();
+        }
+
         // Keyboard
         for (int key = 32; key < 349; key++) {
-            if (glfwGetKey(_window, key) == GLFW_PRESS) {
-                _keyDown[key] = true;
-            } else {
-                _keyDown[key] = false;
-            }
-
-            if (_keyDown[key] && !_keyDownLastFrame[key]) {
-                _keyPressed[key] = true;
-            } else {
-                _keyPressed[key] = false;
-            }
+            _keyDown[key] = glfwGetKey(_window, key) == GLFW_PRESS;
+            _keyPressed[key] = _keyDown[key] && !_keyDownLastFrame[key];
             _keyDownLastFrame[key] = _keyDown[key];
         }
 
@@ -44,6 +53,13 @@ namespace Input {
         _mousePosOffset.y = (float)y - _mousePos.y;
         _mousePos.x = (float)x;
         _mousePos.y = (float)y;
+
+        // Mouse buttons
+        for (int button = 0; button < NUM_MOUSE_BUTTONS; button++) {
+            _mouseButtonDown[button] = glfwGetMouseButton(_window, button) == GLFW_PRESS;
+            _mouseButtonPressed[button] = _mouseButtonDown[button] && !_mouseButtonDownLastFrame[button];
+            _mouseButtonDownLastFrame[button] = _mouseButtonDown[button];
+        }
     }
 
     bool keyPressed(unsigned int key) {
@@ -52,6 +68,14 @@ namespace Input {
 
     bool keyDown(unsigned int key) {
         return _keyDown[key];
+    }
+
+    bool mouseButtonDown(int button) {
+        return _mouseButtonDown[button];
+    }
+
+    bool mouseButtonPressed(int button) {
+        return _mouseButtonPressed[button];
     }
 
     glm::vec2 getMouseOffset() {

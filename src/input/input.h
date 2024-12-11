@@ -16,5 +16,7 @@ namespace Input {
     float getMouseSensitivity();
     void setMouseSensitivity(float sensitivity);
     float getMouseWheelYoffset();
+    bool mouseButtonDown(int button);
+    bool mouseButtonPressed(int button);
     void update();
 }

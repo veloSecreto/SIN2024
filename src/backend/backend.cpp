@@ -3,7 +3,6 @@
 #include "../input/input.h"
 #include "../core/asset_manager.h"
 
-
 namespace Backend {
     GLFWwindow* _window;
     GLFWmonitor* _monitor;
@@ -57,7 +56,6 @@ namespace Backend {
 
     void beginFrame() {
         glfwPollEvents();
-        glfwGetWindowSize(_window, &_width, &_height);
     }
 
     void endFrame() {
@@ -65,8 +63,9 @@ namespace Backend {
     }
 
     void frameBufferSizeCallback(GLFWwindow* window, int width, int height) {
-        glViewport(0, 0, width, height);
-    }
+        _width = width;
+        _height = height;
+        glViewport(0, 0, _width, _height);    }
 
     GLFWwindow* getWindowPointer() {
         return _window;

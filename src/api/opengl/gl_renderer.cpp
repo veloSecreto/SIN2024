@@ -91,13 +91,14 @@ void OpenGLRenderer::unbindVAO() {
 }
 
 void OpenGLRenderer::render() {
-    OpenGLBackend::gbuffer.bind();
+    GBuffer& gbuffer = OpenGLBackend::gbuffer;
+    gbuffer.bind();
     beginFrame();
-    glEnable(GL_DEPTH_TEST);
     bindVAO();
+    glEnable(GL_DEPTH_TEST);
     Game::render();
     unbindVAO();
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-    OpenGLBackend::gbuffer.draw();
+    gbuffer.draw();
 }

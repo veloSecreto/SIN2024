@@ -21,6 +21,10 @@ void Game::start() {
     man.transform.scale = glm::vec3(2);
     scenes["main"].add(man);
 
+    GameObject obj("mushroom", "default");
+    obj.transform.position = glm::vec3(4, 0.5f, 0);
+    scenes["main"].add(obj);
+
     scenes["main"].addLight(Light(glm::vec3(5, 3, 0))); // room on the left
     scenes["main"].addLight(Light(glm::vec3(0, 3, 0), glm::vec3(1, 0.2f, 0.2f))); // dinning room light, should be red like my one
     scenes["main"].addLight(Light(glm::vec3(0, 3, 5))); // forward side bed room

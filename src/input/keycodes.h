@@ -134,3 +134,13 @@
 #define SIN_KEY_NUMPAD_ADD         334
 #define SIN_KEY_NUMPAD_ENTER       335
 #define SIN_KEY_NUMPAD_EQUAL       336
+
+/* Mouse Buttons */
+#define SIN_MOUSE_BUTTON_LEFT      0
+#define SIN_MOUSE_BUTTON_RIGHT     1
+#define SIN_MOUSE_BUTTON_MIDDLE    2
+#define SIN_MOUSE_BUTTON_4         3
+#define SIN_MOUSE_BUTTON_5         4
+#define SIN_MOUSE_BUTTON_6         5
+#define SIN_MOUSE_BUTTON_7         6
+#define SIN_MOUSE_BUTTON_8         7
