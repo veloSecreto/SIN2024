@@ -6,7 +6,7 @@ void GBuffer::configure(const unsigned int& width, const unsigned int& height) {
         if (ID == 0) {
             glGenFramebuffers(1, &ID);
             glGenTextures(1, &albedo);
-            glGenTextures(1, &depth);
+            glGenRenderbuffers(1, &rbo);
             this->width = width;
             this->height = height;
         }
@@ -21,13 +21,9 @@ void GBuffer::configure(const unsigned int& width, const unsigned int& height) {
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, albedo, 0);
 
-        glBindTexture(GL_TEXTURE_2D, depth);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, width, height, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, NULL);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depth, 0);
+        glBindRenderbuffer(GL_RENDERBUFFER, rbo);
+        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height);
+        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo);
     
         auto fboStatus = glCheckFramebufferStatus(GL_FRAMEBUFFER);
         if (fboStatus != GL_FRAMEBUFFER_COMPLETE) std::cout << "G-Framebuffer configuration error from GL\n" << fboStatus << std::endl;
@@ -75,7 +71,7 @@ void GBuffer::draw() {
 
 void GBuffer::destroy() {
     glDeleteTextures(1, &albedo);
-    glDeleteRenderbuffers(1, &depth);
+    glDeleteRenderbuffers(1, &rbo);
     glDeleteFramebuffers(1, &ID);
 }
 

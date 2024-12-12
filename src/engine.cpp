@@ -42,7 +42,7 @@ namespace Engine {
             }
 
             if (Backend::getAPI() == API::OPENGL) {
-                OpenGLRenderer::render();
+                OpenGLRenderer::renderFrame();
             }
             else if (Backend::getAPI() == API::VULKAN) {
                 // Render for VULKAN System, not made yet

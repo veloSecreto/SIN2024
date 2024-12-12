@@ -27,6 +27,7 @@ struct Material {
 
 
 uniform Material material;
+uniform samplerCube cubemap;
 uniform vec3 camPos;
 
 void main()
@@ -38,7 +39,7 @@ void main()
     vec3 specularColor = texture(material.specular1, texCoord).rgb;
 
     vec3 finalColor = vec3(0.0);
-    vec3 GI = vec3(0.0);
+    vec3 GI = diffuseColor * 0.15;
 
     for (int i = 0; i < lights.length(); ++i) {
         Light light = lights[i];
@@ -59,6 +60,12 @@ void main()
 
         finalColor += lightContribution;
     }
+
+    // Environment reflections
+    
+    // vec3 I = normalize(position - camPos);
+    // vec3 R = reflect(I, normalize(normal));
+    // vec4 reflection = vec4(texture(cubemap, R).rgb, 0);
 
     albedo = vec4(finalColor + GI, 1.0);
 }

@@ -36,6 +36,6 @@ struct Mesh {
             shader->setInt("material." + name, i);
             glBindTexture(GL_TEXTURE_2D, textures[i].getID());
         }
-        OpenGLRenderer::render(drawCommand);
+        OpenGLRenderer::renderMesh(drawCommand);
     }
 };

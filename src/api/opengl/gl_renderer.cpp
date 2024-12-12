@@ -63,7 +63,7 @@ void OpenGLRenderer::uploadBuffersToGPU() {
     std::cout << "All global buffers and Global Vertex Array has been uploaded to the GPU\n"; 
 }
 
-void OpenGLRenderer::render(DrawElementsIndirectCommand& command) {
+void OpenGLRenderer::renderMesh(DrawElementsIndirectCommand& command) {
     // glDrawElementsInstancedBaseVertex(GL_TRIANGLES, command.indexCount, GL_UNSIGNED_INT, (void*)(command.firstIndex * sizeof(uint32_t)), command.instancedCount, command.baseVertex);
     // glDrawElementsInstancedBaseVertexBaseInstance(GL_TRIANGLES, command.indexCount, GL_UNSIGNED_INT, (void*)(sizeof(uint32_t) * command.firstIndex), 1, command.baseVertex, 0);
     glDrawElementsInstancedBaseVertexBaseInstance(GL_TRIANGLES, command.indexCount, GL_UNSIGNED_INT, (void*)(sizeof(uint32_t) * command.firstIndex), 1, command.baseVertex, 0);
@@ -90,12 +90,12 @@ void OpenGLRenderer::unbindVAO() {
     glBindVertexArray(0);
 }
 
-void OpenGLRenderer::render() {
+void OpenGLRenderer::renderFrame() {
     GBuffer& gbuffer = OpenGLBackend::gbuffer;
     gbuffer.bind();
     beginFrame();
-    bindVAO();
     glEnable(GL_DEPTH_TEST);
+    bindVAO();
     Game::render();
     unbindVAO();
     glBindFramebuffer(GL_FRAMEBUFFER, 0);

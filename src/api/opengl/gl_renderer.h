@@ -13,7 +13,8 @@ namespace OpenGLRenderer {
 
     void init();
     void uploadBuffersToGPU();
-    void render(DrawElementsIndirectCommand& command);
+    void renderMesh(DrawElementsIndirectCommand& command);
+    void renderFrame();
     void bindVAO();
     void unbindVAO();
     void beginFrame();
@@ -21,5 +22,4 @@ namespace OpenGLRenderer {
     void createShaders();
     Shader* getDefaultShader();
     Shader* getShaderByName(const std::string& name);
-    void render();
 };

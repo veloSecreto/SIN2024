@@ -3,6 +3,7 @@
 #include "../common.h"
 #include "game_object.h"
 #include "lights.hpp"
+#include "../api/opengl/types/skybox.hpp"
 #include <vector>
 
 
@@ -10,6 +11,7 @@ class Scene {
     public:
         std::vector<GameObject> gameObjects;
         std::vector<Light> lights;
+        Skybox skybox;
         
         Scene();
         void add(const GameObject& object);
