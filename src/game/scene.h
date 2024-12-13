@@ -13,7 +13,8 @@ class Scene {
         std::vector<Light> lights;
         Skybox skybox;
         
-        Scene();
+        Scene() = default;
+        Scene(std::string skyboxPath, std::string skyboxFileFormat);
         void add(const GameObject& object);
         void addLight(const Light& light);
         void update();

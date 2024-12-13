@@ -3,9 +3,9 @@
 #include "../api/opengl/gl_backend.h"
 #include "../clock.hpp"
 
-Scene::Scene()
+Scene::Scene(std::string skyboxPath, std::string skyboxFileFormat)
 {
-    skybox = Skybox(ROOT_DIR + "res/skyboxes/dark", "png");
+    skybox = Skybox(skyboxPath, skyboxFileFormat);
 }
 
 void Scene::add(const GameObject& object) {
@@ -22,10 +22,16 @@ void Scene::render() {
         obj.render();
     }
 
-    for (auto& light : lights) {
-        light.render();
-    }
-    skybox.render();
+    // forward rendering
+    // forward rendering
+    // forward rendering
+    // forward rendering
+    // forward rendering
+    
+    // for (auto& light : lights) {
+    //     light.render();
+    // }
+    // skybox.render();
 }
 
 void Scene::update() {

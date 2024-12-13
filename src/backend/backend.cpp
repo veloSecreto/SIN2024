@@ -65,7 +65,8 @@ namespace Backend {
     void frameBufferSizeCallback(GLFWwindow* window, int width, int height) {
         _width = width;
         _height = height;
-        glViewport(0, 0, _width, _height);    }
+        glViewport(0, 0, _width, _height);    
+    }
 
     GLFWwindow* getWindowPointer() {
         return _window;

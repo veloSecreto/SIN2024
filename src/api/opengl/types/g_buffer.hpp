@@ -3,16 +3,16 @@
 #include <glad/glad.h>
 #include <unordered_map>
 #include <iostream>
-#include "shader.h"
 
 struct GBuffer {
     private:
         uint32_t ID = { 0 };
         uint32_t width = { 0 }, height = { 0 };
         uint32_t VAO;
-        Shader* shader;
 
     public:
+        uint32_t position = { 0 };
+        uint32_t normal = { 0 };
         uint32_t albedo = { 0 };
         uint32_t rbo = { 0 };
 
@@ -21,6 +21,8 @@ struct GBuffer {
         void bind();
 
         void draw();
+
+        uint32_t& getID();
 
         void destroy();
 

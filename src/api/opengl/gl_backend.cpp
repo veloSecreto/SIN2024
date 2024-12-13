@@ -85,7 +85,7 @@ void OpenGLBackend::createSSBOs() {
 }
 
 void OpenGLBackend::uploadSSBOsToGPU() {
-    g_ssbos["lights"].create(Game::scenes["main"].lights.data(), Game::scenes["main"].lights.size() * sizeof(Light), 0);
+    g_ssbos["lights"].create(Game::scene.lights.data(), Game::scene.lights.size() * sizeof(Light), 0);
 }
 
 void OpenGLBackend::updateSSBObyName(const std::string& name, const void* data, GLsizeiptr size) {

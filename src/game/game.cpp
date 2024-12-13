@@ -1,35 +1,32 @@
 #include "game.h"
 #include "../core/asset_manager.h"
 
-std::unordered_map<std::string, Scene> Game::scenes;
-
-void Game::createScene(const std::string& name) {
-    scenes[name] = Scene();
-}
+Scene Game::scene;
 
 void Game::start() {
     Camera::init();
-    createScene("main");
+    
+    scene = Scene(ROOT_DIR + "res/skyboxes/dark", "png");
     AssetManager::loadAll();
 
     GameObject house("house", "default");
     house.transform.scale = glm::vec3(0.2f);
-    scenes["main"].add(house);
+    scene.add(house);
 
     GameObject man("nurseGuy", "default");
     man.transform.position = glm::vec3(0, 0.5f, 4);
     man.transform.scale = glm::vec3(2);
-    scenes["main"].add(man);
+    scene.add(man);
 
     GameObject obj("mushroom", "default");
     obj.transform.position = glm::vec3(4, 0.5f, 0);
-    scenes["main"].add(obj);
+    scene.add(obj);
 
-    scenes["main"].addLight(Light(glm::vec3(5, 3, 0))); // room on the left
-    scenes["main"].addLight(Light(glm::vec3(0, 3, 0), glm::vec3(1, 0.2f, 0.2f))); // dinning room light, should be red like my one
-    scenes["main"].addLight(Light(glm::vec3(0, 3, 5))); // forward side bed room
+    scene.addLight(Light(glm::vec3(5, 3, 0))); // room on the left
+    scene.addLight(Light(glm::vec3(0, 3, 0), glm::vec3(1, 0.2f, 0.2f))); // dinning room light, should be red like my one
+    scene.addLight(Light(glm::vec3(0, 3, 5))); // forward side bed room
 }
 
 void Game::render() {
-    scenes["main"].render();
+    scene.render();
 }

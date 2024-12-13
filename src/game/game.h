@@ -4,9 +4,8 @@
 #include "scene.h"
 
 namespace Game {
-    extern std::unordered_map<std::string, Scene> scenes;
+    extern Scene scene;
     
-    void createScene(const std::string& name);
     void start();
     void render();
 };

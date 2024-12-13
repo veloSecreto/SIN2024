@@ -1,0 +1,5 @@
+implemented deferred shading
+noticed some artifacts on pixels, caused by the specular textures incorrect value (albedo.a)
+will fix this later by adding rma attachment in the Geometry buffer or while implementing PBR
+also the light and skybox isn't rendering in the correct way, perhaps the depth data wasn't sent correctly
+for now just sleep, worked a lot today

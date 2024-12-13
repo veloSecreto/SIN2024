@@ -1,6 +1,7 @@
 #include "gl_renderer.h"
 #include "gl_backend.h"
 #include "../../game/game.h"
+#include "../../backend/backend.h"
 #include <filesystem>
 
 // Raw Array and Buffers
@@ -9,6 +10,7 @@ uint32_t OpenGLRenderer::globalVBO;
 uint32_t OpenGLRenderer::globalEBO;
 uint32_t OpenGLRenderer::globalIBO;
 std::unordered_map<std::string, Shader*> OpenGLRenderer::g_shaders;
+
 
 void OpenGLRenderer::createShaders() {
     for (const auto& entry : std::filesystem::directory_iterator(ROOT_DIR + "res/shaders")) {
@@ -71,7 +73,8 @@ void OpenGLRenderer::renderMesh(DrawElementsIndirectCommand& command) {
 
 void OpenGLRenderer::beginFrame() {
     glClearColor(BG_COLOR, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+    glViewport(0, 0, Backend::getWinWidth(), Backend::getWinHeight());
 }
 
 Shader* OpenGLRenderer::getDefaultShader() {
@@ -91,7 +94,8 @@ void OpenGLRenderer::unbindVAO() {
 }
 
 void OpenGLRenderer::renderFrame() {
-    GBuffer& gbuffer = OpenGLBackend::gbuffer;
+    // geometry pass
+    static GBuffer& gbuffer = OpenGLBackend::gbuffer;
     gbuffer.bind();
     beginFrame();
     glEnable(GL_DEPTH_TEST);
@@ -100,5 +104,20 @@ void OpenGLRenderer::renderFrame() {
     unbindVAO();
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
+    // lighting pass
     gbuffer.draw();
+
+    // store depth data
+    glBindFramebuffer(GL_READ_FRAMEBUFFER, gbuffer.getID());
+    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+    glBlitFramebuffer(0, 0, Backend::getWinWidth(), Backend::getWinHeight(), 0, 0, Backend::getWinWidth(), Backend::getWinHeight(), GL_DEPTH_BUFFER_BIT, GL_NEAREST);
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+    // pass through
+    bindVAO();
+    for (auto& light : Game::scene.lights) {
+        light.render();
+    }
+    // Game::scene.skybox.render();
+    unbindVAO();
 }
