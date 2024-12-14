@@ -17,7 +17,6 @@ void Scene::addLight(const Light& light) {
 }
 
 void Scene::render() {
-    update();
     for (auto& obj : gameObjects) {
         obj.render();
     }
@@ -42,7 +41,6 @@ void Scene::update() {
     else {
         Input::unhideCursor();
     }
-    OpenGLBackend::updateSSBObyName("lights", lights.data(), lights.size() * sizeof(Light));
     Light& light = lights[0];
     static glm::vec3 old = light.position;
     float radius = 1.7f;

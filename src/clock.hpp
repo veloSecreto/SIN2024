@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common.h"
+#include <glfw/glfw3.h>
 
 namespace Clock {
     inline float time, _currentFrame, _lastFrame, dt;

@@ -1,6 +1,7 @@
 #include "gl_backend.h"
 #include "../../backend/backend.h"
 #include "../../game/game.h"
+#include "../../game/_camera.h"
 
 void APIENTRY glDebugOutput(GLenum source, GLenum type, unsigned int id, GLenum severity, GLsizei /*length*/, const char* message, const void* /*userParam*/) {
     if (id == 131169 || id == 131185 || id == 131218 || id == 131204) return; // ignore these non-significant error codes
@@ -40,8 +41,14 @@ std::vector<uint32_t>                       OpenGLBackend::globalIndices;
 std::vector<DrawElementsIndirectCommand>    OpenGLBackend::drawCommands;
 std::unordered_map<std::string, SSBO>       OpenGLBackend::g_ssbos;
 GBuffer                                     OpenGLBackend::gbuffer;
+std::vector<uint64_t>                       OpenGLBackend::textureHandles;
 
-
+// struct for passing camera data to ssbo
+struct CameraData {
+    glm::mat4 proj;
+    glm::mat4 view;
+    glm::vec3 position;
+};
 
 void OpenGLBackend::initMinimum() {
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
@@ -81,11 +88,18 @@ void OpenGLBackend::uploadMeshData(std::vector<Vertex>& vertices, std::vector<ui
 
 void OpenGLBackend::createSSBOs() {
     g_ssbos["lights"] = SSBO();
+    g_ssbos["camera"] = SSBO();
+    g_ssbos["textures"] = SSBO();
     std::cout << "SSBO creation process has been completed\n";
 }
 
 void OpenGLBackend::uploadSSBOsToGPU() {
     g_ssbos["lights"].create(Game::scene.lights.data(), Game::scene.lights.size() * sizeof(Light), 0);
+    // camera
+    CameraData cameraData = { Camera::m_proj, Camera::m_view, Camera::m_position };
+    g_ssbos["camera"].create(&cameraData, sizeof(CameraData), 1);
+
+    g_ssbos["textures"].create(textureHandles.data(), textureHandles.size() * sizeof(uint64_t), 2);
 }
 
 void OpenGLBackend::updateSSBObyName(const std::string& name, const void* data, GLsizeiptr size) {
@@ -94,4 +108,12 @@ void OpenGLBackend::updateSSBObyName(const std::string& name, const void* data, 
 
 void OpenGLBackend::configureFBOs() {
     gbuffer.configure(Backend::getWinWidth(), Backend::getWinHeight());
+}
+
+void OpenGLBackend::update() {
+    g_ssbos["lights"].update(Game::scene.lights.data(), Game::scene.lights.size() * sizeof(Light));
+    // camera data
+    CameraData cameraData = { Camera::m_proj, Camera::m_view, Camera::m_position };
+    g_ssbos["camera"].update(&cameraData, sizeof(CameraData));
+    g_ssbos["textures"].update(textureHandles.data(), textureHandles.size() * sizeof(uint64_t));
 }

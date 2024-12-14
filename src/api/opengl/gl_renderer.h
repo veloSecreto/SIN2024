@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../common.h"
+#include "../../defines.h"
 #include "types/shader.h"
 #include "../../common/rendererCommon.h"
 
@@ -10,6 +10,10 @@ namespace OpenGLRenderer {
     extern uint32_t globalEBO;
     extern uint32_t globalIBO;
     extern std::unordered_map<std::string, Shader*> g_shaders;
+    extern RenderMode renderMode;
+
+    // shits
+    extern bool _renderModeChanged;
 
     void init();
     void uploadBuffersToGPU();

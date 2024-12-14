@@ -6,13 +6,13 @@
 #include "_camera.h"
 #include "../clock.hpp"
 
-void Light::render() {
-    Shader* shader = OpenGLRenderer::getShaderByName("pass_through");
+
+// this function is just for visualization of lights
+const void Light::render() {
+    static Shader* shader = OpenGLRenderer::getShaderByName("pass_through");
     Transform transform(position);
     transform.scale = glm::vec3(0.2f);
     shader->use();
-    shader->setMat4x4("m_proj", Camera::m_proj);
-    shader->setMat4x4("m_view", Camera::m_view);
     shader->setMat4x4("m_model", transform.to_mat4());
     shader->setVec3("light_color", color);
     shader->setFloat("time", Clock::time);

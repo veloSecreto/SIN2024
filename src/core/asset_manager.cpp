@@ -26,7 +26,7 @@ void AssetManager::findAllAssetPaths() {
             TextureType type = TextureType::DIFFUSE;
             std::string path = ROOT_DIR + "res/textures/diffuse/" + name;
             name = name.substr(0, name.find_last_of('.'));
-            g_textures.emplace(name, Texture(path, type, name));
+            g_textures.emplace(name, Texture(path, type, g_textures.size()));
             std::cout << "Loaded texture from path: " << path << std::endl;
         }
     }
@@ -37,7 +37,7 @@ void AssetManager::findAllAssetPaths() {
             TextureType type = TextureType::SPECULAR;
             std::string path = ROOT_DIR + "res/textures/specular/" + name;
             name = name.substr(0, name.find_last_of('.'));
-            g_textures.emplace(name, Texture(path, type, name));
+            g_textures.emplace(name, Texture(path, type, g_textures.size()));
             std::cout << "Loaded texture from path: " << path << std::endl;
         }
     }
@@ -48,7 +48,7 @@ void AssetManager::findAllAssetPaths() {
             TextureType type = TextureType::EMISSIVE;
             std::string path = ROOT_DIR + "res/textures/emissive/" + name;
             name = name.substr(0, name.find_last_of('.'));
-            g_textures.emplace(name, Texture(path, type, name));
+            g_textures.emplace(name, Texture(path, type, g_textures.size()));
             std::cout << "Loaded texture from path: " << path << std::endl;
         }
     }

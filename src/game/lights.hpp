@@ -1,4 +1,6 @@
-#include "../common.h"
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 struct Light {
     glm::vec3 position = glm::vec3(0.0f); float _padding0;
@@ -23,5 +25,6 @@ struct Light {
         this->color = color;
     }
 
-    void render();
+    // this function is just for visualization of lights
+    const void render();
 };

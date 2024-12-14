@@ -13,7 +13,7 @@ struct GameObject {
         Shader* shader;
 
         GameObject() = default;
-        GameObject(const std::string& modelName, const std::string& shaderName);
+        GameObject(const std::string& modelName);
         void checkCollision();
         void render();
         void update();

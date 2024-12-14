@@ -1,9 +1,13 @@
 #pragma once
 
-#include "../../../common.h"
+#include <glad/glad.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 #include <fstream>
 #include <sstream>
 #include <unordered_map>
+#include "../../../defines.h"
 
 int checkCompileErrors(unsigned int shader, std::string type);
 

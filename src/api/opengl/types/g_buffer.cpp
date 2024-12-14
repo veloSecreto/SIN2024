@@ -17,13 +17,21 @@ void GBuffer::configure(const unsigned int& width, const unsigned int& height) {
 
         glBindFramebuffer(GL_FRAMEBUFFER, ID);
 
+        glBindTexture(GL_TEXTURE_2D, albedo);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, albedo, 0);
+
         glBindTexture(GL_TEXTURE_2D, position);
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, width, height, 0, GL_RGBA, GL_FLOAT, NULL);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, position, 0);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, position, 0);
 
         glBindTexture(GL_TEXTURE_2D, normal);
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, width, height, 0, GL_RGBA, GL_FLOAT, NULL);
@@ -31,15 +39,7 @@ void GBuffer::configure(const unsigned int& width, const unsigned int& height) {
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, normal, 0);
-
-        glBindTexture(GL_TEXTURE_2D, albedo);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, albedo, 0);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, normal, 0);
 
         glBindRenderbuffer(GL_RENDERBUFFER, rbo);
         glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height);
@@ -49,7 +49,7 @@ void GBuffer::configure(const unsigned int& width, const unsigned int& height) {
         glDrawBuffers(3, attachments);
     
         auto fboStatus = glCheckFramebufferStatus(GL_FRAMEBUFFER);
-        if (fboStatus != GL_FRAMEBUFFER_COMPLETE) std::cout << "G-Framebuffer configuration error from GL\n" << fboStatus << std::endl;
+        if (fboStatus != GL_FRAMEBUFFER_COMPLETE) std::cout << "Geometry Framebuffer configuration error from GL\n" << fboStatus << std::endl;
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
@@ -76,44 +76,47 @@ void GBuffer::configure(const unsigned int& width, const unsigned int& height) {
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
     glBindVertexArray(0);
 
-    static Shader* shader = OpenGLRenderer::getShaderByName("g-buffer");
+    static Shader* shader = OpenGLRenderer::getShaderByName("lighting");
     shader->use();
 
-    shader->setInt("position", 0);
+    shader->setInt("albedo", 0);
     glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, albedo);
+
+    shader->setInt("position", 1);
+    glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, position);
 
-    shader->setInt("normal", 1);
-    glActiveTexture(GL_TEXTURE1);
+    shader->setInt("normal", 2);
+    glActiveTexture(GL_TEXTURE2);
     glBindTexture(GL_TEXTURE_2D, normal);
 
-    shader->setInt("albedo", 2);
-    glActiveTexture(GL_TEXTURE2);
-    glBindTexture(GL_TEXTURE_2D, albedo);
+    std::cout << "Geometry Framebuffer configuration has been completed" << std::endl;
 }
 
 void GBuffer::draw() {
     glBindVertexArray(VAO);
-    static Shader* shader = OpenGLRenderer::getShaderByName("g-buffer");
+    static Shader* shader = OpenGLRenderer::getShaderByName("lighting");
     shader->use();
     shader->setVec3("camPos", Camera::m_position);
-    shader->setInt("position", 0);
+    shader->setInt("albedo", 0);
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, position);
-    shader->setInt("normal", 1);
-    glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_2D, normal);
-    shader->setInt("albedo", 2);
-    glActiveTexture(GL_TEXTURE2);
     glBindTexture(GL_TEXTURE_2D, albedo);
+    shader->setInt("position", 1);
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, position);
+    shader->setInt("normal", 2);
+    glActiveTexture(GL_TEXTURE2);
+    glBindTexture(GL_TEXTURE_2D, normal);
     glDisable(GL_DEPTH_TEST);
     glDrawArrays(GL_TRIANGLES, 0, 6);
+    glEnable(GL_DEPTH_TEST);
 }
 
 void GBuffer::destroy() {
+    glDeleteTextures(1, &albedo);
     glDeleteTextures(1, &position);
     glDeleteTextures(1, &normal);
-    glDeleteTextures(1, &albedo);
     glDeleteRenderbuffers(1, &rbo);
     glDeleteFramebuffers(1, &ID);
 }

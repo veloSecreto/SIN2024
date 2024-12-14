@@ -92,8 +92,6 @@ void Skybox::render() {
 	glDepthFunc(GL_LEQUAL);
 	static Shader* shader = OpenGLRenderer::getShaderByName("skybox");
 	shader->use();
-	shader->setMat4x4("m_proj", Camera::m_proj);
-	shader->setMat4x4("m_view", glm::mat4(glm::mat3(Camera::m_view)));
 	shader->setInt("cubemap", 0);
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_CUBE_MAP, ID);

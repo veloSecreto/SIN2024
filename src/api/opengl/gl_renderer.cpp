@@ -3,6 +3,7 @@
 #include "../../game/game.h"
 #include "../../backend/backend.h"
 #include <filesystem>
+#include "../../input/input.h"
 
 // Raw Array and Buffers
 uint32_t OpenGLRenderer::globalVAO;
@@ -10,6 +11,12 @@ uint32_t OpenGLRenderer::globalVBO;
 uint32_t OpenGLRenderer::globalEBO;
 uint32_t OpenGLRenderer::globalIBO;
 std::unordered_map<std::string, Shader*> OpenGLRenderer::g_shaders;
+
+// Specs
+RenderMode OpenGLRenderer::renderMode;
+
+// shits
+bool OpenGLRenderer::_renderModeChanged;
 
 
 void OpenGLRenderer::createShaders() {
@@ -31,6 +38,8 @@ void OpenGLRenderer::hotLoadShaders() {
 }
 
 void OpenGLRenderer::init() {
+    renderMode = RenderMode::DEFERRED;
+    _renderModeChanged = false;
     createShaders();
 }
 
@@ -94,30 +103,58 @@ void OpenGLRenderer::unbindVAO() {
 }
 
 void OpenGLRenderer::renderFrame() {
-    // geometry pass
-    static GBuffer& gbuffer = OpenGLBackend::gbuffer;
-    gbuffer.bind();
-    beginFrame();
-    glEnable(GL_DEPTH_TEST);
-    bindVAO();
-    Game::render();
-    unbindVAO();
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    if (Input::keyPressed(SIN_KEY_R))
+    {
+        _renderModeChanged = true;
+        renderMode = renderMode == RenderMode::FORWARD ? RenderMode::DEFERRED : RenderMode::FORWARD;
+        static Shader* shader = g_shaders["default"];
+        shader->setInt("renderMode", (int)renderMode);
+        std::cout << "Render Mode switched to " << (renderMode == RenderMode::FORWARD ? "Forward" : "Deferred") << " rendering" << std::endl;
+    } else _renderModeChanged = false;
 
-    // lighting pass
-    gbuffer.draw();
+    // deferred rendering
+    if (renderMode == RenderMode::DEFERRED)
+    {
+        // geometry pass
+        static GBuffer& gbuffer = OpenGLBackend::gbuffer;
+        gbuffer.bind();
+        beginFrame();
+        bindVAO();
+        Game::update();
+        OpenGLBackend::update();
+        Game::render();
+        unbindVAO();
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-    // store depth data
-    glBindFramebuffer(GL_READ_FRAMEBUFFER, gbuffer.getID());
-    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-    glBlitFramebuffer(0, 0, Backend::getWinWidth(), Backend::getWinHeight(), 0, 0, Backend::getWinWidth(), Backend::getWinHeight(), GL_DEPTH_BUFFER_BIT, GL_NEAREST);
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        // lighting pass
+        gbuffer.draw();
 
-    // pass through
-    bindVAO();
-    for (auto& light : Game::scene.lights) {
-        light.render();
+        // store depth data
+        glBindFramebuffer(GL_READ_FRAMEBUFFER, gbuffer.getID());
+        glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+        glBlitFramebuffer(0, 0, Backend::getWinWidth(), Backend::getWinHeight(), 0, 0, Backend::getWinWidth(), Backend::getWinHeight(), GL_DEPTH_BUFFER_BIT, GL_NEAREST);
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+        // pass through
+        bindVAO();
+        for (auto& light : Game::scene.lights) {
+            light.render();
+        }
+        Game::scene.skybox.render();
+        unbindVAO();
     }
-    // Game::scene.skybox.render();
-    unbindVAO();
+    // forward rendering
+    else if (renderMode == RenderMode::FORWARD)
+    {
+        beginFrame();
+        bindVAO();
+        Game::update();
+        OpenGLBackend::update();
+        Game::render();
+        for (auto& light : Game::scene.lights) {
+            light.render();
+        }
+        Game::scene.skybox.render();
+        unbindVAO();
+    }
 }
