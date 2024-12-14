@@ -5,11 +5,6 @@
 # Vendor libraries (optional): Ensure vendor files use LF
 vendor/** text eol=lf
 
-*.png binary
-*.jpg binary
-*.jpeg binary
-*.gif binary
-
 # Mark vendor files and glad.c as vendored (exclude from language stats)
 vendor/** linguist-vendored
 src/glad.c linguist-vendored
