@@ -11,7 +11,6 @@ namespace OpenGLBackend {
     extern std::vector<DrawElementsIndirectCommand> drawCommands;
     extern std::unordered_map<std::string, SSBO> g_ssbos;
     extern GBuffer gbuffer;
-    extern std::vector<uint64_t> textureHandles;
 
     void initMinimum();
     void createSSBOs();

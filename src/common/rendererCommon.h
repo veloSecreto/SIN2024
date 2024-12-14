@@ -36,13 +36,12 @@ struct Vertex {
 
 struct Texture {
     public:
-        unsigned int index;
+        uint32_t ID;
         TextureType type;
 
-        Texture(const std::string& directory, TextureType type, unsigned int index) {
+        Texture(const std::string& directory, TextureType type) {
             this->type = type;
-            this->index = index;
-            generateTextureFromPath(directory);
+            this->ID = generateTextureFromPath(directory);
         }
 };
 

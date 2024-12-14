@@ -21,26 +21,22 @@ layout (std430, binding = 1) buffer CameraBuffer {
     Camera camera;
 };
 
-layout (std430, binding = 2) buffer TextureSamplerBuffer {
-    uvec2 textures[];
-};
-
 in vec3 position;
 in vec3 normal;
 in vec2 texCoord;
 
 out vec4 fragColor;
 
-uniform int diffuseIndex;
-uniform int specularIndex;
+uniform sampler2D diffuseTexture;
+uniform sampler2D specularTexture;
 
 void main()
 {
     vec3 normalDir = normalize(normal);
     vec3 viewDir = normalize(camera.position - position);
 
-    vec3 diffuseColor = texture(sampler2D(textures[diffuseIndex]), texCoord).rgb;
-    vec3 specularColor = texture(sampler2D(textures[specularIndex]), texCoord).rgb;
+    vec3 diffuseColor = texture(diffuseTexture, texCoord).rgb;
+    vec3 specularColor = texture(specularTexture, texCoord).rgb;
 
     vec3 finalColor = vec3(0.0);
     vec3 GI = diffuseColor * 0.15;

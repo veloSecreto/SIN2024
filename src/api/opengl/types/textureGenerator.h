@@ -1,4 +1,5 @@
 #pragma once
+#include <cstdint>
 #include <iostream>
 
-void generateTextureFromPath(const std::string& path);
+uint32_t generateTextureFromPath(const std::string& path);

@@ -1,6 +1,7 @@
 #include "mesh.h"
 #include "../api/opengl/gl_backend.h"
 #include "../api/opengl/gl_renderer.h"
+#include "../api/opengl/types/textureGenerator.h"
 
 
 Mesh::Mesh(std::vector<Vertex>& vertices, std::vector<uint32_t>& indices, std::vector<Texture>& textures) {
@@ -19,12 +20,16 @@ void Mesh::render(Shader* shader) {
 	for (const auto& texture : textures) {
 		if (texture.type == TextureType::DIFFUSE)
 		{
-			shader->setInt("diffuseIndex", texture.index);
+			shader->setInt("diffuseTexture", 0);
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, texture.ID);
 			continue;
 		}
 		else if (texture.type == TextureType::SPECULAR)
 		{
-			shader->setInt("specularIndex", texture.index);
+			shader->setInt("specularTexture", 1);
+			glActiveTexture(GL_TEXTURE1);
+			glBindTexture(GL_TEXTURE_2D, texture.ID);
 			continue;
 		}
 	}

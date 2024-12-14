@@ -3,11 +3,10 @@
 #include <stb_image/stb_image.h>
 #include <glad/glad.h>
 
-void generateTextureFromPath(const std::string& path) {
+uint32_t generateTextureFromPath(const std::string& path) {
 	int width, height, nrComponents;
     unsigned char* data = stbi_load(path.c_str(), &width, &height, &nrComponents, 0);
 
-    uint64_t handle;
     uint32_t ID;
     glGenTextures(1, &ID);
 
@@ -39,7 +38,5 @@ void generateTextureFromPath(const std::string& path) {
         stbi_image_free(data);
     }
 
-    handle = glGetTextureHandleARB(ID);
-    glMakeTextureHandleResidentARB(handle);
-    OpenGLBackend::textureHandles.push_back(handle);
+    return ID;
 }

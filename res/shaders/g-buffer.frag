@@ -8,12 +8,8 @@ layout (location = 0) out vec4 albedo;
 layout (location = 1) out vec3 gPosition;
 layout (location = 2) out vec3 gNormal;
 
-layout (std430, binding = 2) buffer TextureSamplerBuffer {
-    uvec2 textures[];
-};
-
-uniform int diffuseIndex;
-uniform int specularIndex;
+uniform sampler2D diffuseTexture;
+uniform sampler2D specularTexture;
 
 float color2float(vec3 c) {
     c *= 255.0;
@@ -23,7 +19,7 @@ float color2float(vec3 c) {
 
 void main()
 {
-    albedo.rgb = texture(sampler2D(textures[diffuseIndex]), texCoord).rgb;
+    albedo.rgb = texture(diffuseTexture, texCoord).rgb;
     albedo.a = 0.2;
     gNormal = normalize(normal);
     gPosition = position;

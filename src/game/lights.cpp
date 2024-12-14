@@ -14,7 +14,7 @@ const void Light::render() {
     transform.scale = glm::vec3(0.2f);
     shader->use();
     shader->setMat4x4("m_model", transform.to_mat4());
-    shader->setVec3("light_color", color);
+    shader->setVec3("color", color);
     shader->setFloat("time", Clock::time);
     AssetManager::getModelByName("sphere").render(shader);
 }

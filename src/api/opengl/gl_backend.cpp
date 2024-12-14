@@ -41,8 +41,6 @@ std::vector<uint32_t>                       OpenGLBackend::globalIndices;
 std::vector<DrawElementsIndirectCommand>    OpenGLBackend::drawCommands;
 std::unordered_map<std::string, SSBO>       OpenGLBackend::g_ssbos;
 GBuffer                                     OpenGLBackend::gbuffer;
-std::vector<uint64_t>                       OpenGLBackend::textureHandles;
-
 // struct for passing camera data to ssbo
 struct CameraData {
     glm::mat4 proj;
@@ -89,7 +87,6 @@ void OpenGLBackend::uploadMeshData(std::vector<Vertex>& vertices, std::vector<ui
 void OpenGLBackend::createSSBOs() {
     g_ssbos["lights"] = SSBO();
     g_ssbos["camera"] = SSBO();
-    g_ssbos["textures"] = SSBO();
     std::cout << "SSBO creation process has been completed\n";
 }
 
@@ -98,8 +95,6 @@ void OpenGLBackend::uploadSSBOsToGPU() {
     // camera
     CameraData cameraData = { Camera::m_proj, Camera::m_view, Camera::m_position };
     g_ssbos["camera"].create(&cameraData, sizeof(CameraData), 1);
-
-    g_ssbos["textures"].create(textureHandles.data(), textureHandles.size() * sizeof(uint64_t), 2);
 }
 
 void OpenGLBackend::updateSSBObyName(const std::string& name, const void* data, GLsizeiptr size) {
@@ -115,5 +110,4 @@ void OpenGLBackend::update() {
     // camera data
     CameraData cameraData = { Camera::m_proj, Camera::m_view, Camera::m_position };
     g_ssbos["camera"].update(&cameraData, sizeof(CameraData));
-    g_ssbos["textures"].update(textureHandles.data(), textureHandles.size() * sizeof(uint64_t));
 }

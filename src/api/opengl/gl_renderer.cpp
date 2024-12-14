@@ -38,7 +38,7 @@ void OpenGLRenderer::hotLoadShaders() {
 }
 
 void OpenGLRenderer::init() {
-    renderMode = RenderMode::DEFERRED;
+    renderMode = RenderMode::FORWARD;
     _renderModeChanged = false;
     createShaders();
 }
