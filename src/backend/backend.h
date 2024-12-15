@@ -14,6 +14,8 @@ namespace Backend {
     void forceCloseWindow();
     void kill();
 
+    void setWindowTitle(const std::string& title);
+
     void beginFrame();
     void endFrame();
     

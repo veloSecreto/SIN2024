@@ -27,54 +27,89 @@ out vec4 fragColor;
 uniform sampler2D albedo;
 uniform sampler2D position;
 uniform sampler2D normal;
-uniform float time;
+uniform sampler2D rma;
 
-// hope this could be useful, but no
+const float gamma = 2.2;
+const float PI = 3.14159265359;
 
-vec3 float2color(float val) {
-    val += 8388608.0;
-    if (val < 0.0) return vec3(0.0);
-    if (val > 16777216.0) return vec3(1.0);
-    vec3 c = vec3(0.0);
-    c.b = mod(val, 256.0);
-    val = floor(val / 256.0);
-    c.g = mod(val, 256.0);
-    val = floor(val / 256.0);
-    c.r = mod(val, 256.0);
-    return c / 255.0;
+vec3 fresnelSchlick(float cosTheta, vec3 F0) {
+    return F0 + (1.0 - F0) * pow(1.0 - cosTheta, 5.0);
 }
 
-void main()
-{
+float DistributionGGX(vec3 N, vec3 H, float roughness) {
+    float a = roughness * roughness;
+    float a2 = a * a;
+    float NdotH = max(dot(N, H), 0.0);
+    float NdotH2 = NdotH * NdotH;
+
+    float num = a2;
+    float denom = (NdotH2 * (a2 - 1.0) + 1.0);
+    denom = PI * denom * denom;
+
+    return num / denom;
+}
+
+float GeometrySchlickGGX(float NdotV, float roughness) {
+    float r = (roughness + 1.0);
+    float k = (r * r) / 8.0;
+
+    float num = NdotV;
+    float denom = NdotV * (1.0 - k) + k;
+
+    return num / denom;
+}
+
+float GeometrySmith(vec3 N, vec3 V, vec3 L, float roughness) {
+    float NdotV = max(dot(N, V), 0.0);
+    float NdotL = max(dot(N, L), 0.0);
+    float ggx2 = GeometrySchlickGGX(NdotV, roughness);
+    float ggx1 = GeometrySchlickGGX(NdotL, roughness);
+
+    return ggx1 * ggx2;
+}
+
+void main() {
     vec3 fragPos = texture(position, texCoord).xyz;
-    vec3 normalDir = texture(normal, texCoord).xyz;
+    vec3 normalDir = normalize(texture(normal, texCoord).xyz);
     vec3 viewDir = normalize(camera.position - fragPos);
 
+    float roughness = 0.2; // texture(rma, texCoord).r;
+    float metallic = 0.8; // texture(rma, texCoord).g;
+    float ao = 0.2; // texture(rma, texCoord).b;
+
     vec3 diffuseColor = texture(albedo, texCoord).rgb;
-    vec3 specularColor = vec3(0.2); // texture(albedo, texCoord).aaa;
+    vec3 F0 = mix(vec3(0.04), diffuseColor, metallic);
 
     vec3 finalColor = vec3(0.0);
-    vec3 GI = diffuseColor * 0.15;
+    vec3 GI = diffuseColor * ao;
 
     for (int i = 0; i < lights.length(); ++i) {
-        Light light = lights[i];
+        vec3 lightDir = normalize(lights[i].position - fragPos);
+        float distance = length(lights[i].position - fragPos);
 
-        vec3 lightDir = normalize(light.position - fragPos);
-        float distance = length(light.position - fragPos);
+        float attenuation = 1.0 / (1.0 + distance * distance / (lights[i].radius * lights[i].radius));
 
-        float attenuation = 1.0 / (1.0 + distance * distance / (light.radius * light.radius));
+        vec3 H = normalize(viewDir + lightDir);
+        float NDF = DistributionGGX(normalDir, H, roughness);
+        float G = GeometrySmith(normalDir, viewDir, lightDir, roughness);
+        vec3 F = fresnelSchlick(max(dot(H, viewDir), 0.0), F0);
 
-        float diff = max(dot(normalDir, lightDir), 0.0);
-        vec3 diffuse = light.color * diff * diffuseColor;
+        vec3 nominator = NDF * G * F;
+        float denominator = 4.0 * max(dot(normalDir, viewDir), 0.0) * max(dot(normalDir, lightDir), 0.0) + 0.001;
+        vec3 specular = nominator / denominator;
 
-        vec3 halfwayDir = normalize(lightDir + viewDir);
-        float spec = pow(max(dot(normalDir, halfwayDir), 0.0), 32);
-        vec3 specular = light.color * spec * specularColor;
+        float NdotL = max(dot(normalDir, lightDir), 0.0);
+        vec3 kS = F;
+        vec3 kD = vec3(1.0) - kS;
+        kD *= 1.0 - metallic;
 
-        vec3 lightContribution = (diffuse + specular) * attenuation * light.strength;
+        vec3 diffuse = kD * diffuseColor / PI;
+
+        vec3 lightContribution = (diffuse + specular) * NdotL * lights[i].color * lights[i].strength * attenuation;
 
         finalColor += lightContribution;
     }
 
-    fragColor = vec4(finalColor + GI, 1.0);
+    finalColor = pow(finalColor + GI, vec3(1.0 / gamma));
+    fragColor = vec4(finalColor, 1.0);
 }

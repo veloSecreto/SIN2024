@@ -106,4 +106,8 @@ namespace Backend {
         }
         glfwTerminate();
     }
+
+    void setWindowTitle(const std::string& title) {
+        glfwSetWindowTitle(_window, title.c_str());
+    }
 }

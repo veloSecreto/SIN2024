@@ -47,8 +47,7 @@ std::vector<uint32_t> skyboxIndices = {
     20, 21, 22, 22, 23, 20
 };
 
-std::vector<Texture> emptyTextures;
-static Mesh skyboxMesh(skyboxVertices, skyboxIndices, emptyTextures);
+static Mesh skyboxMesh(skyboxVertices, skyboxIndices);
 
 
 Skybox::Skybox(const std::string& path, std::string format) {

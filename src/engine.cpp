@@ -14,7 +14,7 @@ namespace Engine {
     void init() {
         Backend::init();
         Game::start();
-
+        
         // buffer pass
         OpenGLRenderer::uploadBuffersToGPU();
         OpenGLBackend::createSSBOs();
@@ -33,9 +33,9 @@ namespace Engine {
     void run() {
         while (Backend::windowIsOpen()) {
             Clock::update();
-            // OpenGLRenderer::beginFrame();
             Backend::beginFrame();
             Input::update();
+            Backend::setWindowTitle("Unloved  | FPS: " + std::to_string(Clock::fps));
 
             if (Input::keyPressed(SIN_KEY_INSERT)) {
                 OpenGLRenderer::hotLoadShaders();
@@ -47,10 +47,6 @@ namespace Engine {
             else if (Backend::getAPI() == API::VULKAN) {
                 // Render for VULKAN System, not made yet
             }
-
-            // OpenGLRenderer::bindVAO();
-            // Game::render();
-            // OpenGLRenderer::unbindVAO();
 
             Backend::endFrame();
         }

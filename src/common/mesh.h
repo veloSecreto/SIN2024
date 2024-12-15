@@ -1,12 +1,12 @@
 #pragma once
 
-#include "rendererCommon.h"
+#include "material.hpp"
 #include "../api/opengl/types/shader.h"
 
 struct Mesh {
-    std::vector<Texture> textures;
+    Material material;
     DrawElementsIndirectCommand drawCommand;
 
-    Mesh(std::vector<Vertex>& vertices, std::vector<uint32_t>& indices, std::vector<Texture>& textures);
+    Mesh(std::vector<Vertex>& vertices, std::vector<uint32_t>& indices);
     void render(Shader* shader);
 };

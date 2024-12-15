@@ -13,6 +13,7 @@ class Model {
         Model(const std::string& path);
 
         std::vector<Mesh>& getMeshes();
+        void setMaterial(int meshIndex, const Material& material);
         void render(Shader* shader);
 
     private:
@@ -21,5 +22,4 @@ class Model {
         void loadModel(const std::string& path);
         void processNode(aiNode* node, const aiScene* scene);
         Mesh processMesh(aiMesh* mesh, const aiScene* scene);
-        std::vector<Texture> loadTextureMaterials(aiMaterial* mat, aiTextureType type);
 };

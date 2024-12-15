@@ -4,7 +4,7 @@
 
 GameObject::GameObject(const std::string& modelName) {
     model = AssetManager::getModelByName(modelName);
-    shader = OpenGLRenderer::getShaderByName("g-buffer");
+    shader = OpenGLRenderer::getShaderByName((OpenGLRenderer::renderMode == RenderMode::FORWARD ? "default" : "g-buffer"));
 }
 
 void GameObject::render() {

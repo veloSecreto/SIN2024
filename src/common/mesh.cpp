@@ -4,9 +4,7 @@
 #include "../api/opengl/types/textureGenerator.h"
 
 
-Mesh::Mesh(std::vector<Vertex>& vertices, std::vector<uint32_t>& indices, std::vector<Texture>& textures) {
-    this->textures = textures;
-
+Mesh::Mesh(std::vector<Vertex>& vertices, std::vector<uint32_t>& indices) {
     drawCommand.indexCount = indices.size();
     drawCommand.instancedCount = 1;
     drawCommand.firstIndex = OpenGLBackend::globalIndices.size();
@@ -17,22 +15,29 @@ Mesh::Mesh(std::vector<Vertex>& vertices, std::vector<uint32_t>& indices, std::v
 }
 
 void Mesh::render(Shader* shader) {
-	for (const auto& texture : textures) {
-		if (texture.type == TextureType::DIFFUSE)
-		{
-			shader->setInt("diffuseTexture", 0);
-			glActiveTexture(GL_TEXTURE0);
-			glBindTexture(GL_TEXTURE_2D, texture.ID);
-			continue;
-		}
-		else if (texture.type == TextureType::SPECULAR)
-		{
-			shader->setInt("specularTexture", 1);
-			glActiveTexture(GL_TEXTURE1);
-			glBindTexture(GL_TEXTURE_2D, texture.ID);
-			continue;
-		}
+	if (material.albedo.ID != -1)
+	{
+		shader->setInt("material.albedo", 0);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, material.albedo.ID);
 	}
-
+	if (material.roughness.ID != -1)
+	{
+	shader->setInt("material.roughness", 1);
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, material.roughness.ID);
+	}
+	if (material.metallic.ID != -1)
+	{
+	shader->setInt("material.metallic", 2);
+	glActiveTexture(GL_TEXTURE2);
+	glBindTexture(GL_TEXTURE_2D, material.metallic.ID);
+	}
+	if (material.ao.ID != -1)
+	{
+	shader->setInt("material.ao", 3);
+	glActiveTexture(GL_TEXTURE3);
+	glBindTexture(GL_TEXTURE_2D, material.ao.ID);
+	}
 	OpenGLRenderer::renderMesh(drawCommand);
 }

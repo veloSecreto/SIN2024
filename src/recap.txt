@@ -3,3 +3,13 @@ noticed some artifacts on pixels, caused by the specular textures incorrect valu
 will fix this later by adding rma attachment in the Geometry buffer or while implementing PBR
 also the light and skybox isn't rendering in the correct way, perhaps the depth data wasn't sent correctly
 for now just sleep, worked a lot today
+
+forgot to add updates :)
+the artifacts were gone, tried to implement the bindless texture, but alas
+my hardware doesn't support it :) so just cancelled the idea
+today I enabled gamma correction, add fps mechanism to trace performance and implemented pbr,
+and now running on the texture management issue
+found a way, and working on that, it needs to manually set material properties for each model,
+this is quit modern and efficient
+however, lessss go  to sleep
+neva quit, neva die

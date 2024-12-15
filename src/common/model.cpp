@@ -1,5 +1,4 @@
 #include "model.h"
-#include "../core/asset_manager.h"
 
 
 Model::Model() = default;
@@ -39,7 +38,6 @@ void Model::processNode(aiNode* node, const aiScene* scene) {
 Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene) {
     std::vector<Vertex> vertices;
     std::vector<uint32_t> indices;
-    std::vector<Texture> textures;
 
     for (int i = 0; i < mesh->mNumVertices; i++) {
         Vertex vertex;
@@ -60,36 +58,20 @@ Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene) {
         }
     }
 
-    if (mesh->mMaterialIndex >= 0) {
-        aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
-        std::vector<Texture> diffuseMaps = loadTextureMaterials(material, aiTextureType_DIFFUSE);
-        textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
-
-        std::vector<Texture> specularMaps = loadTextureMaterials(material, aiTextureType_SPECULAR);
-        textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
-    }
-
-    return Mesh(vertices, indices, textures);
-}
-
-std::vector<Texture> Model::loadTextureMaterials(aiMaterial* mat, aiTextureType type) {
-    std::vector<Texture> textures;
-
-    for (int i = 0; i < mat->GetTextureCount(type); i++) {
-        aiString str;
-        mat->GetTexture(type, i, &str);
-        std::string name = str.C_Str();
-        name = name.substr((name.find('/') != std::string::npos ? name.find_last_of('/') : name.find_last_of('\\')) + 1, name.length());
-        name = name.substr(0, name.find_last_of('.'));
-        Texture& tex = AssetManager::getTextureByName(name);
-        textures.push_back(tex);
-    }
-
-    return textures;
+    return Mesh(vertices, indices);
 }
 
 void Model::render(Shader* shader) {
     for (auto& mesh : meshes) {
         mesh.render(shader);
     }
+}
+
+void Model::setMaterial(int meshIndex, const Material& material) {
+    if (meshIndex >= 0 && meshIndex < meshes.size())
+    {
+        meshes[meshIndex].material = material;
+        std::cout << "New material was set" << std::endl;
+    }
+    else std::cout << "Mesh Index not valid, couldn't set material" << std::endl;
 }

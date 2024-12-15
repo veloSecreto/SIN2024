@@ -36,8 +36,10 @@ struct Vertex {
 
 struct Texture {
     public:
-        uint32_t ID;
+        uint32_t ID = -1;
         TextureType type;
+
+        Texture() = default;
 
         Texture(const std::string& directory, TextureType type) {
             this->type = type;

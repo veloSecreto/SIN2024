@@ -14,6 +14,9 @@ void AssetManager::loadForTesting() {
     g_models["mushroom"] =  Model(ROOT_DIR + "res/models/mushroom.obj");
     g_models["nurseGuy"] =  Model(ROOT_DIR + "res/models/nurseGuy.obj");
     g_models["sphere"] = Model(ROOT_DIR + "res/models/sphere.obj");
+    Material mat;
+    mat.albedo = getTextureByName("light_texture");
+    g_models["sphere"].setMaterial(0, mat);
     g_models["cube"] = Model(ROOT_DIR + "res/models/cube.obj");
     g_models["house"] = Model(ROOT_DIR + "res/models/house.obj");
     g_models["room"] = Model(ROOT_DIR + "res/models/room.obj");
@@ -31,22 +34,33 @@ void AssetManager::findAllAssetPaths() {
         }
     }
 
-    for (const auto& entry : std::filesystem::directory_iterator(ROOT_DIR + "res/textures/specular")) {
+    for (const auto& entry : std::filesystem::directory_iterator(ROOT_DIR + "res/textures/roughness")) {
         if (entry.is_regular_file()) {
             std::string name = entry.path().filename().string();
-            TextureType type = TextureType::SPECULAR;
-            std::string path = ROOT_DIR + "res/textures/specular/" + name;
+            TextureType type = TextureType::ROUGHNESS;
+            std::string path = ROOT_DIR + "res/textures/roughness/" + name;
             name = name.substr(0, name.find_last_of('.'));
             g_textures.emplace(name, Texture(path, type));
             std::cout << "Loaded texture from path: " << path << std::endl;
         }
     }
     
-    for (const auto& entry : std::filesystem::directory_iterator(ROOT_DIR + "res/textures/emissive")) {
+    for (const auto& entry : std::filesystem::directory_iterator(ROOT_DIR + "res/textures/metallic")) {
         if (entry.is_regular_file()) {
             std::string name = entry.path().filename().string();
-            TextureType type = TextureType::EMISSIVE;
-            std::string path = ROOT_DIR + "res/textures/emissive/" + name;
+            TextureType type = TextureType::METALLIC;
+            std::string path = ROOT_DIR + "res/textures/metallic/" + name;
+            name = name.substr(0, name.find_last_of('.'));
+            g_textures.emplace(name, Texture(path, type));
+            std::cout << "Loaded texture from path: " << path << std::endl;
+        }
+    }
+
+    for (const auto& entry : std::filesystem::directory_iterator(ROOT_DIR + "res/textures/ao")) {
+        if (entry.is_regular_file()) {
+            std::string name = entry.path().filename().string();
+            TextureType type = TextureType::AO;
+            std::string path = ROOT_DIR + "res/textures/ao/" + name;
             name = name.substr(0, name.find_last_of('.'));
             g_textures.emplace(name, Texture(path, type));
             std::cout << "Loaded texture from path: " << path << std::endl;
