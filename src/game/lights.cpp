@@ -9,6 +9,7 @@
 
 // this function is just for visualization of lights
 const void Light::render() {
+    static Mesh sphere = AssetManager::getModelByName("sphere").meshes[0];
     static Shader* shader = OpenGLRenderer::getShaderByName("pass_through");
     Transform transform(position);
     transform.scale = glm::vec3(0.2f);
@@ -16,5 +17,5 @@ const void Light::render() {
     shader->setMat4x4("m_model", transform.to_mat4());
     shader->setVec3("color", color);
     shader->setFloat("time", Clock::time);
-    AssetManager::getModelByName("sphere").render(shader);
+    OpenGLRenderer::renderMesh(sphere.drawCommand);
 }

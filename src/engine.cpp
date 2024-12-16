@@ -15,17 +15,15 @@ namespace Engine {
         Backend::init();
         Game::start();
         
-        // buffer pass
         OpenGLRenderer::uploadBuffersToGPU();
         OpenGLBackend::createSSBOs();
         OpenGLBackend::uploadSSBOsToGPU();
         OpenGLBackend::configureFBOs();
         
-        // final injection
         Backend::show();
-        // subsystems
         Input::init();
-        Input::disableCursor();
+
+        std::cout << "\nPreparation has been completed\nEngine is ready to run\n\n";
     }
 
     // Starts running the main Engine itself

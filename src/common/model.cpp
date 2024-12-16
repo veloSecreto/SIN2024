@@ -7,9 +7,6 @@ Model::Model(const std::string& path) {
     loadModel(path);
 }
 
-std::vector<Mesh>& Model::getMeshes() {
-    return meshes;
-}
 
 void Model::loadModel(const std::string& path) {
     Assimp::Importer importer;
@@ -71,7 +68,6 @@ void Model::setMaterial(int meshIndex, const Material& material) {
     if (meshIndex >= 0 && meshIndex < meshes.size())
     {
         meshes[meshIndex].material = material;
-        std::cout << "New material was set" << std::endl;
     }
     else std::cout << "Mesh Index not valid, couldn't set material" << std::endl;
 }

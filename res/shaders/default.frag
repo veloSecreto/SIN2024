@@ -36,7 +36,7 @@ out vec4 fragColor;
 
 uniform Material material;
 
-const float gamma = 2.2;
+const float gamma = 2.4;
 const float PI = 3.14159265359;
 
 float DistributionGGX(vec3 N, vec3 H, float roughness) {
@@ -74,38 +74,46 @@ void main() {
     vec3 normalDir = normalize(normal);
     vec3 viewDir = normalize(camera.position - position);
 
+    float roughness = texture(material.roughness, texCoord).r;
+    float metallic =  texture(material.metallic, texCoord).r;
+    float ao =  texture(material.ao, texCoord).r;
     vec3 albedo = texture(material.albedo, texCoord).rgb;
-    vec3 roughness = texture(material.roughness, texCoord).rgb;
-    vec3 metallic =  texture(material.metallic, texCoord).rgb;
-    vec3 ao =  texture(material.ao, texCoord).rgb;
+    albedo = pow(albedo, vec3(gamma));
 
     vec3 F0 = vec3(0.04);
     F0 = mix(F0, albedo, metallic);
 
     vec3 finalColor = vec3(0.0);
-    vec3 GI = albedo * ao;
+    vec3 GI = albedo * 0.05;
 
     for (int i = 0; i < lights.length(); ++i) {
         vec3 lightDir = normalize(lights[i].position - position);
         float distance = length(lights[i].position - position);
+
         float attenuation = 1.0 / (1.0 + distance * distance / (lights[i].radius * lights[i].radius));
-        vec3 radiance = lights[i].color * lights[i].strength * attenuation;
+        // float attenuation = 1.0 / (distance * distance);
 
-        float NDF = DistributionGGX(normalDir, normalize(lightDir + viewDir), roughness.r);
-        float G = GeometrySmith(normalDir, viewDir, lightDir, roughness.r);
-        vec3 F = fresnelSchlick(max(dot(normalDir, viewDir), 0.0), F0);
+        vec3 H = normalize(viewDir + lightDir);
+        float NDF = DistributionGGX(normalDir, H, roughness);
+        float G = GeometrySmith(normalDir, viewDir, lightDir, roughness);
+        vec3 F = fresnelSchlick(max(dot(H, viewDir), 0.0), F0);
 
-        vec3 kD = vec3(1.0) - F;
-        kD *= 1.0 - metallic;
+        vec3 nominator = NDF * G * F;
+        float denominator = 4.0 * max(dot(normalDir, viewDir), 0.0) * max(dot(normalDir, lightDir), 0.0) + 0.001;
+        vec3 specular = nominator / denominator;
 
         float NdotL = max(dot(normalDir, lightDir), 0.0);
-        vec3 diffuse = kD * albedo / PI;
-        vec3 specular = (NDF * G * F) / max(4.0 * max(dot(normalDir, viewDir), 0.0) * NdotL, 0.001);
+        vec3 kS = F;
+        vec3 kD = vec3(1.0) - kS;
+        kD *= 1.0 - metallic;
 
-        vec3 lightContribution = (diffuse + specular) * radiance * NdotL;
+        vec3 diffuse = kD * albedo / PI;
+
+        vec3 lightContribution = (diffuse + specular) * NdotL * lights[i].color * lights[i].strength * attenuation;
+
         finalColor += lightContribution;
     }
 
     finalColor = pow(finalColor + GI, vec3(1 / gamma));
-    fragColor = vec4(finalColor, 1.0);
+    fragColor = vec4(finalColor * ao, 1.0);
 }

@@ -9,21 +9,26 @@ void Game::start() {
     AssetManager::loadAll();
     scene = Scene(ROOT_DIR + "res/skyboxes/dark", "png");
 
-    // GameObject house("house");
-    // house.transform.scale = glm::vec3(0.2f);
-    // scene.add(house);
+    GameObject house("house");
+    house.transform.scale = glm::vec3(0.2f);
+    scene.add(house);
 
-    GameObject man("sphere");
-    man.transform.position = glm::vec3(0, 1.5f, 4);
-    // man.transform.scale = glm::vec3(2);
+    GameObject man("nurseGuy");
+    man.transform.position = glm::vec3(0, 0.5f, 4);
+    man.transform.scale = glm::vec3(2);
     scene.add(man);
 
-    GameObject obj("sphere");
-    obj.transform.position = glm::vec3(4, 1.5f, 0);
+    GameObject obj("mushroom");
+    obj.transform.position = glm::vec3(5, 0.5f, 0);
     scene.add(obj);
 
+    GameObject cube("cube");
+    cube.transform.scale = glm::vec3(1.5f, 0.05f, 1.5f);
+    cube.transform.position = glm::vec3(0, 1, 0);
+    scene.add(cube);
+
     scene.addLight(Light(glm::vec3(5, 3, 0))); // room on the left
-    scene.addLight(Light(glm::vec3(0, 3, 0), glm::vec3(1, 0.2f, 0.2f))); // dinning room light, should be red like my one
+    scene.addLight(Light(glm::vec3(0, 3, 0))); // dinning room light, should be red like my one
     scene.addLight(Light(glm::vec3(0, 3, 5))); // forward side bed room
 }
 
@@ -73,17 +78,22 @@ void Game::start() {
 // void Game::start() {
 //     Camera::init();
 //     AssetManager::loadAll();
-//     scene = Scene(ROOT_DIR + "res/skyboxes/icebergs", "jpg");
+//     scene = Scene(ROOT_DIR + "res/skyboxes/Clouds", "jpg");
 
 //     for (int i = 0; i < 49; i++) {
+//         int col = i % 7;
+//         int row = i / 7;
 //         const float scale = 0.8f;
-//         glm::vec3 rma(glm::clamp((float)(i % 7) / 7.0f, 1 / 7.0f, 1.0f), (int)(i / 7) / 7.0f, 0.0f);
-//         glm::vec3 position(i % 7 - 3.5f, (int)(i / 7) - 3.5f, 0);
-//         GameObject obj("sphere", rma);
+//         glm::vec3 position(col - 3.5f, row - 3.5f, -(glm::sin(col * 180 / 7.0f) + glm::sin(row * 180 / 7.0f)) / 2.0f);
+//         GameObject obj("sphere");
 //         obj.transform.scale = glm::vec3(scale);
-//         obj.transform.position = glm::vec3(position.x, position.y, 0);
+//         obj.transform.position = position;
 //         scene.add(obj);
 //     }
+
+//     GameObject mushroom("mushroom");
+//     mushroom.transform.position = glm::vec3(0, 0, 9);
+//     scene.add(mushroom);
 
 //     scene.addLight(Light(glm::vec3(-3.5f, -3.5f, 4)));
 //     scene.addLight(Light(glm::vec3(-3.5f,  3.5f, 4)));

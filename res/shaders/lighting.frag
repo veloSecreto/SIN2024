@@ -29,7 +29,7 @@ uniform sampler2D position;
 uniform sampler2D normal;
 uniform sampler2D rma;
 
-const float gamma = 2.2;
+const float gamma = 2.4;
 const float PI = 3.14159265359;
 
 vec3 fresnelSchlick(float cosTheta, vec3 F0) {
@@ -73,16 +73,18 @@ void main() {
     vec3 normalDir = normalize(texture(normal, texCoord).xyz);
     vec3 viewDir = normalize(camera.position - fragPos);
 
-    float roughness = 0.2; // texture(rma, texCoord).r;
-    float metallic = 0.8; // texture(rma, texCoord).g;
-    float ao = 0.2; // texture(rma, texCoord).b;
+    float roughness = texture(rma, texCoord).r;
+    float metallic = texture(rma, texCoord).g;
+    float ao = texture(rma, texCoord).b;
 
     vec3 diffuseColor = texture(albedo, texCoord).rgb;
+    diffuseColor = pow(diffuseColor, vec3(gamma));
     vec3 F0 = mix(vec3(0.04), diffuseColor, metallic);
 
     vec3 finalColor = vec3(0.0);
-    vec3 GI = diffuseColor * ao;
+    vec3 GI = diffuseColor * 0.05;
 
+    
     for (int i = 0; i < lights.length(); ++i) {
         vec3 lightDir = normalize(lights[i].position - fragPos);
         float distance = length(lights[i].position - fragPos);
@@ -111,5 +113,5 @@ void main() {
     }
 
     finalColor = pow(finalColor + GI, vec3(1.0 / gamma));
-    fragColor = vec4(finalColor, 1.0);
+    fragColor = vec4(finalColor * ao, 1.0);
 }

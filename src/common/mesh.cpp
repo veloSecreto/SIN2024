@@ -15,29 +15,22 @@ Mesh::Mesh(std::vector<Vertex>& vertices, std::vector<uint32_t>& indices) {
 }
 
 void Mesh::render(Shader* shader) {
-	if (material.albedo.ID != -1)
-	{
-		shader->setInt("material.albedo", 0);
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, material.albedo.ID);
-	}
-	if (material.roughness.ID != -1)
-	{
+	
+	shader->setInt("material.albedo", 0);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, material.albedo.ID);
+
 	shader->setInt("material.roughness", 1);
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, material.roughness.ID);
-	}
-	if (material.metallic.ID != -1)
-	{
+
 	shader->setInt("material.metallic", 2);
 	glActiveTexture(GL_TEXTURE2);
 	glBindTexture(GL_TEXTURE_2D, material.metallic.ID);
-	}
-	if (material.ao.ID != -1)
-	{
+
 	shader->setInt("material.ao", 3);
 	glActiveTexture(GL_TEXTURE3);
 	glBindTexture(GL_TEXTURE_2D, material.ao.ID);
-	}
+
 	OpenGLRenderer::renderMesh(drawCommand);
 }

@@ -9,16 +9,15 @@
 
 class Model {
     public:
+        std::vector<Mesh> meshes;
+
         Model();
         Model(const std::string& path);
-
-        std::vector<Mesh>& getMeshes();
+        
         void setMaterial(int meshIndex, const Material& material);
         void render(Shader* shader);
 
     private:
-        std::vector<Mesh> meshes;
-
         void loadModel(const std::string& path);
         void processNode(aiNode* node, const aiScene* scene);
         Mesh processMesh(aiMesh* mesh, const aiScene* scene);

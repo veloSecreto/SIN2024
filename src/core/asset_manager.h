@@ -12,7 +12,7 @@ namespace AssetManager {
 
     void loadAll();
     void findAllAssetPaths();
-    void loadForTesting();
+    void loadModels();
     void loadModel();
     void loadTexture();
     Model& getModelByName(const std::string& name);

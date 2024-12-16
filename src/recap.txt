@@ -13,3 +13,7 @@ found a way, and working on that, it needs to manually set material properties f
 this is quit modern and efficient
 however, lessss go  to sleep
 neva quit, neva die
+
+improved material system a lot, adding setParameter actions
+also figured out that the ao and gamma is applied incorrectly
+the scene looks sick now, will try to implement shadows tomorrow
