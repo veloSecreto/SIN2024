@@ -4,33 +4,33 @@
 
 Scene Game::scene;
 
-void Game::start() {
-    Camera::init();
-    AssetManager::loadAll();
-    scene = Scene(ROOT_DIR + "res/skyboxes/dark", "png");
+// void Game::start() {
+//     Camera::init();
+//     AssetManager::loadAll();
+//     scene = Scene(ROOT_DIR + "res/skyboxes/dark", "png");
 
-    GameObject house("house");
-    house.transform.scale = glm::vec3(0.2f);
-    scene.add(house);
+//     GameObject house("house");
+//     house.transform.scale = glm::vec3(0.2f);
+//     scene.add(house);
 
-    GameObject man("nurseGuy");
-    man.transform.position = glm::vec3(0, 0.5f, 4);
-    man.transform.scale = glm::vec3(2);
-    scene.add(man);
+//     GameObject man("nurseGuy");
+//     man.transform.position = glm::vec3(0, 0.5f, 4);
+//     man.transform.scale = glm::vec3(2);
+//     scene.add(man);
 
-    GameObject obj("mushroom");
-    obj.transform.position = glm::vec3(5, 0.5f, 0);
-    scene.add(obj);
+//     GameObject obj("mushroom");
+//     obj.transform.position = glm::vec3(5, 0.5f, 0);
+//     scene.add(obj);
 
-    GameObject cube("cube");
-    cube.transform.scale = glm::vec3(1.5f, 0.05f, 1.5f);
-    cube.transform.position = glm::vec3(0, 1, 0);
-    scene.add(cube);
+//     GameObject cube("cube");
+//     cube.transform.scale = glm::vec3(1.5f, 0.05f, 1.5f);
+//     cube.transform.position = glm::vec3(0, 1, 0);
+//     scene.add(cube);
 
-    scene.addLight(Light(glm::vec3(5, 3, 0))); // room on the left
-    scene.addLight(Light(glm::vec3(0, 3, 0))); // dinning room light, should be red like my one
-    scene.addLight(Light(glm::vec3(0, 3, 5))); // forward side bed room
-}
+//     scene.addLight(Light(glm::vec3(5, 3, 0))); // room on the left
+//     scene.addLight(Light(glm::vec3(0, 3, 0))); // dinning room light, should be red like my one
+//     scene.addLight(Light(glm::vec3(0, 3, 5))); // forward side bed room
+// }
 
 // void Game::start() {
 //     Camera::init();
@@ -45,7 +45,7 @@ void Game::start() {
 //     std::uniform_real_distribution<float> distColor(0.0f, 1.0f); // Range for light color
 
 //     // Add 56 nurseGuy objects with random positions on the x and z axes
-//     for (int i = 0; i < 56; ++i) {
+//     for (int i = 0; i < 20; ++i) {
 //         GameObject man("nurseGuy");
 //         man.transform.position = glm::vec3(dist(gen), distY(gen), dist(gen));  // Random positions in x, y, z
 //         man.transform.scale = glm::vec3(2);
@@ -58,7 +58,7 @@ void Game::start() {
 //     scene.add(obj);
 
 //     // Add 1000 lights with random positions and colors
-//     for (int i = 0; i < 1; ++i) {
+//     for (int i = 0; i < 500; ++i) {
 //         // Random positions for lights
 //         glm::vec3 lightPosition(dist(gen), distY(gen), dist(gen));
 
@@ -66,40 +66,40 @@ void Game::start() {
 //         glm::vec3 lightColor(distColor(gen), distColor(gen), distColor(gen));
         
 //         // Add the light to the scene
-//         scene.addLight(Light(lightPosition, lightColor));
+//         scene.addLight(Light(lightPosition, lightColor, 0.5f, 2.0f));
 //     }
 
 //     // Add fixed lights
-//     scene.addLight(Light(glm::vec3(5, 3, 0))); // room on the left
-//     scene.addLight(Light(glm::vec3(0, 3, 0), glm::vec3(1, 0.2f, 0.2f))); // dinning room light, should be red like my one
-//     scene.addLight(Light(glm::vec3(0, 3, 5))); // forward side bed room
+//     // scene.addLight(Light(glm::vec3(5, 3, 0))); // room on the left
+//     // scene.addLight(Light(glm::vec3(0, 3, 0), glm::vec3(1, 0.2f, 0.2f))); // dinning room light, should be red like my one
+//     // scene.addLight(Light(glm::vec3(0, 3, 5))); // forward side bed room
 // }
 
-// void Game::start() {
-//     Camera::init();
-//     AssetManager::loadAll();
-//     scene = Scene(ROOT_DIR + "res/skyboxes/Clouds", "jpg");
+void Game::start() {
+    Camera::init();
+    AssetManager::loadAll();
+    scene = Scene(ROOT_DIR + "res/skyboxes/Clouds", "jpg");
 
-//     for (int i = 0; i < 49; i++) {
-//         int col = i % 7;
-//         int row = i / 7;
-//         const float scale = 0.8f;
-//         glm::vec3 position(col - 3.5f, row - 3.5f, -(glm::sin(col * 180 / 7.0f) + glm::sin(row * 180 / 7.0f)) / 2.0f);
-//         GameObject obj("sphere");
-//         obj.transform.scale = glm::vec3(scale);
-//         obj.transform.position = position;
-//         scene.add(obj);
-//     }
+    for (int i = 0; i < 49; i++) {
+        int col = i % 7;
+        int row = i / 7;
+        const float scale = 0.8f;
+        glm::vec3 position(col - 3.5f, row - 3.5f, -(glm::sin(col * 180 / 7.0f) + glm::sin(row * 180 / 7.0f)) / 2.0f);
+        GameObject obj("sphere");
+        obj.transform.scale = glm::vec3(scale);
+        obj.transform.position = position;
+        scene.add(obj);
+    }
 
-//     GameObject mushroom("mushroom");
-//     mushroom.transform.position = glm::vec3(0, 0, 9);
-//     scene.add(mushroom);
+    GameObject mushroom("mushroom");
+    mushroom.transform.position = glm::vec3(0, 0, 9);
+    scene.add(mushroom);
 
-//     scene.addLight(Light(glm::vec3(-3.5f, -3.5f, 4)));
-//     scene.addLight(Light(glm::vec3(-3.5f,  3.5f, 4)));
-//     scene.addLight(Light(glm::vec3( 3.5f, -3.5f, 4)));
-//     scene.addLight(Light(glm::vec3( 3.5f,  3.5f, 4)));
-// }
+    scene.addLight(Light(glm::vec3(-3.5f, -3.5f, 4)));
+    scene.addLight(Light(glm::vec3(-3.5f,  3.5f, 4)));
+    scene.addLight(Light(glm::vec3( 3.5f, -3.5f, 4)));
+    scene.addLight(Light(glm::vec3( 3.5f,  3.5f, 4)));
+}
 
 
 void Game::render() {

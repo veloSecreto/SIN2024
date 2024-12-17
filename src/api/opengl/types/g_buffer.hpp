@@ -17,6 +17,8 @@ struct GBuffer {
         uint32_t rma = { 0 };
         uint32_t rbo = { 0 };
 
+        uint32_t screen = { 0 };
+
         void configure(const unsigned int& width, const unsigned int& height);
 
         void bind();

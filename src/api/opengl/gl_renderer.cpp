@@ -20,21 +20,20 @@ bool OpenGLRenderer::_renderModeChanged;
 
 
 void OpenGLRenderer::createShaders() {
-    for (const auto& entry : std::filesystem::directory_iterator(ROOT_DIR + "res/shaders")) {
-        const std::string name = entry.path().filename().string();
-        const std::string key = name.substr(0, name.find_last_of('.'));
-        
-        if (g_shaders.find(key) == g_shaders.end()) {
-            g_shaders.emplace(key, new Shader(key));
-        }
-    }
+    g_shaders["default"] = new Shader("default.vert", "default.frag");
+    g_shaders["lighting"] = new Shader("lighting.vert", "lighting.frag");
+    g_shaders["g-buffer"] = new Shader("g-buffer.vert", "g-buffer.frag");
+    g_shaders["pass_through"] = new Shader("pass_through.vert", "pass_through.frag");
+    g_shaders["skybox"] = new Shader("skybox.vert", "skybox.frag");
 }
 
 void OpenGLRenderer::hotLoadShaders() {
     std::cout << "Hot Loading Shaders..." << std::endl;
-    for (auto& obj : g_shaders) {
-        obj.second->load(obj.first);
-    }
+    g_shaders["default"]->load("default.vert", "default.frag");
+    g_shaders["lighting"]->load("lighting.vert", "lighting.frag");
+    g_shaders["g-buffer"]->load("g-buffer.vert", "g-buffer.frag");
+    g_shaders["pass_through"]->load("pass_through.vert", "pass_through.frag");
+    g_shaders["skybox"]->load("skybox.vert", "skybox.frag");
 }
 
 void OpenGLRenderer::init() {
@@ -107,8 +106,6 @@ void OpenGLRenderer::renderFrame() {
     {
         _renderModeChanged = true;
         renderMode = renderMode == RenderMode::FORWARD ? RenderMode::DEFERRED : RenderMode::FORWARD;
-        static Shader* shader = g_shaders["default"];
-        shader->setInt("renderMode", (int)renderMode);
         std::cout << "Render Mode switched to " << (renderMode == RenderMode::FORWARD ? "Forward" : "Deferred") << " rendering" << std::endl;
     } else _renderModeChanged = false;
 
