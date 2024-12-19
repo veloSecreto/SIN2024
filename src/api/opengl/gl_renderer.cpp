@@ -21,23 +21,27 @@ bool OpenGLRenderer::_renderModeChanged;
 
 void OpenGLRenderer::createShaders() {
     g_shaders["default"] = new Shader("default.vert", "default.frag");
-    g_shaders["lighting"] = new Shader("lighting.vert", "lighting.frag");
+    g_shaders["lighting"] = new Shader("lighting.comp");
+    g_shaders["lighting2"] = new Shader("lighting.vert", "lighting.frag");
     g_shaders["g-buffer"] = new Shader("g-buffer.vert", "g-buffer.frag");
     g_shaders["pass_through"] = new Shader("pass_through.vert", "pass_through.frag");
     g_shaders["skybox"] = new Shader("skybox.vert", "skybox.frag");
+    g_shaders["screen"] = new Shader("screen.vert", "screen.frag");
 }
 
 void OpenGLRenderer::hotLoadShaders() {
     std::cout << "Hot Loading Shaders..." << std::endl;
     g_shaders["default"]->load("default.vert", "default.frag");
-    g_shaders["lighting"]->load("lighting.vert", "lighting.frag");
+    g_shaders["lighting"]->load("lighting.comp");
+    g_shaders["lighting2"]->load("lighting.vert", "lighting.frag");
     g_shaders["g-buffer"]->load("g-buffer.vert", "g-buffer.frag");
     g_shaders["pass_through"]->load("pass_through.vert", "pass_through.frag");
     g_shaders["skybox"]->load("skybox.vert", "skybox.frag");
+    g_shaders["screen"]->load("screen.vert", "screen.frag");
 }
 
 void OpenGLRenderer::init() {
-    renderMode = RenderMode::FORWARD;
+    renderMode = RenderMode::DEFERRED;
     _renderModeChanged = false;
     createShaders();
 }

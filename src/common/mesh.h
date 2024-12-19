@@ -2,6 +2,7 @@
 
 #include "material.hpp"
 #include "../api/opengl/types/shader.h"
+#include <vector>
 
 struct Mesh {
     Material material;

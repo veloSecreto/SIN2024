@@ -1,7 +1,11 @@
 #pragma once
 
-#include "../common.h"
 #include "../api/opengl/types/textureGenerator.h"
+#include "defines.h"
+
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 #include <stb_image/stb_image.h>
 
 
@@ -12,18 +16,18 @@ struct Vertex {
     glm::vec3 normal;
     glm::vec2 texCoord;
 
-    Vertex(glm::vec3 position, glm::vec3 normal, glm::vec2 texCoord) {
+    Vertex(const glm::vec3& position, const glm::vec3& normal, const glm::vec2& texCoord) {
         this->position = position;
         this->normal = normal;
         this->texCoord = texCoord;
     }
 
-    Vertex(glm::vec3 position, glm::vec3 normal) {
+    Vertex(const glm::vec3& position, const glm::vec3& normal) {
         this->position = position;
         this->normal = normal;
     }
 
-    Vertex(glm::vec3 position) {
+    Vertex(const glm::vec3& position) {
         this->position = position;
     }
 

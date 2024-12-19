@@ -4,6 +4,7 @@
 #include "../../common/rendererCommon.h"
 #include "types/ssbo.hpp"
 #include "types/g_buffer.hpp"
+#include <vector>
 
 namespace OpenGLBackend {
     extern std::vector<Vertex> globalVertices;

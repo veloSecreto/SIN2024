@@ -17,3 +17,15 @@ neva quit, neva die
 improved material system a lot, adding setParameter actions
 also figured out that the ao and gamma is applied incorrectly
 the scene looks sick now, will try to implement shadows tomorrow
+
+shadows were not implemented, but tried to compile compute shaders since the last 2 days
+got compute shaders not working at the 60% completion, but actually it was a really small problem
+coords and texCoords aren't the same, the coords are actually  the global invocation ID of ann invocation
+and the texcoords are texture coordinates simply, that was the problem
+however, noticed that in compute texture coordinates aren't the same, it isn't the same as the model defined coordinates
+and also performance drops with compute shaders
+so lighting in compute shader is currently depcrated
+I don't know what is next, but perhaps shadows for sure
+I think I will start implementing the editor from tomorrow
+it is midnight and for now just sleep
+never gonna stop

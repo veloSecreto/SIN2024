@@ -28,7 +28,7 @@ layout (location = 1) uniform sampler2D position;
 layout (location = 2) uniform sampler2D normal;
 layout (location = 3) uniform sampler2D rma;
 
-layout (location = 4) uniform image2D screen;
+layout (rgba32f, binding = 0) uniform image2D screen;
 
 const float gamma = 2.4;
 const float PI = 3.14159265359;
@@ -71,7 +71,8 @@ float GeometrySmith(vec3 N, vec3 V, vec3 L, float roughness) {
 
 void main()
 {
-	ivec2 texCoord = ivec2(gl_InvocationID.xy);
+    ivec2 coords = ivec2(gl_GlobalInvocationID.xy);
+	vec2 texCoord = vec2(gl_GlobalInvocationID.xy) / imageSize(screen);
     vec3 fragPos = texture(position, texCoord).xyz;
     vec3 normalDir = normalize(texture(normal, texCoord).xyz);
     vec3 viewDir = normalize(camera.position - fragPos);
@@ -116,5 +117,5 @@ void main()
     }
 
     finalColor = pow(finalColor + GI, vec3(1.0 / gamma));
-    imageStore(screen, texCoord, vec4(finalColor * ao, 1.0));
+    imageStore(screen, coords, vec4(finalColor * ao, 1));
 }
