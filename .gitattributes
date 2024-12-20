@@ -11,3 +11,8 @@ src/glad.c linguist-vendored
 
 # Optional: Treat header files as C++ (if required)
 *.h linguist-language=C++
+
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
