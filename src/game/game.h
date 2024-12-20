@@ -6,7 +6,7 @@
 namespace Game {
     extern Scene scene;
     
-    void start();
+    void init();
     void update();
     void render();
 };

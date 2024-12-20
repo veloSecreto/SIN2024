@@ -41,7 +41,7 @@ void OpenGLRenderer::hotLoadShaders() {
 }
 
 void OpenGLRenderer::init() {
-    renderMode = RenderMode::DEFERRED;
+    renderMode = RenderMode::FORWARD;
     _renderModeChanged = false;
     createShaders();
 }
@@ -121,7 +121,6 @@ void OpenGLRenderer::renderFrame() {
         gbuffer.bind();
         beginFrame();
         bindVAO();
-        Game::update();
         OpenGLBackend::update();
         Game::render();
         unbindVAO();
@@ -149,7 +148,6 @@ void OpenGLRenderer::renderFrame() {
     {
         beginFrame();
         bindVAO();
-        Game::update();
         OpenGLBackend::update();
         Game::render();
         for (auto& light : Game::scene.lights) {

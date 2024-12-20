@@ -6,14 +6,17 @@
 #include "core/asset_manager.h"
 #include "input/input.h"
 #include "game/game.h"
+#include "editor/editor.h"
 
 namespace Engine {
+    Mode mode = Mode::Editing;
 
     // Initializes the BackEnd and all other subsytems along with modifications
     // ------------------------------------------------------------------------
     void init() {
         Backend::init();
-        Game::start();
+        Game::init();
+        Editor::init();
         
         OpenGLRenderer::uploadBuffersToGPU();
         OpenGLBackend::createSSBOs();
@@ -38,12 +41,19 @@ namespace Engine {
             if (Input::keyPressed(SIN_KEY_H)) {
                 OpenGLRenderer::hotLoadShaders();
             }
+            if (Input::keyPressed(SIN_KEY_P)) {
+                mode = mode == Mode::Editing ? Mode::Playing : Mode::Editing;
+            }
 
-            if (Backend::getAPI() == API::OPENGL) {
+            if (mode == Mode::Playing)
+            {
+                Game::update();
                 OpenGLRenderer::renderFrame();
             }
-            else if (Backend::getAPI() == API::VULKAN) {
-                // Render for VULKAN System, not made yet
+            else
+            {
+                Editor::update();
+                OpenGLRenderer::renderFrame();
             }
 
             Backend::endFrame();

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../api/opengl/types/textureGenerator.h"
-#include "defines.h"
+#include "../defines.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>

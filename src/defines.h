@@ -13,6 +13,7 @@ const std::string ROOT_DIR = "../../";
 
 // enums here
 enum class API { UNDEFINED, OPENGL, VULKAN };
+enum class Mode { Editing, Playing };
 enum class WindowMode { WINDOWED, FULLSCREEN };
 enum class TextureType { ALBEDO, ROUGHNESS, METALLIC, AO, EMISSIVE };
 enum class LightType { POINT, FLASH };

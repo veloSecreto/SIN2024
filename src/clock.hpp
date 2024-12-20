@@ -8,7 +8,7 @@ namespace Clock {
 
     inline void update() {
         // delta time mechanism
-        time = glfwGetTime();
+        time = (float)glfwGetTime();
         dt = time - _lastFrame;
         _lastFrame = time;
         // fps

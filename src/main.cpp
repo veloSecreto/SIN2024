@@ -34,9 +34,7 @@ int main()
     Engine::run();
 
     // that's for ease of debugging
-    std::cout << "\n\nSIN Engine Version: 1.0.0" << endl;
-    std::cout << "Press any key to close the window...";
-    std::cin.get();
+    std::cout << "\n\nSIN Engine Version: 1.0.0\n" << endl;
 
     return 0;
 }

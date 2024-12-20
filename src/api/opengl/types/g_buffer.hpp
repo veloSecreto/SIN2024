@@ -23,7 +23,7 @@ struct GBuffer {
 
         void bind();
 
-        void draw();
+        void draw() const;
 
         uint32_t& getID();
 

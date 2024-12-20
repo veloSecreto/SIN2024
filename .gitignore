@@ -1,0 +1,11 @@
+# Ignore Visual Studio solution and project files
+*.sln
+*.vcxproj
+*.vcxproj.filters
+*.user
+*.suo
+
+.vs/
+.vscode/
+.idea/
+SIN2024/

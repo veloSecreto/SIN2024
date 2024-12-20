@@ -1,6 +1,4 @@
 #include "scene.h"
-#include "_camera.h"
-#include "../api/opengl/gl_backend.h"
 #include "../clock.hpp"
 
 Scene::Scene(std::string skyboxPath, std::string skyboxFileFormat)
@@ -20,28 +18,9 @@ void Scene::render() {
     for (auto& obj : gameObjects) {
         obj.render();
     }
-
-    // forward rendering
-    // forward rendering
-    // forward rendering
-    // forward rendering
-    // forward rendering
-    
-    // for (auto& light : lights) {
-    //     light.render();
-    // }
-    // skybox.render();
 }
 
 void Scene::update() {
-    if (Input::mouseButtonDown(SIN_MOUSE_BUTTON_RIGHT)) {
-        Input::disableCursor();
-        Camera::update();
-    }
-    else {
-        Input::unhideCursor();
-    }
-    
     Light& light = lights[0];
     static glm::vec3 old = light.position;
     float radius = 1.7f;

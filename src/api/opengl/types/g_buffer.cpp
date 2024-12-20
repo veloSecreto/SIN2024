@@ -122,7 +122,7 @@ void GBuffer::configure(const unsigned int& width, const unsigned int& height) {
 // deprecated, texture coordinate inaccuracy
 static bool computePassEnabled = false;
 
-void GBuffer::draw() {
+void GBuffer::draw() const {
     if (computePassEnabled)
     {
         static Shader* computeShader = OpenGLRenderer::getShaderByName("lighting");
