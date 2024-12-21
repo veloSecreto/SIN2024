@@ -27,6 +27,9 @@ void OpenGLRenderer::createShaders() {
     g_shaders["pass_through"] = new Shader("pass_through.vert", "pass_through.frag");
     g_shaders["skybox"] = new Shader("skybox.vert", "skybox.frag");
     g_shaders["screen"] = new Shader("screen.vert", "screen.frag");
+    g_shaders["im3d_triangles"] = new Shader("im3d_triangles.vert", "im3d_triangles.frag");
+    g_shaders["im3d_lines"] = new Shader("im3d_lines.vert", "im3d_lines.frag", "im3d_lines.geom");
+    g_shaders["im3d_points"] = new Shader("im3d_points.vert", "im3d_points.frag");
 }
 
 void OpenGLRenderer::hotLoadShaders() {
@@ -38,6 +41,9 @@ void OpenGLRenderer::hotLoadShaders() {
     g_shaders["pass_through"]->load("pass_through.vert", "pass_through.frag");
     g_shaders["skybox"]->load("skybox.vert", "skybox.frag");
     g_shaders["screen"]->load("screen.vert", "screen.frag");
+    g_shaders["im3d_triangles"]->load("im3d_triangles.vert", "im3d_triangles.frag");
+    g_shaders["im3d_lines"]->load("im3d_lines.vert", "im3d_lines.frag", "im3d_lines.geom");
+    g_shaders["im3d_points"]->load("im3d_points.vert", "im3d_points.frag");
 }
 
 void OpenGLRenderer::init() {
@@ -106,13 +112,6 @@ void OpenGLRenderer::unbindVAO() {
 }
 
 void OpenGLRenderer::renderFrame() {
-    if (Input::keyPressed(SIN_KEY_R))
-    {
-        _renderModeChanged = true;
-        renderMode = renderMode == RenderMode::FORWARD ? RenderMode::DEFERRED : RenderMode::FORWARD;
-        std::cout << "Render Mode switched to " << (renderMode == RenderMode::FORWARD ? "Forward" : "Deferred") << " rendering" << std::endl;
-    } else _renderModeChanged = false;
-
     // deferred rendering
     if (renderMode == RenderMode::DEFERRED)
     {

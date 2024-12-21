@@ -105,7 +105,6 @@ void AssetManager::loadModels() {
         g_models["house"].setMaterial(15, houseMat);
     }
 
-    std::cout << "nurseGuy has " << g_models["nurseGuy"].meshes.size() << " meshes" << std::endl;
     g_models["room"] = Model(ROOT_DIR + "res/models/room.obj");
     // room materiial setttings
     {

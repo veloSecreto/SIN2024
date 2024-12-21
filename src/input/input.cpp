@@ -1,6 +1,8 @@
 #include "input.h"
 #include "../backend/backend.h"
+#include "../game/_camera.h"
 #include <iostream>
+
 
 namespace Input {
     GLFWwindow* _window = nullptr;
@@ -16,6 +18,9 @@ namespace Input {
     bool _mouseButtonPressed[NUM_MOUSE_BUTTONS];
     bool _mouseButtonDownLastFrame[NUM_MOUSE_BUTTONS];
 
+    // optimization configuration
+    bool mouseStateChanged = false;
+    int prevMouseState, currentMouseState;
 
     void init() {
         double x, y;
@@ -60,6 +65,11 @@ namespace Input {
             _mouseButtonPressed[button] = _mouseButtonDown[button] && !_mouseButtonDownLastFrame[button];
             _mouseButtonDownLastFrame[button] = _mouseButtonDown[button];
         }
+
+        // optimizations
+        currentMouseState = getCursorState();
+        mouseStateChanged = currentMouseState != prevMouseState;
+        prevMouseState = currentMouseState;
     }
 
     bool keyPressed(unsigned int key) {
@@ -91,15 +101,21 @@ namespace Input {
     }
 
     void hideCursor() {
-        glfwSetInputMode(_window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
+        if (!mouseStateChanged) {
+            glfwSetInputMode(_window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
+        }
     }
 
     void unhideCursor() {
-        glfwSetInputMode(_window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+        if (!mouseStateChanged) {
+            glfwSetInputMode(_window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+        }
     }
 
     void disableCursor() {
-        glfwSetInputMode(_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+        if (!mouseStateChanged) {
+            glfwSetInputMode(_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+        }
     }
 
     float getMouseSensitivity() {
@@ -112,5 +128,23 @@ namespace Input {
 
     float getMouseWheelYoffset() {
         return 0;
+    }
+
+    static int getCursorState() {
+        return glfwGetInputMode(_window, GLFW_CURSOR);
+    }
+
+    glm::vec3 getMouseRay() {
+        float x = (2.0f * _mousePos.x) / (float)Backend::getWinWidth() - 1.0f;
+        float y = 1.0f - (2.0f * _mousePos.y) / (float)Backend::getWinHeight();
+        float z = 1.0f;
+        glm::vec3 ray_nds = glm::vec3(x, y, z);
+        glm::vec4 ray_clip = glm::vec4(ray_nds.x, ray_nds.y, ray_nds.z, 1.0f);
+        glm::vec4 ray_eye = glm::inverse(Camera::m_proj) * ray_clip;
+        ray_eye = glm::vec4(ray_eye.x, ray_eye.y, ray_eye.z, 0.0f);
+        glm::vec4 inv_ray_wor = (inverse(Camera::m_view) * ray_eye);
+        glm::vec3 ray_wor = glm::vec3(inv_ray_wor.x, inv_ray_wor.y, inv_ray_wor.z);
+        ray_wor = normalize(ray_wor);
+        return ray_wor;
     }
 }

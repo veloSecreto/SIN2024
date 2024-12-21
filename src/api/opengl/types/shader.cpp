@@ -237,6 +237,13 @@ void BaseShader::setBool(const std::string& name, bool value) {
     glUniform1i(uniformLocs[name], ( int )value);
 }
 
+void BaseShader::setVec2(const std::string& name, const glm::vec2& value) {
+    if (uniformLocs.find(name) == uniformLocs.end()) {
+        uniformLocs[name] = glGetUniformLocation(m_ID, name.c_str());
+    }
+    glUniform2fv(uniformLocs[name], 1, &value[0]);
+}
+
 void BaseShader::setVec3(const std::string& name, const glm::vec3& value) {
     if (uniformLocs.find(name) == uniformLocs.end()) {
         uniformLocs[name] = glGetUniformLocation(m_ID, name.c_str());

@@ -25,10 +25,13 @@ struct Vertex {
     Vertex(const glm::vec3& position, const glm::vec3& normal) {
         this->position = position;
         this->normal = normal;
+        this->texCoord = glm::vec3(0);
     }
 
     Vertex(const glm::vec3& position) {
         this->position = position;
+        this->normal = glm::vec3(0.0f);
+        this->texCoord = glm::vec2(0.0f);
     }
 
     Vertex() {

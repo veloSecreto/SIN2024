@@ -18,6 +18,7 @@ class BaseShader {
         void setInt(const std::string& name, int value);
         void setFloat(const std::string& name, float value);
         void setBool(const std::string& name, bool value);
+        void setVec2(const std::string& name, const glm::vec2& value);
         void setVec3(const std::string& name, const glm::vec3& value);
         void setMat4x4(const std::string& name, const glm::mat4& value);
         ~BaseShader();

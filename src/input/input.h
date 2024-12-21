@@ -10,6 +10,7 @@ namespace Input {
     bool keyDown(unsigned int key);
     glm::vec2 getMouseOffset();
     glm::vec2 getMousePos();
+    glm::vec3 getMouseRay();
     void hideCursor();
     void unhideCursor();
     void disableCursor();
@@ -18,5 +19,6 @@ namespace Input {
     float getMouseWheelYoffset();
     bool mouseButtonDown(int button);
     bool mouseButtonPressed(int button);
+    static int getCursorState();
     void update();
 }

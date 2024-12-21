@@ -7,6 +7,7 @@
 #define FAR_PLANE 100.0f
 #define NEAR_PLANE 0.01f
 #define FOVY 50.0f
+#define SIN_PI 3.14159265359
 
 // constantss here
 const std::string ROOT_DIR = "../../";

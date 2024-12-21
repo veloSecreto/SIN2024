@@ -1809,7 +1809,7 @@ void Context::merge(const Context& _src)
 {
 	IM3D_ASSERT(!m_endFrameCalled && !_src.m_endFrameCalled); // call MergeContexts() before calling EndFrame()
 
- // layer IDs
+ // layer IDs   
 	for (Id id : _src.m_layerIdMap)
 	{
 		pushLayerId(id); // add a new layer if id doesn't alrady exist
@@ -1964,8 +1964,8 @@ Context::Context()
 	m_appActiveId = Id_Invalid;
 	m_appHotId = Id_Invalid;
 	m_hotDepth = FLT_MAX;
-	m_gizmoHeightPixels = 64.0f;
-	m_gizmoSizePixels = 5.0f;
+	m_gizmoHeightPixels = 40.0f;     // Edit for SIN engine, by livin amuk aka Chris Burrows' Hell engine
+	m_gizmoSizePixels = 3.0f;        // Edit for SIN engine, by livin amuk aka Chris Burrows' Hell engine
 
 	memset(&m_keyDownCurr, 0, sizeof(m_keyDownCurr));
 	memset(&m_keyDownPrev, 0, sizeof(m_keyDownPrev));
@@ -2384,15 +2384,28 @@ void Context::gizmoAxisTranslation_Draw(Id _id, const Vec3& _origin, const Vec3&
 	float aligned = 1.0f - fabs(Dot(_axis, viewDir));
 	aligned = Remap(aligned, 0.05f, 0.1f);
 	Color color = _color;
+	/*
+	Edit by Noman Ahmed Khan, Boss of Enigma Publishers Ltd
+	the section below is commented out so that gizmo lines are not generated, they generate
+	pretty fat badass thiccc lines which are fucking shit.
+	this solution was found in livin amuk aka tokyospliff, Chris Burrows' stream
+	the stream link timestamped to when he found the problem->
+	https://youtu.be/F5o05hjR_k4?t=13150
+	and the link timestamped to when he found the solution->
+	https://youtu.be/F5o05hjR_k4?t=14614
+
+	12.22.2024, 12:10 AM
+	Chandpur, Bangladesh
+	*/
 	if (_id == m_activeId)
 	{
-		color = Color_GizmoHighlight;
+	/*	color = Color_GizmoHighlight;
 		pushEnableSorting(false);
 		begin(PrimitiveMode_Lines);
 			vertex(_origin - _axis * 999.0f, m_gizmoSizePixels * 0.5f, _color);
 			vertex(_origin + _axis * 999.0f, m_gizmoSizePixels * 0.5f, _color);
 		end();
-		popEnableSorting();
+		popEnableSorting();*/
 	}
 	else if (_id == m_hotId)
 	{
@@ -2609,12 +2622,26 @@ void Context::gizmoAxislAngle_Draw(Id _id, const Vec3& _origin, const Vec3& _axi
 		Ray ray(m_appData.m_cursorRayOrigin, m_appData.m_cursorRayDirection);
 		Plane plane(_axis, _origin);
 		float tr;
+		/*
+		Edit by Noman Ahmed Khan, Boss of Enigma Publishers Ltd
+		the section below is commented out so that gizmo lines are not generated, they generate
+		pretty fat badass thiccc lines which are fucking shit.
+		this solution was found in livin amuk aka tokyospliff, Chris Burrows' stream
+		the stream link timestamped to when he found the problem->
+		https://youtu.be/F5o05hjR_k4?t=13150
+		and the link timestamped to when he found the solution->
+		https://youtu.be/F5o05hjR_k4?t=14614
+
+		12.22.2024, 12:10 AM
+		Chandpur, Bangladesh
+		*/
+
 		if (Intersect(ray, plane, tr))
 		{
 			Vec3 intersection = ray.m_origin + ray.m_direction * tr;
 			Vec3 delta = Normalize(intersection - _origin);
 
-			pushAlpha(Max(_minAlpha, Remap(aligned, 1.0f, 0.99f)));
+			/*pushAlpha(Max(_minAlpha, Remap(aligned, 1.0f, 0.99f)));
 			pushEnableSorting(false);
 			begin(PrimitiveMode_Lines);
 				vertex(_origin - _axis * 999.0f, m_gizmoSizePixels * 0.5f, _color);
@@ -2623,7 +2650,7 @@ void Context::gizmoAxislAngle_Draw(Id _id, const Vec3& _origin, const Vec3& _axi
 				//vertex(_origin + storedVec * _worldRadius, m_gizmoSizePixels * 0.5f, Color_GizmoHighlight);
 			end();
 			popEnableSorting();
-			popAlpha();
+			popAlpha();*/
 
 			pushColor(Color_GizmoHighlight);
 			pushSize(m_gizmoSizePixels);
@@ -2752,15 +2779,28 @@ void Context::gizmoAxisScale_Draw(Id _id, const Vec3& _origin, const Vec3& _axis
 	float aligned = 1.0f - fabs(Dot(_axis, viewDir));
 	aligned = Remap(aligned, 0.05f, 0.1f);
 	Color color = _color;
+	/*
+	Edit by Noman Ahmed Khan, Boss of Enigma Publishers Ltd
+	the section below is commented out so that gizmo lines are not generated, they generate
+	pretty fat badass thiccc lines which are fucking shit.
+	this solution was found in livin amuk aka tokyospliff, Chris Burrows' stream
+	the stream link timestamped to when he found the problem->
+	https://youtu.be/F5o05hjR_k4?t=13150
+	and the link timestamped to when he found the solution->
+	https://youtu.be/F5o05hjR_k4?t=14614
+
+	12.22.2024, 12:10 AM
+	Chandpur, Bangladesh
+	*/
 	if (_id == m_activeId)
 	{
-		color = Color_GizmoHighlight;
+		/*color = Color_GizmoHighlight;
 		pushEnableSorting(false);
 		begin(PrimitiveMode_Lines);
 			vertex(_origin - _axis * 999.0f, m_gizmoSizePixels * 0.5f, _color);
 			vertex(_origin + _axis * 999.0f, m_gizmoSizePixels * 0.5f, _color);
 		end();
-		popEnableSorting();
+		popEnableSorting();*/
 	}
 	else if (_id == m_hotId)
 	{

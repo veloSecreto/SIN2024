@@ -29,3 +29,10 @@ I don't know what is next, but perhaps shadows for sure
 I think I will start implementing the editor from tomorrow
 it is midnight and for now just sleep
 never gonna stop
+
+hell yeah, got the gizmos working, it was a long journey
+im3d is a bit weird, but extreme lightweight and powerful
+got scaling, translating and rotating the house with the gizmo somehow
+need to refine a bit
+but got a new bug, a yellow overlay like shit appears to the screen
+however, worked a lot today, now just have dinner and sleep
