@@ -142,7 +142,7 @@ namespace Gizmo {
 
         Transform gizmoTransform;
         gizmoTransform.position = glm::vec3(pos.x, pos.y, pos.z);
-        gizmoTransform.rotation = glm::vec3(euler.x, euler.y, euler.z);
+        gizmoTransform.rotation = glm::vec3(euler.x, euler.y, euler.z) * 180.0f / (float)SIN_PI;
         gizmoTransform.scale = glm::vec3(scale.x, scale.y, scale.z);
         return gizmoTransform;
     }
@@ -167,7 +167,6 @@ namespace Gizmo {
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         glEnable(GL_PROGRAM_POINT_SIZE);
         glDisable(GL_DEPTH_TEST);
-        glDisable(GL_CULL_FACE);
 
         glViewport(0, 0, (GLsizei)Backend::getWinWidth(), (GLsizei)Backend::getWinHeight());
 
@@ -210,7 +209,6 @@ namespace Gizmo {
 
             shader->use();
             shader->setVec2("uViewport", glm::vec2(Backend::getWinWidth(), Backend::getWinHeight()));
-            shader->setMat4x4("uViewProjMatrix", Camera::m_proj * Camera::m_view);
 
             glDrawArrays(prim, 0, (GLsizei)drawList.m_vertexCount);
         }

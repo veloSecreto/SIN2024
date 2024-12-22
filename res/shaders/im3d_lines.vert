@@ -1,4 +1,4 @@
-#version 420
+#version 460 core
 
 struct VertexData {
 	float m_edgeDistance;
@@ -8,21 +8,26 @@ struct VertexData {
 
 #define kAntialiasing 2.0
 
-uniform mat4 uViewProjMatrix;
+struct Camera {
+    mat4 projection;
+    mat4 view;
+    vec3 position;
+};
+
+layout (std430, binding = 1) buffer CameraBuffer {
+    Camera camera;
+};
 	
-layout(location=0) in vec4 aPositionSize;
-layout(location=1) in vec4 aColor;
+layout (location = 0) in vec4 aPositionSize;
+layout (location = 1) in vec4 aColor;
 	
 out VertexData vData;
 	
 void main() 
 {
-	vData.m_color = aColor.abgr; // swizzle to correct endianness
+	vData.m_color = aColor.abgr;
 	vData.m_color.a *= smoothstep(0.0, 1.0, aPositionSize.w / kAntialiasing);
 	
 	vData.m_size = max(aPositionSize.w, kAntialiasing);
-	gl_Position = uViewProjMatrix * vec4(aPositionSize.xyz, 1.0);
-	//#if defined(POINTS)
-	//	gl_PointSize = vData.m_size;
-	//#endif*
+	gl_Position = camera.projection * camera.view * vec4(aPositionSize.xyz, 1.0);
 }

@@ -2,19 +2,20 @@
 
 #include "../core/asset_manager.h"
 #include "../common/types.h"
+#include "../common/aabb.hpp"
 #include "_camera.h"
 #include "../api/opengl/types/shader.h"
-#include <functional>
 
 struct GameObject {
     public:
         Model model;
-        Transform transform;
         Shader* shader;
+        Transform transform;
+        AABB aabb;
+        Mesh _aabbMesh;
 
         GameObject() = default;
         GameObject(const std::string& modelName);
-        void checkCollision();
         void render();
         void update();
 };

@@ -10,6 +10,8 @@ uint32_t OpenGLRenderer::globalVAO;
 uint32_t OpenGLRenderer::globalVBO;
 uint32_t OpenGLRenderer::globalEBO;
 uint32_t OpenGLRenderer::globalIBO;
+uint32_t OpenGLRenderer::debugVAO;
+uint32_t OpenGLRenderer::debugVBO;
 std::unordered_map<std::string, Shader*> OpenGLRenderer::g_shaders;
 
 // Specs
@@ -17,6 +19,7 @@ RenderMode OpenGLRenderer::renderMode;
 
 // shits
 bool OpenGLRenderer::_renderModeChanged;
+bool OpenGLRenderer::_debugging;
 
 
 void OpenGLRenderer::createShaders() {
@@ -24,7 +27,7 @@ void OpenGLRenderer::createShaders() {
     g_shaders["lighting"] = new Shader("lighting.comp");
     g_shaders["lighting2"] = new Shader("lighting.vert", "lighting.frag");
     g_shaders["g-buffer"] = new Shader("g-buffer.vert", "g-buffer.frag");
-    g_shaders["pass_through"] = new Shader("pass_through.vert", "pass_through.frag");
+    g_shaders["solid_color"] = new Shader("solid_color.vert", "solid_color.frag");
     g_shaders["skybox"] = new Shader("skybox.vert", "skybox.frag");
     g_shaders["screen"] = new Shader("screen.vert", "screen.frag");
     g_shaders["im3d_triangles"] = new Shader("im3d_triangles.vert", "im3d_triangles.frag");
@@ -38,7 +41,7 @@ void OpenGLRenderer::hotLoadShaders() {
     g_shaders["lighting"]->load("lighting.comp");
     g_shaders["lighting2"]->load("lighting.vert", "lighting.frag");
     g_shaders["g-buffer"]->load("g-buffer.vert", "g-buffer.frag");
-    g_shaders["pass_through"]->load("pass_through.vert", "pass_through.frag");
+    g_shaders["solid_color"]->load("solid_color.vert", "solid_color.frag");
     g_shaders["skybox"]->load("skybox.vert", "skybox.frag");
     g_shaders["screen"]->load("screen.vert", "screen.frag");
     g_shaders["im3d_triangles"]->load("im3d_triangles.vert", "im3d_triangles.frag");
@@ -80,6 +83,16 @@ void OpenGLRenderer::uploadBuffersToGPU() {
     glBufferData(GL_DRAW_INDIRECT_BUFFER, OpenGLBackend::drawCommands.size() * sizeof(DrawElementsIndirectCommand), OpenGLBackend::drawCommands.data(), GL_DYNAMIC_DRAW);
     
     unbindVAO();
+
+    glGenVertexArrays(1, &debugVAO);
+    glBindVertexArray(debugVAO);
+    glGenBuffers(1, &debugVBO);
+    glBindBuffer(GL_ARRAY_BUFFER, debugVBO);
+    glBufferData(GL_ARRAY_BUFFER, NULL, nullptr, GL_DYNAMIC_DRAW);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glBindVertexArray(0);
+
     std::cout << "All global buffers and Global Vertex Array has been uploaded to the GPU\n"; 
 }
 
@@ -155,4 +168,53 @@ void OpenGLRenderer::renderFrame() {
         Game::scene.skybox.render();
         unbindVAO();
     }
+}
+
+void OpenGLRenderer::debugAABBs() {
+    std::vector<float> vertices;
+
+    static Shader* shader = g_shaders["solid_color"];
+    shader->use();
+    shader->setVec3("color", glm::vec3(0, 1, 1));
+    shader->setMat4x4("m_model", glm::mat4(1));
+    glPointSize(3);
+    glLineWidth(1);
+    glDisable(GL_DEPTH_TEST);
+    glBindVertexArray(debugVAO);
+    for (auto& obj : Game::scene.gameObjects) {
+        float minX = obj.aabb.min.x, minY = obj.aabb.min.y, minZ = obj.aabb.min.z;
+        float maxX = obj.aabb.max.x, maxY = obj.aabb.max.y, maxZ = obj.aabb.max.z;
+
+        vertices.push_back(minX); vertices.push_back(minY); vertices.push_back(minZ);
+        vertices.push_back(maxX); vertices.push_back(minY); vertices.push_back(minZ);
+        vertices.push_back(maxX); vertices.push_back(minY); vertices.push_back(minZ);
+        vertices.push_back(maxX); vertices.push_back(minY); vertices.push_back(maxZ);
+        vertices.push_back(maxX); vertices.push_back(minY); vertices.push_back(maxZ);
+        vertices.push_back(minX); vertices.push_back(minY); vertices.push_back(maxZ);
+        vertices.push_back(minX); vertices.push_back(minY); vertices.push_back(maxZ);
+        vertices.push_back(minX); vertices.push_back(minY); vertices.push_back(minZ);
+
+        vertices.push_back(minX); vertices.push_back(maxY); vertices.push_back(minZ);
+        vertices.push_back(maxX); vertices.push_back(maxY); vertices.push_back(minZ);
+        vertices.push_back(maxX); vertices.push_back(maxY); vertices.push_back(minZ);
+        vertices.push_back(maxX); vertices.push_back(maxY); vertices.push_back(maxZ);
+        vertices.push_back(maxX); vertices.push_back(maxY); vertices.push_back(maxZ);
+        vertices.push_back(minX); vertices.push_back(maxY); vertices.push_back(maxZ);
+        vertices.push_back(minX); vertices.push_back(maxY); vertices.push_back(maxZ);
+        vertices.push_back(minX); vertices.push_back(maxY); vertices.push_back(minZ);
+
+        vertices.push_back(minX); vertices.push_back(minY); vertices.push_back(minZ);
+        vertices.push_back(minX); vertices.push_back(maxY); vertices.push_back(minZ);
+        vertices.push_back(maxX); vertices.push_back(minY); vertices.push_back(minZ);
+        vertices.push_back(maxX); vertices.push_back(maxY); vertices.push_back(minZ);
+        vertices.push_back(maxX); vertices.push_back(minY); vertices.push_back(maxZ);
+        vertices.push_back(maxX); vertices.push_back(maxY); vertices.push_back(maxZ);
+        vertices.push_back(minX); vertices.push_back(minY); vertices.push_back(maxZ);
+        vertices.push_back(minX); vertices.push_back(maxY); vertices.push_back(maxZ);
+    }
+    glBindBuffer(GL_ARRAY_BUFFER, debugVBO);
+    glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), vertices.data(), GL_DYNAMIC_DRAW);
+    glDrawArrays(GL_LINES, 0, vertices.size() / 3);
+    glBindVertexArray(0);
+    glEnable(GL_DEPTH_TEST);
 }

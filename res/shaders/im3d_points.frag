@@ -1,4 +1,4 @@
-#version 420
+#version 460 core
 
 struct VertexData {
 	float m_edgeDistance;
@@ -10,7 +10,7 @@ in VertexData vData;
 
 #define kAntialiasing 2.0
 	
-layout(location=0) out vec4 fResult;
+out vec4 fResult;
 	
 void main() {
 	fResult = vData.m_color;

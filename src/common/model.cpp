@@ -1,9 +1,11 @@
 #include "model.h"
+#include "../math/math.hpp"
 
 
 Model::Model() = default;
 
 Model::Model(const std::string& path) {
+    localAABB = AABB();
     loadModel(path);
 }
 
@@ -55,6 +57,7 @@ Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene) {
         }
     }
 
+    localAABB = Math::calculateAABB(localAABB, vertices);
     return Mesh(vertices, indices);
 }
 

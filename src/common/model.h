@@ -6,10 +6,12 @@
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
+#include "aabb.hpp"
 
 class Model {
     public:
         std::vector<Mesh> meshes;
+        AABB localAABB;
 
         Model();
         Model(const std::string& path);

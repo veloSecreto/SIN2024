@@ -37,6 +37,7 @@ void APIENTRY glDebugOutput(GLenum source, GLenum type, unsigned int id, GLenum 
 }
 
 std::vector<Vertex>                         OpenGLBackend::globalVertices;
+std::vector<Vertex>                         OpenGLBackend::debugVertices;
 std::vector<uint32_t>                       OpenGLBackend::globalIndices;
 std::vector<DrawElementsIndirectCommand>    OpenGLBackend::drawCommands;
 std::unordered_map<std::string, SSBO>       OpenGLBackend::g_ssbos;

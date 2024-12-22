@@ -52,8 +52,9 @@ namespace Engine {
             }
             else
             {
-                OpenGLRenderer::renderFrame();
                 Editor::update();
+                OpenGLRenderer::renderFrame();
+                Editor::draw();
             }
 
             Backend::endFrame();

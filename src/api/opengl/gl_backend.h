@@ -10,6 +10,7 @@ namespace OpenGLBackend {
     extern std::vector<Vertex> globalVertices;
     extern std::vector<uint32_t> globalIndices;
     extern std::vector<DrawElementsIndirectCommand> drawCommands;
+    extern std::vector<Vertex> debugVertices;
     extern std::unordered_map<std::string, SSBO> g_ssbos;
     extern GBuffer gbuffer;
 

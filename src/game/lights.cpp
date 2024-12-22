@@ -10,7 +10,7 @@
 // this function is just for visualization of lights
 const void Light::render() {
     static Mesh sphere = AssetManager::getModelByName("sphere").meshes[0];
-    static Shader* shader = OpenGLRenderer::getShaderByName("pass_through");
+    static Shader* shader = OpenGLRenderer::getShaderByName("solid_color");
     Transform transform(position);
     transform.scale = glm::vec3(0.2f);
     shader->use();

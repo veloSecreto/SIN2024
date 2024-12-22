@@ -1,10 +1,12 @@
 #include "game_object.h"
 #include "../api/opengl/gl_renderer.h"
-#include "../input/input.h"
+#include "../math/math.hpp"
 
 GameObject::GameObject(const std::string& modelName) {
     model = AssetManager::getModelByName(modelName);
     shader = OpenGLRenderer::getShaderByName((OpenGLRenderer::renderMode == RenderMode::FORWARD ? "default" : "g-buffer"));
+    // From local to World space coordinates
+    aabb = Math::calculateOBB(model.localAABB, transform);
 }
 
 void GameObject::render() {
@@ -18,4 +20,6 @@ void GameObject::update() {
     if (OpenGLRenderer::_renderModeChanged) {
         shader = OpenGLRenderer::getShaderByName((OpenGLRenderer::renderMode == RenderMode::FORWARD ? "default" : "g-buffer"));
     }
+
+    aabb = Math::calculateOBB(model.localAABB, transform);
 }

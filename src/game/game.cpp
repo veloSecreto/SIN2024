@@ -23,7 +23,6 @@ void Game::init() {
     scene.add(obj);
 
     GameObject cube("cube");
-    cube.transform.scale = glm::vec3(1.5f, 0.05f, 1.5f);
     cube.transform.position = glm::vec3(0, 1, 0);
     scene.add(cube);
 

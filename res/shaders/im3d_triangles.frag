@@ -1,4 +1,4 @@
-#version 420
+#version 460 core
 
 struct VertexData {
 	float m_edgeDistance;
@@ -7,8 +7,8 @@ struct VertexData {
 };
 
 in VertexData vData;
-	
-layout(location=0) out vec4 fResult;
+
+out vec4 fResult;
 	
 void main() 
 {

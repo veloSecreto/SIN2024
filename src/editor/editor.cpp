@@ -7,11 +7,9 @@
 #include <iostream>
 
 namespace Editor {
-	glm::mat4 m_model;
-
+	DebugMode debugMode = DebugMode::NONE;
 	void init() {
 		Gizmo::init();
-		m_model = glm::mat4(1);
 		std::cout << "Editor is initialized" << std::endl;
 	}
 
@@ -32,7 +30,17 @@ namespace Editor {
 		}
 		else OpenGLRenderer::_renderModeChanged = false;
 
-		Game::scene.gameObjects[0].transform = Gizmo::update(Game::scene.gameObjects[0].transform.to_mat4());
-		Gizmo::draw();
+		if (Input::keyPressed(SIN_KEY_L)) {
+			debugMode = (DebugMode)(((int)debugMode + 1) % 2);
+		}
+
+		Game::scene.gameObjects[3].transform = Gizmo::update(Game::scene.gameObjects[3].transform.to_mat4());
 	}
 };
+
+void Editor::draw() {
+	Gizmo::draw();
+	if (debugMode == DebugMode::AABB) {
+		OpenGLRenderer::debugAABBs();
+	}
+}
