@@ -10,20 +10,20 @@ void Game::init() {
     scene = Scene(ROOT_DIR + "res/skyboxes/dark", "png");
 
     GameObject house("house");
-    house.transform.scale = glm::vec3(0.2f);
+    house.transform.setScale(glm::vec3(0.2f));
     scene.add(house);
 
     GameObject man("nurseGuy");
-    man.transform.position = glm::vec3(0, 0.5f, 4);
-    man.transform.scale = glm::vec3(2);
+    man.transform.setPosition(glm::vec3(0, 0.5f, 4));
+    man.transform.setScale(glm::vec3(2));
     scene.add(man);
 
     GameObject obj("mushroom");
-    obj.transform.position = glm::vec3(5, 0.5f, 0);
+    obj.transform.setPosition(glm::vec3(5, 0.5f, 0));
     scene.add(obj);
 
     GameObject cube("cube");
-    cube.transform.position = glm::vec3(0, 1, 0);
+    cube.transform.setPosition(glm::vec3(0, 1, 0));
     scene.add(cube);
 
     scene.addLight(Light(glm::vec3(5, 3, 0))); // room on the left

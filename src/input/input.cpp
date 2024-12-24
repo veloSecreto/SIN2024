@@ -17,10 +17,11 @@ namespace Input {
     bool _mouseButtonDown[NUM_MOUSE_BUTTONS];
     bool _mouseButtonPressed[NUM_MOUSE_BUTTONS];
     bool _mouseButtonDownLastFrame[NUM_MOUSE_BUTTONS];
+    glm::vec3 _mouseRay;
 
     // optimization configuration
-    bool mouseStateChanged = false;
-    int prevMouseState, currentMouseState;
+    // bool mouseStateChanged = false;
+    int /*prevMouseState,*/ currentMouseState;
 
     void init() {
         double x, y;
@@ -66,10 +67,22 @@ namespace Input {
             _mouseButtonDownLastFrame[button] = _mouseButtonDown[button];
         }
 
+        // Mouse Ray
+        float _x = (2.0f * _mousePos.x) / (float)Backend::getWinWidth() - 1.0f;
+        float _y = 1.0f - (2.0f * _mousePos.y) / (float)Backend::getWinHeight();
+        float _z = 1.0f;
+        glm::vec3 ray_nds = glm::vec3(_x, _y, _z);
+        glm::vec4 ray_clip = glm::vec4(ray_nds.x, ray_nds.y, ray_nds.z, 1.0f);
+        glm::vec4 ray_eye = glm::inverse(Camera::m_proj) * ray_clip;
+        ray_eye = glm::vec4(ray_eye.x, ray_eye.y, ray_eye.z, 0.0f);
+        glm::vec4 inv_ray_wor = (inverse(Camera::m_view) * ray_eye);
+        _mouseRay = glm::vec3(inv_ray_wor.x, inv_ray_wor.y, inv_ray_wor.z);
+        _mouseRay = normalize(_mouseRay);
+
         // optimizations
         currentMouseState = getCursorState();
-        mouseStateChanged = currentMouseState != prevMouseState;
-        prevMouseState = currentMouseState;
+        /*mouseStateChanged = currentMouseState != prevMouseState;
+        prevMouseState = currentMouseState;*/
     }
 
     bool keyPressed(unsigned int key) {
@@ -88,11 +101,11 @@ namespace Input {
         return _mouseButtonPressed[button];
     }
 
-    glm::vec2 getMouseOffset() {
+    const glm::vec2& getMouseOffset() {
         return _mousePosOffset;
     }
     
-    glm::vec2 getMousePos() {
+    const glm::vec2& getMousePos() {
         return _mousePos;
     }
 
@@ -101,19 +114,19 @@ namespace Input {
     }
 
     void hideCursor() {
-        if (!mouseStateChanged) {
+        if (currentMouseState != GLFW_CURSOR_HIDDEN) {
             glfwSetInputMode(_window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
         }
     }
 
     void unhideCursor() {
-        if (!mouseStateChanged) {
+        if (currentMouseState != GLFW_CURSOR_NORMAL) {
             glfwSetInputMode(_window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
         }
     }
 
     void disableCursor() {
-        if (!mouseStateChanged) {
+        if (currentMouseState != GLFW_CURSOR_DISABLED) {
             glfwSetInputMode(_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
         }
     }
@@ -130,21 +143,11 @@ namespace Input {
         return 0;
     }
 
-    static int getCursorState() {
+    int getCursorState() {
         return glfwGetInputMode(_window, GLFW_CURSOR);
     }
 
-    glm::vec3 getMouseRay() {
-        float x = (2.0f * _mousePos.x) / (float)Backend::getWinWidth() - 1.0f;
-        float y = 1.0f - (2.0f * _mousePos.y) / (float)Backend::getWinHeight();
-        float z = 1.0f;
-        glm::vec3 ray_nds = glm::vec3(x, y, z);
-        glm::vec4 ray_clip = glm::vec4(ray_nds.x, ray_nds.y, ray_nds.z, 1.0f);
-        glm::vec4 ray_eye = glm::inverse(Camera::m_proj) * ray_clip;
-        ray_eye = glm::vec4(ray_eye.x, ray_eye.y, ray_eye.z, 0.0f);
-        glm::vec4 inv_ray_wor = (inverse(Camera::m_view) * ray_eye);
-        glm::vec3 ray_wor = glm::vec3(inv_ray_wor.x, inv_ray_wor.y, inv_ray_wor.z);
-        ray_wor = normalize(ray_wor);
-        return ray_wor;
+    const glm::vec3& getMouseRay() {
+        return _mouseRay;
     }
 }

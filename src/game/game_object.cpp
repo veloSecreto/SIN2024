@@ -1,12 +1,12 @@
 #include "game_object.h"
 #include "../api/opengl/gl_renderer.h"
-#include "../math/math.hpp"
+#include "../physics/physics.h"
 
 GameObject::GameObject(const std::string& modelName) {
     model = AssetManager::getModelByName(modelName);
     shader = OpenGLRenderer::getShaderByName((OpenGLRenderer::renderMode == RenderMode::FORWARD ? "default" : "g-buffer"));
     // From local to World space coordinates
-    aabb = Math::calculateOBB(model.localAABB, transform);
+    aabb = Physics::calculateOBB(model.localAABB, transform);
 }
 
 void GameObject::render() {
@@ -21,5 +21,7 @@ void GameObject::update() {
         shader = OpenGLRenderer::getShaderByName((OpenGLRenderer::renderMode == RenderMode::FORWARD ? "default" : "g-buffer"));
     }
 
-    aabb = Math::calculateOBB(model.localAABB, transform);
+    if (transform.dirty) {
+        aabb = Physics::calculateOBB(model.localAABB, transform);
+    }
 }

@@ -4,10 +4,12 @@
 #include "../game/game.h"
 #include "../api/opengl/gl_renderer.h"
 #include "gizmo.hpp"
-#include <iostream>
+#include "../physics/physics.h"
 
 namespace Editor {
 	DebugMode debugMode = DebugMode::NONE;
+	int g_selectionIndex;
+
 	void init() {
 		Gizmo::init();
 		std::cout << "Editor is initialized" << std::endl;
@@ -34,12 +36,36 @@ namespace Editor {
 			debugMode = (DebugMode)(((int)debugMode + 1) % 2);
 		}
 
-		Game::scene.gameObjects[3].transform = Gizmo::update(Game::scene.gameObjects[3].transform.to_mat4());
+		if (Input::mouseButtonPressed(SIN_MOUSE_BUTTON_LEFT) && !Gizmo::hasHover())
+		{
+			float nearestDistance = std::numeric_limits<float>::max();
+			int closestObjectIndex = -1;
+
+			for (unsigned int i = 0; i < Game::scene.gameObjects.size(); ++i) {
+
+				Ray mouseRay = { Camera::m_position, Input::getMouseRay() };
+				AABB& aabb = Game::scene.gameObjects[i].aabb;
+				float tMin;
+
+				bool hit = Physics::intersection(mouseRay, aabb, tMin);
+				if (hit && tMin < nearestDistance) {
+					nearestDistance = tMin;
+					closestObjectIndex = i;
+				}
+			}
+			
+			g_selectionIndex = closestObjectIndex;
+		}
+
+		if (g_selectionIndex != -1)
+		{
+			Gizmo::update(Game::scene.gameObjects[g_selectionIndex].transform);
+		}
 	}
 };
 
 void Editor::draw() {
-	Gizmo::draw();
+	if (g_selectionIndex != -1) Gizmo::draw();
 	if (debugMode == DebugMode::AABB) {
 		OpenGLRenderer::debugAABBs();
 	}

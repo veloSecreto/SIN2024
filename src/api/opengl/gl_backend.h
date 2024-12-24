@@ -1,7 +1,7 @@
 #pragma once
 
-#include "gl_renderer.h"
-#include "../../common/rendererCommon.h"
+#include "../../core/vertex.hpp"
+#include "../../core/drawCommand.hpp"
 #include "types/ssbo.hpp"
 #include "types/g_buffer.hpp"
 #include <vector>

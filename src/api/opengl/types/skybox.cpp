@@ -2,7 +2,8 @@
 #include "shader.h"
 #include "../gl_renderer.h"
 #include "../../../game/_camera.h"
-#include "../../../common/mesh.h"
+#include "../../../core/mesh.h"
+#include "../../../core/vertex.hpp"
 #include <vector>
 #include <stb_image/stb_image.h>
 

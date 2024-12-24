@@ -8,9 +8,9 @@ namespace Input {
     void _scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
     bool keyPressed(unsigned int key);
     bool keyDown(unsigned int key);
-    glm::vec2 getMouseOffset();
-    glm::vec2 getMousePos();
-    glm::vec3 getMouseRay();
+    const glm::vec2& getMouseOffset();
+    const glm::vec2& getMousePos();
+    const glm::vec3& getMouseRay();
     void hideCursor();
     void unhideCursor();
     void disableCursor();

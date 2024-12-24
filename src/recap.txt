@@ -36,3 +36,12 @@ got scaling, translating and rotating the house with the gizmo somehow
 need to refine a bit
 but got a new bug, a yellow overlay like shit appears to the screen
 however, worked a lot today, now just have dinner and sleep
+
+didn't make any recap last time
+the yellow shit has gone, just because I wasn't using the projection and view matrix
+the rotation also fixed, by converting the radians to degrees
+currently working on the selection mechanism
+got aabbs last time, also obb
+debug lines has been implemented also
+a lot of improvements since last time
+however, now just go to play

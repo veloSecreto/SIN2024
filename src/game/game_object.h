@@ -1,8 +1,8 @@
 #pragma once
 
 #include "../core/asset_manager.h"
-#include "../common/types.h"
-#include "../common/aabb.hpp"
+#include "../physics/transform.hpp"
+#include "../physics/aabb.hpp"
 #include "_camera.h"
 #include "../api/opengl/types/shader.h"
 
@@ -12,7 +12,6 @@ struct GameObject {
         Shader* shader;
         Transform transform;
         AABB aabb;
-        Mesh _aabbMesh;
 
         GameObject() = default;
         GameObject(const std::string& modelName);

@@ -2,7 +2,7 @@
 #include "im3d/im3d.h"
 #include "../api/opengl/gl_renderer.h"
 #include "../input/input.h"
-#include "../common/types.h"
+#include "../physics/transform.hpp"
 #include "../game/_camera.h"
 #include "../backend/backend.h"
 
@@ -22,15 +22,7 @@ namespace Gizmo {
 
 
     inline bool hasHover() {
-
-
-        Im3d::Context& ctx = Im3d::GetContext();
-
         return (Im3d::GetHotId() != 0);
-        return (Im3d::GetActiveId() != 0);
-        //return (ctx.GetActiveId() != Id_Invalid);
-
-        return (ctx.m_hotId != 0);
     }
 
     inline bool inUse() {
@@ -91,7 +83,7 @@ namespace Gizmo {
         return ret;
     }
 
-    inline Transform update(const glm::mat4& m_model) {
+    inline void update(Transform& transform) {
 
         Im3d::Context& ctx = Im3d::GetContext();
         ctx.m_gizmoHeightPixels = 50;
@@ -118,7 +110,7 @@ namespace Gizmo {
         ad.m_projScaleY = tanf(1.0f * 0.5f) * 2.0f; // controls how gizmos are scaled in world space to maintain a constant screen height or vertical fov for a perspective projection
 
         // World space cursor ray from mouse position
-        auto mousePos = Input::getMousePos();
+        auto& mousePos = Input::getMousePos();
         Im3d::Vec2 cursorPos = { mousePos.x, mousePos.y };
         glm::vec3 mouseRay = Input::getMouseRay();
         cursorPos.x = (cursorPos.x / ad.m_viewportSize.x) * 2.0f - 1.0f;
@@ -131,7 +123,7 @@ namespace Gizmo {
         ad.m_keyDown[Im3d::Mouse_Left] = Input::mouseButtonDown(SIN_MOUSE_BUTTON_LEFT);
 
         Im3d::NewFrame();
-        g_transform = GlmMat4ToIm3dMat4(m_model);
+        g_transform = GlmMat4ToIm3dMat4(transform.to_mat4());
         _inUse = Im3d::Gizmo("GizmoUnified", g_transform);
         Im3d::EndFrame();
 
@@ -140,11 +132,9 @@ namespace Gizmo {
         Im3d::Vec3 euler = ToEulerXYZ(resultMatrix.getRotation());
         Im3d::Vec3 scale = resultMatrix.getScale();
 
-        Transform gizmoTransform;
-        gizmoTransform.position = glm::vec3(pos.x, pos.y, pos.z);
-        gizmoTransform.rotation = glm::vec3(euler.x, euler.y, euler.z) * 180.0f / (float)SIN_PI;
-        gizmoTransform.scale = glm::vec3(scale.x, scale.y, scale.z);
-        return gizmoTransform;
+        transform.setPosition(glm::vec3(pos.x, pos.y, pos.z));
+        transform.setRotation(glm::vec3(euler.x, euler.y, euler.z) * 180.0f / (float)SIN_PI);
+        transform.setScale(glm::vec3(scale.x, scale.y, scale.z));
     }
 
     inline void draw() {
@@ -230,5 +220,4 @@ namespace Gizmo {
         ctx.reset();
         ctx.resetId();
     }
-
 }

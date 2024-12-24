@@ -2,7 +2,7 @@
 
 #include "../../defines.h"
 #include "types/shader.h"
-#include "../../common/rendererCommon.h"
+#include "../../core/drawCommand.hpp"
 
 namespace OpenGLRenderer {
     extern uint32_t globalVAO;

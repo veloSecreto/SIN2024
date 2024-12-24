@@ -1,8 +1,8 @@
 #pragma once
 
 #include "../common.h"
-#include "../common/model.h"
-#include "../common/rendererCommon.h"
+#include "../core/model.h"
+#include "../core/texture.hpp"
 #include <vector>
 #include <filesystem>
 
@@ -13,8 +13,6 @@ namespace AssetManager {
     void loadAll();
     void findAllAssetPaths();
     void loadModels();
-    void loadModel();
-    void loadTexture();
     Model& getModelByName(const std::string& name);
     Texture& getTextureByName(const std::string& name);
 };

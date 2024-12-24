@@ -26,5 +26,5 @@ struct Light {
     }
 
     // this function is just for visualization of lights
-    const void render();
+    const void render() const;
 };

@@ -1,5 +1,6 @@
 #include "backend.h"
 #include "../api/opengl/gl_backend.h"
+#include "../api/opengl/gl_renderer.h"
 #include "../input/input.h"
 #include "../core/asset_manager.h"
 
