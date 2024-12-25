@@ -1,5 +1,6 @@
 #include "game.h"
 #include "../core/asset_manager.h"
+#include "../file/file_system.h"
 #include <random>
 
 Scene Game::scene;
@@ -29,6 +30,8 @@ void Game::init() {
     scene.addLight(Light(glm::vec3(5, 3, 0))); // room on the left
     scene.addLight(Light(glm::vec3(0, 3, 0))); // dinning room light, should be red like my one
     scene.addLight(Light(glm::vec3(0, 3, 5))); // forward side bed room
+
+    FileSystem::Repository::saveSceneData();
 }
 
 // void Game::init() {

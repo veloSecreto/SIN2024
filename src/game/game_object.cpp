@@ -3,6 +3,7 @@
 #include "../physics/physics.h"
 
 GameObject::GameObject(const std::string& modelName) {
+    _modelName = modelName;
     model = AssetManager::getModelByName(modelName);
     shader = OpenGLRenderer::getShaderByName((OpenGLRenderer::renderMode == RenderMode::FORWARD ? "default" : "g-buffer"));
     // From local to World space coordinates

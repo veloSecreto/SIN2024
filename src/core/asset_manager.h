@@ -1,8 +1,8 @@
 #pragma once
 
 #include "../common.h"
-#include "../core/model.h"
-#include "../core/texture.hpp"
+#include "model.h"
+#include "texture.hpp"
 #include <vector>
 #include <filesystem>
 

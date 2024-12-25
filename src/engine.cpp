@@ -7,6 +7,7 @@
 #include "input/input.h"
 #include "game/game.h"
 #include "editor/editor.h"
+#include "file/file_system.h"
 
 namespace Engine {
     Mode mode = Mode::Editing;
@@ -15,6 +16,7 @@ namespace Engine {
     // ------------------------------------------------------------------------
     void init() {
         Backend::init();
+        FileSystem::init();
         Game::init();
         Editor::init();
         

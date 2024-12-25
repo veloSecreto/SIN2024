@@ -5,6 +5,7 @@
 #include "../api/opengl/gl_renderer.h"
 #include "gizmo.hpp"
 #include "../physics/physics.h"
+#include "../file/file_system.h"
 
 namespace Editor {
 	DebugMode debugMode = DebugMode::NONE;
@@ -55,6 +56,11 @@ namespace Editor {
 			}
 			
 			g_selectionIndex = closestObjectIndex;
+		}
+
+		// saving scene data
+		if (Input::keyDown(SIN_KEY_LEFT_CONTROL) && Input::keyDown(SIN_KEY_LEFT_SHIFT) && Input::keyPressed(SIN_KEY_S)) {
+			FileSystem::Repository::saveSceneData();
 		}
 
 		if (g_selectionIndex != -1)
