@@ -11,15 +11,15 @@ namespace FileSystem {
 			std::ifstream file(ROOT_DIR + "res/data/scene.json");
 
 			if (!file.is_open()) {
-				std::cerr << "Failed to load scene data: Could not open file at "
-					<< "SIN2024/res/data/scene.json" << std::endl;
+				std::cerr << "Failed to load scene data: Could not open file at path: "
+					<< ROOT_DIR << "res/data/scene.json" << std::endl;
 				return;
 			}
 
 			try {
 				file >> sceneData;
-				std::cout << "Scene data loaded successfully from "
-					<< "SIN2024/res/data/scene.json" << std::endl;
+				std::cout << "Scene data loaded successfully from: "
+					<< ROOT_DIR << "res/data/scene.json" << std::endl;
 			}
 			catch (const std::exception& e) {
 				std::cerr << "Failed to load scene data: " << e.what() << std::endl;
@@ -59,10 +59,10 @@ namespace FileSystem {
 			if (file.is_open()) {
 				file << sceneData.dump(4);
 				file.close();
-				std::cout << "Scene data saved successfully" << std::endl;
+				std::cout << "Scene data saved successfully to: " << ROOT_DIR << "res/data/scene.json" << std::endl;
 			}
 			else {
-				std::cerr << "Failed to load file at path: '../../res/data/scene.json' for saving scene data" << std::endl;
+				std::cerr << "Failed to load file at path: '" << ROOT_DIR << "res/data/scene.json' for saving scene data" << std::endl;
 			}
 		}
 	}

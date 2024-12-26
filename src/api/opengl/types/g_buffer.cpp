@@ -123,6 +123,7 @@ void GBuffer::configure(const unsigned int& width, const unsigned int& height) {
 static bool computePassEnabled = false;
 
 void GBuffer::draw() const {
+    glDisable(GL_CULL_FACE);
     if (computePassEnabled)
     {
         static Shader* computeShader = OpenGLRenderer::getShaderByName("lighting");
@@ -156,19 +157,25 @@ void GBuffer::draw() const {
     {
         static Shader* shader = OpenGLRenderer::getShaderByName("lighting2");
         shader->use();
+        shader->setInt("albedo", 0);
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, albedo);
+        shader->setInt("position", 1);
         glActiveTexture(GL_TEXTURE1);
         glBindTexture(GL_TEXTURE_2D, position);
+        shader->setInt("normal", 2);
         glActiveTexture(GL_TEXTURE2);
         glBindTexture(GL_TEXTURE_2D, normal);
+        shader->setInt("rma", 3);
         glActiveTexture(GL_TEXTURE3);
         glBindTexture(GL_TEXTURE_2D, rma);
+
         glDisable(GL_DEPTH_TEST);
         glBindVertexArray(VAO);
         glDrawArrays(GL_TRIANGLES, 0, 6);
         glEnable(GL_DEPTH_TEST);
     }
+    glEnable(GL_CULL_FACE);
 }
 
 void GBuffer::destroy() {

@@ -16,7 +16,7 @@ class Scene {
         Scene() = default;
         Scene(std::string skyboxPath, std::string skyboxFileFormat);
         void add(const GameObject& object);
-        void addLight(const Light& light);
+        void add(const Light& light);
         void update();
         void render();
 };

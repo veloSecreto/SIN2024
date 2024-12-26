@@ -89,6 +89,7 @@ Skybox::Skybox(const std::string& path, std::string format) {
 
 
 void Skybox::render() {
+    glDisable(GL_CULL_FACE);
 	glDepthFunc(GL_LEQUAL);
 	static Shader* shader = OpenGLRenderer::getShaderByName("skybox");
 	shader->use();
@@ -96,6 +97,7 @@ void Skybox::render() {
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_CUBE_MAP, ID);
 	OpenGLRenderer::renderMesh(skyboxMesh.drawCommand);
+    glEnable(GL_CULL_FACE);
 	glDepthFunc(GL_LESS);
 }
 

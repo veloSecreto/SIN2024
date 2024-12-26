@@ -8,11 +8,18 @@
 #include "../file/file_system.h"
 
 namespace Editor {
+
+	struct ClipBoard {
+		Transform transform;
+		std::string modelName;
+	} g_clipBoard;
+
 	DebugMode debugMode = DebugMode::NONE;
 	int g_selectionIndex;
 
 	void init() {
 		Gizmo::init();
+		g_selectionIndex = -1;
 		std::cout << "Editor is initialized" << std::endl;
 	}
 
@@ -61,6 +68,19 @@ namespace Editor {
 		// saving scene data
 		if (Input::keyDown(SIN_KEY_LEFT_CONTROL) && Input::keyDown(SIN_KEY_LEFT_SHIFT) && Input::keyPressed(SIN_KEY_S)) {
 			FileSystem::Repository::saveSceneData();
+		}
+
+		// deleting game objects
+		if (Input::keyPressed(SIN_KEY_DELETE) && g_selectionIndex != -1) {
+			Game::scene.gameObjects.erase(Game::scene.gameObjects.begin() + g_selectionIndex);
+			g_selectionIndex = -1;
+		}
+
+		// adding game objects
+		if (Input::keyPressed(SIN_KEY_INSERT)) {
+			GameObject newObj("cube");
+			newObj.transform.setPosition(Camera::m_position + Camera::_forward * 3.0f);
+			Game::scene.add(newObj);
 		}
 
 		if (g_selectionIndex != -1)

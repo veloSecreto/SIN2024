@@ -10,28 +10,26 @@ void Game::init() {
     AssetManager::loadAll();
     scene = Scene(ROOT_DIR + "res/skyboxes/dark", "png");
 
-    GameObject house("house");
-    house.transform.setScale(glm::vec3(0.2f));
-    scene.add(house);
+    auto& sceneData = FileSystem::Repository::getSceneData();
 
-    GameObject man("nurseGuy");
-    man.transform.setPosition(glm::vec3(0, 0.5f, 4));
-    man.transform.setScale(glm::vec3(2));
-    scene.add(man);
+    for (unsigned int i = 0; i < sceneData["Game Objects"].size(); i++) {
+        auto& data = sceneData["Game Objects"][i];
+        GameObject newObj(data["Model Name"]);
+        newObj.transform.setPosition(glm::vec3(data["Position"][0].get<float>(), data["Position"][1].get<float>(), data["Position"][2].get<float>()));
+        newObj.transform.setRotation(glm::vec3(data["Rotation"][0].get<float>(), data["Rotation"][1].get<float>(), data["Rotation"][2].get<float>()));
+        newObj.transform.setScale(glm::vec3(data["Scale"][0].get<float>(), data["Scale"][1].get<float>(), data["Scale"][2].get<float>()));
+        scene.add(newObj);
+    }
 
-    GameObject obj("mushroom");
-    obj.transform.setPosition(glm::vec3(5, 0.5f, 0));
-    scene.add(obj);
-
-    GameObject cube("cube");
-    cube.transform.setPosition(glm::vec3(0, 1, 0));
-    scene.add(cube);
-
-    scene.addLight(Light(glm::vec3(5, 3, 0))); // room on the left
-    scene.addLight(Light(glm::vec3(0, 3, 0))); // dinning room light, should be red like my one
-    scene.addLight(Light(glm::vec3(0, 3, 5))); // forward side bed room
-
-    FileSystem::Repository::saveSceneData();
+    for (unsigned int i = 0; i < sceneData["Lights"].size(); i++) {
+        auto& data = sceneData["Lights"][i];
+        Light newLight;
+        newLight.position = glm::vec3(data["Position"][0].get<float>(), data["Position"][1].get<float>(), data["Position"][2].get<float>());
+        newLight.color = glm::vec3(data["Color"][0].get<float>(), data["Color"][1].get<float>(), data["Color"][2].get<float>());
+        newLight.strength = data["Strength"].get<float>();
+        newLight.radius = data["Radius"].get<float>();
+        scene.add(newLight);
+    }
 }
 
 // void Game::init() {
