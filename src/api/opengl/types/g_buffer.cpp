@@ -178,7 +178,7 @@ void GBuffer::draw() const {
     glEnable(GL_CULL_FACE);
 }
 
-void GBuffer::destroy() {
+void GBuffer::destroy() const {
     glDeleteTextures(1, &albedo);
     glDeleteTextures(1, &position);
     glDeleteTextures(1, &normal);
@@ -192,7 +192,7 @@ GBuffer::~GBuffer() {
     destroy();
 }
 
-void GBuffer::bind() {
+void GBuffer::bind() const {
     glBindFramebuffer(GL_FRAMEBUFFER, ID);
 }
 

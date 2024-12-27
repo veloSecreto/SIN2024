@@ -21,13 +21,13 @@ struct GBuffer {
 
         void configure(const unsigned int& width, const unsigned int& height);
 
-        void bind();
+        void bind() const;
 
         void draw() const;
 
         uint32_t& getID();
 
-        void destroy();
+        void destroy() const;
 
         ~GBuffer();
 };
