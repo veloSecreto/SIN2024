@@ -6,18 +6,36 @@
 #include "gizmo.hpp"
 #include "../physics/physics.h"
 #include "../file/file_system.h"
+#include <imgui/imgui.h>
+#include <imgui/imgui_impl_glfw.h>
+#include <imgui/imgui_impl_opengl3.h>
+
+
 
 namespace Editor {
 
 	struct ClipBoard {
-		Transform transform;
-		std::string modelName;
+		bool copied = false;
+		GameObject gameObject;
 	} g_clipBoard;
 
 	DebugMode debugMode = DebugMode::NONE;
 	int g_selectionIndex;
 
+
+
 	void init() {
+		IMGUI_CHECKVERSION();
+		ImGui::CreateContext();
+		ImGuiIO& io = ImGui::GetIO();
+		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+		io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
+
+		ImGui::StyleColorsDark();
+		ImGui_ImplGlfw_InitForOpenGL(Backend::getWindowPointer(), true);
+		ImGui_ImplOpenGL3_Init("#version 460 core");
+
 		Gizmo::init();
 		g_selectionIndex = -1;
 		std::cout << "Editor is initialized" << std::endl;
@@ -83,6 +101,17 @@ namespace Editor {
 			Game::scene.add(newObj);
 		}
 
+		if (Input::keyDown(SIN_KEY_LEFT_CONTROL) && Input::keyPressed(SIN_KEY_C)) {
+			if (g_selectionIndex != -1) {
+				g_clipBoard.gameObject = Game::scene.gameObjects[g_selectionIndex];
+				g_clipBoard.copied = true;
+			}
+		}
+
+		if (Input::keyDown(SIN_KEY_LEFT_CONTROL) && Input::keyPressed(SIN_KEY_V) && g_clipBoard.copied) {
+			Game::scene.add(g_clipBoard.gameObject);
+		}
+
 		if (g_selectionIndex != -1)
 		{
 			Gizmo::update(Game::scene.gameObjects[g_selectionIndex].transform);
@@ -95,4 +124,18 @@ void Editor::draw() {
 	if (debugMode == DebugMode::AABB) {
 		OpenGLRenderer::debugAABBs();
 	}
+
+	/*ImGui_ImplOpenGL3_NewFrame();
+	ImGui_ImplGlfw_NewFrame();
+	ImGui::NewFrame();
+
+	ImGui::Render();
+	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+	if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
+		GLFWwindow* backupCurrentContext = glfwGetCurrentContext();
+		ImGui::UpdatePlatformWindows();
+		ImGui::RenderPlatformWindowsDefault();
+		glfwMakeContextCurrent(backupCurrentContext);
+	}*/
 }

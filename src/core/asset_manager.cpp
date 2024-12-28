@@ -25,7 +25,7 @@ void AssetManager::loadModels() {
         Material newMat;
         newMat.setParameter(TextureType::ALBEDO, "tree_mushroom_BaseColor");
         newMat.setParameter(TextureType::ROUGHNESS, "tree_mushroom_Roughness");
-        newMat.setParameter(TextureType::METALLIC, "Ch16_1002_Specular");
+        newMat.setParameter(TextureType::METALLIC, "metalic_blank");
         newMat.setParameter(TextureType::AO, "tree_mushroom_AO");
 
         g_models["mushroom"].setMaterial(0, newMat);
@@ -36,13 +36,13 @@ void AssetManager::loadModels() {
     {
         Material nurseMat;
         nurseMat.setParameter(TextureType::ALBEDO, "Ch16_1001_Diffuse");
-        nurseMat.setParameter(TextureType::ROUGHNESS, glm::vec3(0.7));
-        nurseMat.setParameter(TextureType::METALLIC, "Ch16_1001_Specular");
+        nurseMat.setParameter(TextureType::ROUGHNESS, glm::vec3(1));
+        nurseMat.setParameter(TextureType::METALLIC, "metalic_blank");
         nurseMat.setParameter(TextureType::AO, glm::vec3(1));
         Material nurseMat2;
         nurseMat2.setParameter(TextureType::ALBEDO, "Ch16_1002_Diffuse");
         nurseMat2.setParameter(TextureType::ROUGHNESS, glm::vec3(0.7));
-        nurseMat2.setParameter(TextureType::METALLIC, "Ch16_1002_Specular");
+        nurseMat2.setParameter(TextureType::METALLIC, "metalic_blank");
         nurseMat2.setParameter(TextureType::AO, glm::vec3(1));
 
         g_models["nurseGuy"].setMaterial(0, nurseMat);   // head, hand, shoes
@@ -69,11 +69,17 @@ void AssetManager::loadModels() {
     g_models["cube"] = Model(ROOT_DIR + "res/models/cube.obj");
     // cube materialls
     {
-        Material cubeMat;
+        /*Material cubeMat;
         cubeMat.setParameter(TextureType::ALBEDO, "Floorboards_ALB");
         cubeMat.setParameter(TextureType::ROUGHNESS, "Floorboards_R");
         cubeMat.setParameter(TextureType::METALLIC, "metalic_blank");
-        cubeMat.setParameter(TextureType::AO, "Floorboards_AO");
+        cubeMat.setParameter(TextureType::AO, "Floorboards_AO");*/
+
+        Material cubeMat;
+        cubeMat.setParameter(TextureType::ALBEDO, "Ceiling_ALB");
+        cubeMat.setParameter(TextureType::ROUGHNESS, "Ceiling_R");
+        cubeMat.setParameter(TextureType::METALLIC, "metalic_blank");
+        cubeMat.setParameter(TextureType::AO, "Ceiling_AO");
 
         g_models["cube"].setMaterial(0, cubeMat);
     }

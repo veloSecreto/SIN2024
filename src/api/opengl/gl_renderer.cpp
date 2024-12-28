@@ -24,8 +24,7 @@ bool OpenGLRenderer::_debugging;
 
 void OpenGLRenderer::createShaders() {
     g_shaders["default"] = new Shader("default.vert", "default.frag");
-    g_shaders["lighting"] = new Shader("lighting.comp");
-    g_shaders["lighting2"] = new Shader("lighting.vert", "lighting.frag");
+    g_shaders["lighting"] = new Shader("lighting.vert", "lighting.frag");
     g_shaders["g-buffer"] = new Shader("g-buffer.vert", "g-buffer.frag");
     g_shaders["solid_color"] = new Shader("solid_color.vert", "solid_color.frag");
     g_shaders["skybox"] = new Shader("skybox.vert", "skybox.frag");
@@ -35,11 +34,18 @@ void OpenGLRenderer::createShaders() {
     g_shaders["im3d_points"] = new Shader("im3d_points.vert", "im3d_points.frag");
 }
 
+void OpenGLRenderer::onResize()
+{
+    glViewport(0, 0, Backend::getWinWidth(), Backend::getWinHeight());
+    Camera::m_proj = Camera::getProjMatrix();
+    if (renderMode == RenderMode::DEFERRED)
+        OpenGLBackend::gbuffer.resize(Backend::getWinWidth(), Backend::getWinHeight());
+}
+
 void OpenGLRenderer::hotLoadShaders() {
     std::cout << "Hot Loading Shaders..." << std::endl;
     g_shaders["default"]->load("default.vert", "default.frag");
-    g_shaders["lighting"]->load("lighting.comp");
-    g_shaders["lighting2"]->load("lighting.vert", "lighting.frag");
+    g_shaders["lighting"]->load("lighting.vert", "lighting.frag");
     g_shaders["g-buffer"]->load("g-buffer.vert", "g-buffer.frag");
     g_shaders["solid_color"]->load("solid_color.vert", "solid_color.frag");
     g_shaders["skybox"]->load("skybox.vert", "skybox.frag");
@@ -93,7 +99,7 @@ void OpenGLRenderer::uploadBuffersToGPU() {
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
     glBindVertexArray(0);
 
-    std::cout << "All global buffers and Global Vertex Array has been uploaded to the GPU\n"; 
+    std::cout << "All global buffers and Global Vertex Array has been uploaded to the GPU\n";
 }
 
 void OpenGLRenderer::renderMesh(DrawElementsIndirectCommand& command) {
@@ -105,7 +111,6 @@ void OpenGLRenderer::renderMesh(DrawElementsIndirectCommand& command) {
 void OpenGLRenderer::beginFrame() {
     glClearColor(BG_COLOR, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-    glViewport(0, 0, Backend::getWinWidth(), Backend::getWinHeight());
 }
 
 Shader* OpenGLRenderer::getDefaultShader() {
@@ -136,37 +141,44 @@ void OpenGLRenderer::renderFrame() {
         OpenGLBackend::update();
         Game::render();
         unbindVAO();
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
         // lighting pass
+        glBindVertexArray(gbuffer.VAO);
         gbuffer.draw();
-
-        // store depth data
-        glBindFramebuffer(GL_READ_FRAMEBUFFER, gbuffer.getID());
-        glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-        glBlitFramebuffer(0, 0, Backend::getWinWidth(), Backend::getWinHeight(), 0, 0, Backend::getWinWidth(), Backend::getWinHeight(), GL_DEPTH_BUFFER_BIT, GL_NEAREST);
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-        // pass through
-        bindVAO();
-        for (auto& light : Game::scene.lights) {
-            light.render();
-        }
-        Game::scene.skybox.render();
-        unbindVAO();
+        static Shader* shader = g_shaders["screen"];
+        shader->use();
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, gbuffer.screen);
+        glDisable(GL_CULL_FACE);
+        glDisable(GL_DEPTH_TEST);
+        glBindVertexArray(gbuffer.VAO);
+        glDrawArrays(GL_TRIANGLES, 0, 6);
+        glEnable(GL_DEPTH_TEST);
+        glEnable(GL_CULL_FACE);
     }
     // forward rendering
     else if (renderMode == RenderMode::FORWARD)
     {
+        static GBuffer& gbuffer = OpenGLBackend::gbuffer;
+        gbuffer.bind();
         beginFrame();
         bindVAO();
         OpenGLBackend::update();
         Game::render();
-        for (auto& light : Game::scene.lights) {
-            light.render();
-        }
-        Game::scene.skybox.render();
         unbindVAO();
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+        static Shader* shader = g_shaders["screen"];
+        shader->use();
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, gbuffer.screen);
+        glDisable(GL_CULL_FACE);
+        glDisable(GL_DEPTH_TEST);
+        glBindVertexArray(gbuffer.VAO);
+        glDrawArrays(GL_TRIANGLES, 0, 6);
+        glEnable(GL_DEPTH_TEST);
+        glEnable(GL_CULL_FACE);
     }
 }
 

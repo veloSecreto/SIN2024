@@ -3,6 +3,7 @@
 #include "../api/opengl/gl_renderer.h"
 #include "../input/input.h"
 #include "../core/asset_manager.h"
+#include "../game/_camera.h"
 
 namespace Backend {
     GLFWwindow* _window;
@@ -66,7 +67,7 @@ namespace Backend {
     void frameBufferSizeCallback(GLFWwindow* window, int width, int height) {
         _width = width;
         _height = height;
-        glViewport(0, 0, _width, _height);    
+        OpenGLRenderer::onResize();
     }
 
     GLFWwindow* getWindowPointer() {

@@ -38,7 +38,6 @@ namespace Engine {
             Clock::update();
             Backend::beginFrame();
             Input::update();
-            Backend::setWindowTitle("Unloved  | FPS: " + std::to_string(Clock::fps));
 
             if (Input::keyPressed(SIN_KEY_H)) {
                 OpenGLRenderer::hotLoadShaders();
@@ -61,6 +60,9 @@ namespace Engine {
 
             Backend::endFrame();
         }
-        Backend::kill();
     }
 };
+
+void Engine::clean() {
+    Backend::kill();
+}
