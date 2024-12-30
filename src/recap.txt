@@ -45,3 +45,12 @@ got aabbs last time, also obb
 debug lines has been implemented also
 a lot of improvements since last time
 however, now just go to play
+
+I forgot what I added recently
+it's been a long time since I made the last recap
+I just added ImGui and dockspace configuration
+I am not sure if I would ever touch SIN
+parents are so rude to let me code
+and now I am stuck
+I am feeling so sad at this point to write my last recap
+goodbye SIN

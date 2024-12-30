@@ -38,8 +38,7 @@ void OpenGLRenderer::onResize()
 {
     glViewport(0, 0, Backend::getWinWidth(), Backend::getWinHeight());
     Camera::m_proj = Camera::getProjMatrix();
-    if (renderMode == RenderMode::DEFERRED)
-        OpenGLBackend::gbuffer.resize(Backend::getWinWidth(), Backend::getWinHeight());
+    OpenGLBackend::gbuffer.resize(Backend::getWinWidth(), Backend::getWinHeight());
 }
 
 void OpenGLRenderer::hotLoadShaders() {
@@ -131,55 +130,51 @@ void OpenGLRenderer::unbindVAO() {
 
 void OpenGLRenderer::renderFrame() {
     // deferred rendering
+    static GBuffer& gbuffer = OpenGLBackend::gbuffer;
+    OpenGLBackend::update();
     if (renderMode == RenderMode::DEFERRED)
     {
         // geometry pass
-        static GBuffer& gbuffer = OpenGLBackend::gbuffer;
         gbuffer.bind();
         beginFrame();
         bindVAO();
-        OpenGLBackend::update();
         Game::render();
         unbindVAO();
         // lighting pass
-        glBindVertexArray(gbuffer.VAO);
         gbuffer.draw();
+        bindVAO();
+        for (const auto& light : Game::scene.lights) {
+            light.render();
+        }
+        Game::scene.skybox.render();
+        unbindVAO();
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-        static Shader* shader = g_shaders["screen"];
-        shader->use();
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, gbuffer.screen);
-        glDisable(GL_CULL_FACE);
-        glDisable(GL_DEPTH_TEST);
-        glBindVertexArray(gbuffer.VAO);
-        glDrawArrays(GL_TRIANGLES, 0, 6);
-        glEnable(GL_DEPTH_TEST);
-        glEnable(GL_CULL_FACE);
     }
     // forward rendering
     else if (renderMode == RenderMode::FORWARD)
     {
-        static GBuffer& gbuffer = OpenGLBackend::gbuffer;
         gbuffer.bind();
         beginFrame();
         bindVAO();
-        OpenGLBackend::update();
         Game::render();
+        for (const auto& light : Game::scene.lights) {
+            light.render();
+        }
+        Game::scene.skybox.render();
         unbindVAO();
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-        static Shader* shader = g_shaders["screen"];
-        shader->use();
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, gbuffer.screen);
-        glDisable(GL_CULL_FACE);
-        glDisable(GL_DEPTH_TEST);
-        glBindVertexArray(gbuffer.VAO);
-        glDrawArrays(GL_TRIANGLES, 0, 6);
-        glEnable(GL_DEPTH_TEST);
-        glEnable(GL_CULL_FACE);
     }
+
+    static Shader* shader = g_shaders["screen"];
+    shader->use();
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, gbuffer.screen);
+    glDisable(GL_CULL_FACE);
+    glDisable(GL_DEPTH_TEST);
+    glBindVertexArray(gbuffer.VAO);
+    glDrawArrays(GL_TRIANGLES, 0, 6);
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_CULL_FACE);
 }
 
 void OpenGLRenderer::debugAABBs() {

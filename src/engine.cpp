@@ -54,7 +54,6 @@ namespace Engine {
             else
             {
                 Editor::update();
-                OpenGLRenderer::renderFrame();
                 Editor::draw();
             }
 

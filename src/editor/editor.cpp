@@ -3,6 +3,7 @@
 #include "../game/_camera.h"
 #include "../game/game.h"
 #include "../api/opengl/gl_renderer.h"
+#include "../api/opengl/gl_backend.h"
 #include "gizmo.hpp"
 #include "../physics/physics.h"
 #include "../file/file_system.h"
@@ -120,22 +121,108 @@ namespace Editor {
 };
 
 void Editor::draw() {
-	if (g_selectionIndex != -1) Gizmo::draw();
-	if (debugMode == DebugMode::AABB) {
-		OpenGLRenderer::debugAABBs();
-	}
+    OpenGLBackend::update();
+    static GBuffer& gbuffer = OpenGLBackend::gbuffer;
+    gbuffer.bind();
 
-	/*ImGui_ImplOpenGL3_NewFrame();
-	ImGui_ImplGlfw_NewFrame();
-	ImGui::NewFrame();
+    // Deferred rendering
+    if (OpenGLRenderer::renderMode == RenderMode::DEFERRED) {
+        // Geometry pass
+        OpenGLRenderer::beginFrame();
+        OpenGLRenderer::bindVAO();
+        Game::render();
+        OpenGLRenderer::unbindVAO();
 
-	ImGui::Render();
-	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+        // Lighting pass
+        gbuffer.draw();
+        OpenGLRenderer::bindVAO();
+        for (const auto& light : Game::scene.lights) {
+            light.render();
+        }
+        Game::scene.skybox.render();
+        OpenGLRenderer::unbindVAO();
+    }
+    // Forward rendering
+    else if (OpenGLRenderer::renderMode == RenderMode::FORWARD) {
+        OpenGLRenderer::beginFrame();
+        OpenGLRenderer::bindVAO();
+        Game::render();
+        for (const auto& light : Game::scene.lights) {
+            light.render();
+        }
+        Game::scene.skybox.render();
+        OpenGLRenderer::unbindVAO();
+    }
 
-	if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
-		GLFWwindow* backupCurrentContext = glfwGetCurrentContext();
-		ImGui::UpdatePlatformWindows();
-		ImGui::RenderPlatformWindowsDefault();
-		glfwMakeContextCurrent(backupCurrentContext);
-	}*/
+    if (g_selectionIndex != -1) Gizmo::draw();
+    if (debugMode == DebugMode::AABB) {
+        OpenGLRenderer::debugAABBs();
+    }
+
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+    // ImGui
+    ImGui_ImplOpenGL3_NewFrame();
+    ImGui_ImplGlfw_NewFrame();
+    ImGui::NewFrame();
+
+    // Begin dockspace
+    static bool dockspaceOpen = true;
+    static bool optFullscreen = true;
+    static ImGuiDockNodeFlags dockspaceFlags = ImGuiDockNodeFlags_None;
+
+    ImGuiWindowFlags windowFlags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;
+    if (optFullscreen) {
+        const ImGuiViewport* viewport = ImGui::GetMainViewport();
+        ImGui::SetNextWindowPos(viewport->Pos);
+        ImGui::SetNextWindowSize(viewport->Size);
+        ImGui::SetNextWindowViewport(viewport->ID);
+        windowFlags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
+        windowFlags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
+    }
+
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+    ImGui::Begin("Dockspace", &dockspaceOpen, windowFlags);
+    ImGui::PopStyleVar(2);
+
+    // Create the dockspace
+    ImGuiID dockspaceID = ImGui::GetID("MyDockspace");
+    ImGui::DockSpace(dockspaceID, ImVec2(0.0f, 0.0f), dockspaceFlags);
+
+    // Add a menu bar (optional)
+    if (ImGui::BeginMenuBar()) {
+        if (ImGui::BeginMenu("File")) {
+            if (ImGui::MenuItem("Exit")) {
+                // Handle exit
+            }
+            ImGui::EndMenu();
+        }
+        ImGui::EndMenuBar();
+    }
+
+    // Render game window
+    ImGui::Begin("GameWindow");
+    {
+        ImVec2 contentSize = ImGui::GetContentRegionAvail();
+        if (contentSize.x != Backend::getWinWidth() || contentSize.y != Backend::getWinHeight()) {
+            Backend::frameBufferSizeCallback(Backend::getWindowPointer(), (int)contentSize.x, (int)contentSize.y);
+        }
+        ImGui::Image((ImTextureID)gbuffer.screen, contentSize, ImVec2(0, 1), ImVec2(1, 0));
+    }
+    ImGui::End();
+
+    ImGui::End(); // End dockspace window
+
+    // Render ImGui
+    ImGui::Render();
+    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+    // Multi-viewport handling (optional, for ViewportsEnable)
+    if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
+        GLFWwindow* backupCurrentContext = glfwGetCurrentContext();
+        ImGui::UpdatePlatformWindows();
+        ImGui::RenderPlatformWindowsDefault();
+        glfwMakeContextCurrent(backupCurrentContext);
+    }
 }

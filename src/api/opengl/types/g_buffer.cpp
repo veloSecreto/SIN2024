@@ -156,6 +156,13 @@ void GBuffer::draw() const {
     shader->setInt("rma", 4);
     glActiveTexture(GL_TEXTURE4);
     glBindTexture(GL_TEXTURE_2D, rma);
+
+    glDisable(GL_CULL_FACE);
+    glDisable(GL_DEPTH_TEST);
+    glBindVertexArray(VAO);
+    glDrawArrays(GL_TRIANGLES, 0, 6);
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_CULL_FACE);
 }
 
 void GBuffer::destroy() const {
