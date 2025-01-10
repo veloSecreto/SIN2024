@@ -37,7 +37,7 @@ uint32_t generateTextureFromPath(const std::string& path) {
         std::cout << "Failed to load texture at directory: " << path << std::endl;
         stbi_image_free(data);
     }
-
+    
     return ID;
 }
 

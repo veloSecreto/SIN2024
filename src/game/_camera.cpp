@@ -79,3 +79,8 @@ const glm::mat4 Camera::getViewMatrix() {
 const glm::mat4 Camera::getProjMatrix() {
     return glm::perspective(glm::radians(FOVY), (float)Backend::getWinWidth() / (float)Backend::getWinHeight(), NEAR_PLANE, FAR_PLANE);
 }
+
+const glm::mat4 Camera::getProjMatrix(float width, float height, float fovy, float nearPlane, float farPlane)
+{
+    return glm::perspective(glm::radians(fovy), width / height, nearPlane, farPlane);
+}

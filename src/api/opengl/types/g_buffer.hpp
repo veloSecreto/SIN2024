@@ -10,12 +10,13 @@ struct GBuffer {
         uint32_t width = { 0 }, height = { 0 };
 
     public:
+        uint32_t screen = { 0 };
         uint32_t albedo = { 0 };
         uint32_t position = { 0 };
         uint32_t normal = { 0 };
         uint32_t rma = { 0 };
+        uint32_t blur = { 0 };
         uint32_t rbo = { 0 };
-        uint32_t screen = { 0 };
 
         uint32_t VAO;
 
@@ -23,7 +24,7 @@ struct GBuffer {
         void bind() const;
         void draw() const;
         uint32_t& getID();
-        void resize(float width, float height);
+        void resize(int width, int height);
         void destroy() const;
         ~GBuffer();
 };

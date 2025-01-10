@@ -121,108 +121,120 @@ namespace Editor {
 };
 
 void Editor::draw() {
-    OpenGLBackend::update();
-    static GBuffer& gbuffer = OpenGLBackend::gbuffer;
-    gbuffer.bind();
+	// static ImVec2 previousContentSize(0, 0);
+	static GBuffer& gbuffer = OpenGLBackend::gbuffer;
+	gbuffer.bind();
+	OpenGLRenderer::beginFrame();
+	OpenGLBackend::update();
 
-    // Deferred rendering
-    if (OpenGLRenderer::renderMode == RenderMode::DEFERRED) {
-        // Geometry pass
-        OpenGLRenderer::beginFrame();
-        OpenGLRenderer::bindVAO();
-        Game::render();
-        OpenGLRenderer::unbindVAO();
+	if (OpenGLRenderer::renderMode == RenderMode::DEFERRED) {
+		OpenGLRenderer::bindVAO();
+		Game::render();
+		for (const auto& light : Game::scene.lights) {
+			light.render();
+		}
+		Game::scene.skybox.render();
+		OpenGLRenderer::unbindVAO();
 
-        // Lighting pass
-        gbuffer.draw();
-        OpenGLRenderer::bindVAO();
-        for (const auto& light : Game::scene.lights) {
-            light.render();
-        }
-        Game::scene.skybox.render();
-        OpenGLRenderer::unbindVAO();
-    }
-    // Forward rendering
-    else if (OpenGLRenderer::renderMode == RenderMode::FORWARD) {
-        OpenGLRenderer::beginFrame();
-        OpenGLRenderer::bindVAO();
-        Game::render();
-        for (const auto& light : Game::scene.lights) {
-            light.render();
-        }
-        Game::scene.skybox.render();
-        OpenGLRenderer::unbindVAO();
-    }
+		gbuffer.draw();
+	}
+	else if (OpenGLRenderer::renderMode == RenderMode::FORWARD) {
+		OpenGLRenderer::bindVAO();
+		Game::render();
+		for (const auto& light : Game::scene.lights) {
+			light.render();
+		}
+		Game::scene.skybox.render();
+		OpenGLRenderer::unbindVAO();
+	}
 
-    if (g_selectionIndex != -1) Gizmo::draw();
-    if (debugMode == DebugMode::AABB) {
-        OpenGLRenderer::debugAABBs();
-    }
+	// if (g_selectionIndex != -1) Gizmo::draw(glm::vec2(previousContentSize.x, previousContentSize.y));
+	if (g_selectionIndex != -1) Gizmo::draw(glm::vec2(static_cast<float>(Backend::getWinWidth()), static_cast<float>(Backend::getWinHeight())));
+	if (debugMode == DebugMode::AABB) {
+		OpenGLRenderer::debugAABBs();
+	}
 
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-    // ImGui
-    ImGui_ImplOpenGL3_NewFrame();
-    ImGui_ImplGlfw_NewFrame();
-    ImGui::NewFrame();
+	/*
+	ImGui_ImplOpenGL3_NewFrame();
+	ImGui_ImplGlfw_NewFrame();
+	ImGui::NewFrame();
 
-    // Begin dockspace
-    static bool dockspaceOpen = true;
-    static bool optFullscreen = true;
-    static ImGuiDockNodeFlags dockspaceFlags = ImGuiDockNodeFlags_None;
+	static bool dockspaceOpen = true;
+	static bool optFullscreen = true;
+	static ImGuiDockNodeFlags dockspaceFlags = ImGuiDockNodeFlags_None;
+	ImGuiWindowFlags windowFlags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;
 
-    ImGuiWindowFlags windowFlags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;
-    if (optFullscreen) {
-        const ImGuiViewport* viewport = ImGui::GetMainViewport();
-        ImGui::SetNextWindowPos(viewport->Pos);
-        ImGui::SetNextWindowSize(viewport->Size);
-        ImGui::SetNextWindowViewport(viewport->ID);
-        windowFlags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
-        windowFlags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
-    }
+	if (optFullscreen) {
+		const ImGuiViewport* viewport = ImGui::GetMainViewport();
+		ImGui::SetNextWindowPos(viewport->Pos);
+		ImGui::SetNextWindowSize(viewport->Size);
+		ImGui::SetNextWindowViewport(viewport->ID);
+		windowFlags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
+		windowFlags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
+	}
 
-    ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
-    ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
-    ImGui::Begin("Dockspace", &dockspaceOpen, windowFlags);
-    ImGui::PopStyleVar(2);
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+	if (ImGui::Begin("Dockspace", &dockspaceOpen, windowFlags)) {
+		ImGui::PopStyleVar(2);
 
-    // Create the dockspace
-    ImGuiID dockspaceID = ImGui::GetID("MyDockspace");
-    ImGui::DockSpace(dockspaceID, ImVec2(0.0f, 0.0f), dockspaceFlags);
+		ImGuiID dockspaceID = ImGui::GetID("MyDockspace");
+		ImGui::DockSpace(dockspaceID, ImVec2(0.0f, 0.0f), dockspaceFlags);
 
-    // Add a menu bar (optional)
-    if (ImGui::BeginMenuBar()) {
-        if (ImGui::BeginMenu("File")) {
-            if (ImGui::MenuItem("Exit")) {
-                // Handle exit
-            }
-            ImGui::EndMenu();
-        }
-        ImGui::EndMenuBar();
-    }
+		if (ImGui::BeginMenuBar()) {
+			if (ImGui::BeginMenu("File")) {
+				if (ImGui::MenuItem("Exit")) {
+				}
+				ImGui::EndMenu();
+			}
+			ImGui::EndMenuBar();
+		}
 
-    // Render game window
-    ImGui::Begin("GameWindow");
-    {
-        ImVec2 contentSize = ImGui::GetContentRegionAvail();
-        if (contentSize.x != Backend::getWinWidth() || contentSize.y != Backend::getWinHeight()) {
-            Backend::frameBufferSizeCallback(Backend::getWindowPointer(), (int)contentSize.x, (int)contentSize.y);
-        }
-        ImGui::Image((ImTextureID)gbuffer.screen, contentSize, ImVec2(0, 1), ImVec2(1, 0));
-    }
-    ImGui::End();
+		ImGui::Begin("GameWindow");
+		{
+			ImVec2 contentSize = ImGui::GetContentRegionAvail();
 
-    ImGui::End(); // End dockspace window
+			if (contentSize.x > 0 && contentSize.y > 0 &&
+				(contentSize.x != previousContentSize.x || contentSize.y != previousContentSize.y)) {
+				OpenGLRenderer::onResize(contentSize.x, contentSize.y);
+				previousContentSize = contentSize;
+			}
 
-    // Render ImGui
-    ImGui::Render();
-    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+			ImGui::Image((ImTextureID)gbuffer.screen, contentSize, ImVec2(0, 1), ImVec2(1, 0));
+		}
+		ImGui::End();
+	}
+	ImGui::End();
 
-    // Multi-viewport handling (optional, for ViewportsEnable)
-    if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
-        GLFWwindow* backupCurrentContext = glfwGetCurrentContext();
-        ImGui::UpdatePlatformWindows();
-        ImGui::RenderPlatformWindowsDefault();
-        glfwMakeContextCurrent(backupCurrentContext);
-    }
+	ImGui::Render();
+	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+	if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
+		GLFWwindow* backupCurrentContext = glfwGetCurrentContext();
+		ImGui::UpdatePlatformWindows();
+		ImGui::RenderPlatformWindowsDefault();
+		glfwMakeContextCurrent(backupCurrentContext);
+	}
+	*/
+	static Shader* postProcessingShader = OpenGLRenderer::getShaderByName("post-processing");
+	postProcessingShader->use();
+	glDispatchCompute(
+		(Backend::getWinWidth() + 15) / 16,
+		(Backend::getWinHeight() + 15) / 16,
+		1
+	);
+	glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
+
+	static Shader* shader = OpenGLRenderer::g_shaders["screen"];
+    shader->use();
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, gbuffer.screen);
+    glDisable(GL_CULL_FACE);
+    glDisable(GL_DEPTH_TEST);
+    glBindVertexArray(gbuffer.VAO);
+    glDrawArrays(GL_TRIANGLES, 0, 6);
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_CULL_FACE);
 }

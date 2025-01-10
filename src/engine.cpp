@@ -43,7 +43,12 @@ namespace Engine {
                 OpenGLRenderer::hotLoadShaders();
             }
             if (Input::keyPressed(SIN_KEY_P)) {
-                mode = mode == Mode::Editing ? Mode::Playing : Mode::Editing;
+                if (mode == Mode::Editing) {
+                    mode = Mode::Playing;
+                }
+                else {
+                    mode = Mode::Editing;
+                }
             }
 
             if (mode == Mode::Playing)

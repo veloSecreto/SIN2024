@@ -137,7 +137,7 @@ namespace Gizmo {
         transform.setScale(glm::vec3(scale.x, scale.y, scale.z));
     }
 
-    inline void draw() {
+    inline void draw(const glm::vec2& viewport) {
         GLint prevViewport[4];
         glGetIntegerv(GL_VIEWPORT, prevViewport);
 
@@ -158,7 +158,7 @@ namespace Gizmo {
         glEnable(GL_PROGRAM_POINT_SIZE);
         glDisable(GL_DEPTH_TEST);
 
-        glViewport(0, 0, (GLsizei)Backend::getWinWidth(), (GLsizei)Backend::getWinHeight());
+        glViewport(0, 0, static_cast<GLsizei>(viewport.x), static_cast<GLsizei>(viewport.y));
 
         for (Im3d::U32 i = 0, n = Im3d::GetDrawListCount(); i < n; ++i) {
             const Im3d::DrawList& drawList = Im3d::GetDrawLists()[i];
@@ -198,7 +198,7 @@ namespace Gizmo {
                 (GLvoid*)drawList.m_vertexData, GL_STREAM_DRAW);
 
             shader->use();
-            shader->setVec2("uViewport", glm::vec2(Backend::getWinWidth(), Backend::getWinHeight()));
+            shader->setVec2("uViewport", viewport);
 
             glDrawArrays(prim, 0, (GLsizei)drawList.m_vertexCount);
         }

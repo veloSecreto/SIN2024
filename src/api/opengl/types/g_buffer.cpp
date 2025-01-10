@@ -13,6 +13,7 @@ void GBuffer::configure(const unsigned int& width, const unsigned int& height) {
             glGenTextures(1, &position);
             glGenTextures(1, &normal);
             glGenTextures(1, &rma);
+            glGenTextures(1, &blur);
             glGenRenderbuffers(1, &rbo);
             this->width = width;
             this->height = height;
@@ -60,12 +61,21 @@ void GBuffer::configure(const unsigned int& width, const unsigned int& height) {
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT4, GL_TEXTURE_2D, rma, 0);
 
+        glBindTexture(GL_TEXTURE_2D, blur);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, width, height, 0, GL_RGBA, GL_FLOAT, NULL);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT5, GL_TEXTURE_2D, blur, 0);
+        glBindImageTexture(5, blur, 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA32F);
+
         glBindRenderbuffer(GL_RENDERBUFFER, rbo);
         glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height);
         glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo);
 
-        unsigned int attachments[5] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3, GL_COLOR_ATTACHMENT4 };
-        glDrawBuffers(5, attachments);
+        unsigned int attachments[6] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3, GL_COLOR_ATTACHMENT4, GL_COLOR_ATTACHMENT5 };
+        glDrawBuffers(6, attachments);
     
         auto fboStatus = glCheckFramebufferStatus(GL_FRAMEBUFFER);
         if (fboStatus != GL_FRAMEBUFFER_COMPLETE) std::cout << "Geometry Framebuffer configuration error from GL\n" << fboStatus << std::endl;
@@ -114,7 +124,7 @@ void GBuffer::configure(const unsigned int& width, const unsigned int& height) {
     std::cout << "Geometry Framebuffer configuration has been completed" << std::endl;
 }
 
-void GBuffer::resize(float width, float height) {
+void GBuffer::resize(int width, int height) {
     this->width = width;
     this->height = height;
 
@@ -133,6 +143,9 @@ void GBuffer::resize(float width, float height) {
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, width, height, 0, GL_RGBA, GL_FLOAT, NULL);
 
     glBindTexture(GL_TEXTURE_2D, rma);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+
+    glBindTexture(GL_TEXTURE_2D, blur);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
 
     glBindRenderbuffer(GL_RENDERBUFFER, rbo);
@@ -166,11 +179,12 @@ void GBuffer::draw() const {
 }
 
 void GBuffer::destroy() const {
+    glDeleteTextures(1, &screen);
     glDeleteTextures(1, &albedo);
     glDeleteTextures(1, &position);
     glDeleteTextures(1, &normal);
     glDeleteTextures(1, &rma);
-    glDeleteTextures(1, &screen);
+    glDeleteTextures(1, &blur);
     glDeleteRenderbuffers(1, &rbo);
     glDeleteFramebuffers(1, &ID);
 }

@@ -29,6 +29,7 @@ namespace OpenGLRenderer {
     void hotLoadShaders();
     void createShaders();
     void onResize();
+    void onResize(float width, float height);
     Shader* getDefaultShader();
     Shader* getShaderByName(const std::string& name);
 };

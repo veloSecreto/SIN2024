@@ -28,4 +28,5 @@ namespace Camera {
     void updateVecs();
     const glm::mat4 getViewMatrix();
     const glm::mat4 getProjMatrix();
+    const glm::mat4 getProjMatrix(float width, float height, float fovy, float nearPlane, float farPlane);
 };

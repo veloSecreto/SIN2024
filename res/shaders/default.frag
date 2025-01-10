@@ -116,4 +116,11 @@ void main() {
 
     finalColor = pow(finalColor + GI, vec3(1 / gamma));
     fragColor = vec4(finalColor * ao, 1.0);
+    /*
+    vec3 wildColor = vec3(normal.g, normal.r, normal.r);
+    wildColor *= wildColor;
+    wildColor *= wildColor;
+    wildColor += albedo * 0.25;
+    fragColor = vec4(wildColor, 1.0);
+    */
 }

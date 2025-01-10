@@ -26,6 +26,8 @@ void OpenGLRenderer::createShaders() {
     g_shaders["default"] = new Shader("default.vert", "default.frag");
     g_shaders["lighting"] = new Shader("lighting.vert", "lighting.frag");
     g_shaders["g-buffer"] = new Shader("g-buffer.vert", "g-buffer.frag");
+    g_shaders["post-processing"] = new Shader("post-processing.comp");
+    g_shaders["light"] = new Shader("light.vert", "light.frag");
     g_shaders["solid_color"] = new Shader("solid_color.vert", "solid_color.frag");
     g_shaders["skybox"] = new Shader("skybox.vert", "skybox.frag");
     g_shaders["screen"] = new Shader("screen.vert", "screen.frag");
@@ -41,11 +43,20 @@ void OpenGLRenderer::onResize()
     OpenGLBackend::gbuffer.resize(Backend::getWinWidth(), Backend::getWinHeight());
 }
 
+void OpenGLRenderer::onResize(float width, float height)
+{
+    glViewport(0, 0, static_cast<int>(width), static_cast<int>(height));
+    Camera::m_proj = Camera::getProjMatrix(width, height, FOVY, NEAR_PLANE, FAR_PLANE);
+    OpenGLBackend::gbuffer.resize(static_cast<int>(width), static_cast<int>(height));
+}
+
 void OpenGLRenderer::hotLoadShaders() {
     std::cout << "Hot Loading Shaders..." << std::endl;
     g_shaders["default"]->load("default.vert", "default.frag");
     g_shaders["lighting"]->load("lighting.vert", "lighting.frag");
     g_shaders["g-buffer"]->load("g-buffer.vert", "g-buffer.frag");
+    g_shaders["post-processing"]->load("post-processing.comp");
+    g_shaders["light"]->load("light.vert", "light.frag");
     g_shaders["solid_color"]->load("solid_color.vert", "solid_color.frag");
     g_shaders["skybox"]->load("skybox.vert", "skybox.frag");
     g_shaders["screen"]->load("screen.vert", "screen.frag");
@@ -93,7 +104,7 @@ void OpenGLRenderer::uploadBuffersToGPU() {
     glBindVertexArray(debugVAO);
     glGenBuffers(1, &debugVBO);
     glBindBuffer(GL_ARRAY_BUFFER, debugVBO);
-    glBufferData(GL_ARRAY_BUFFER, NULL, nullptr, GL_DYNAMIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, 0, nullptr, GL_DYNAMIC_DRAW);
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
     glBindVertexArray(0);
@@ -102,14 +113,12 @@ void OpenGLRenderer::uploadBuffersToGPU() {
 }
 
 void OpenGLRenderer::renderMesh(DrawElementsIndirectCommand& command) {
-    // glDrawElementsInstancedBaseVertex(GL_TRIANGLES, command.indexCount, GL_UNSIGNED_INT, (void*)(command.firstIndex * sizeof(uint32_t)), command.instancedCount, command.baseVertex);
-    // glDrawElementsInstancedBaseVertexBaseInstance(GL_TRIANGLES, command.indexCount, GL_UNSIGNED_INT, (void*)(sizeof(uint32_t) * command.firstIndex), 1, command.baseVertex, 0);
     glDrawElementsInstancedBaseVertexBaseInstance(GL_TRIANGLES, command.indexCount, GL_UNSIGNED_INT, (void*)(sizeof(uint32_t) * command.firstIndex), 1, command.baseVertex, 0);
 }
 
 void OpenGLRenderer::beginFrame() {
     glClearColor(BG_COLOR, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
 Shader* OpenGLRenderer::getDefaultShader() {
@@ -131,30 +140,24 @@ void OpenGLRenderer::unbindVAO() {
 void OpenGLRenderer::renderFrame() {
     // deferred rendering
     static GBuffer& gbuffer = OpenGLBackend::gbuffer;
+    gbuffer.bind();
+    beginFrame();
     OpenGLBackend::update();
     if (renderMode == RenderMode::DEFERRED)
     {
-        // geometry pass
-        gbuffer.bind();
-        beginFrame();
         bindVAO();
         Game::render();
-        unbindVAO();
-        // lighting pass
-        gbuffer.draw();
-        bindVAO();
         for (const auto& light : Game::scene.lights) {
             light.render();
         }
         Game::scene.skybox.render();
         unbindVAO();
+        gbuffer.draw();
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
     // forward rendering
     else if (renderMode == RenderMode::FORWARD)
     {
-        gbuffer.bind();
-        beginFrame();
         bindVAO();
         Game::render();
         for (const auto& light : Game::scene.lights) {
@@ -162,8 +165,8 @@ void OpenGLRenderer::renderFrame() {
         }
         Game::scene.skybox.render();
         unbindVAO();
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
     static Shader* shader = g_shaders["screen"];
     shader->use();
