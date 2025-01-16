@@ -7,5 +7,4 @@ layout (binding = 5, rgba32f) uniform image2D blur;
 
 void main() {
     ivec2 coord = ivec2(gl_GlobalInvocationID.xy);
-    
 }

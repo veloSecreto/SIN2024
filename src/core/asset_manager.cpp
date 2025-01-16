@@ -19,7 +19,7 @@ void AssetManager::loadAll() {
 */
 
 void AssetManager::loadModels() {
-    g_models["mushroom"] =  Model(ROOT_DIR + "res/models/mushroom.obj");
+    g_models["mushroom"] = Model(ROOT_DIR + "res/models/mushroom.obj");
     // mushroom material setup
     {
         Material newMat;

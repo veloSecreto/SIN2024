@@ -39,14 +39,19 @@ void OpenGLRenderer::createShaders() {
 void OpenGLRenderer::onResize()
 {
     glViewport(0, 0, Backend::getWinWidth(), Backend::getWinHeight());
-    Camera::m_proj = Camera::getProjMatrix();
+    if (Backend::getWinWidth() > 0 || Backend::getWinHeight() > 0)
+    {
+        Camera::m_proj = Camera::getProjMatrix();
+    }
     OpenGLBackend::gbuffer.resize(Backend::getWinWidth(), Backend::getWinHeight());
 }
 
 void OpenGLRenderer::onResize(float width, float height)
 {
     glViewport(0, 0, static_cast<int>(width), static_cast<int>(height));
-    Camera::m_proj = Camera::getProjMatrix(width, height, FOVY, NEAR_PLANE, FAR_PLANE);
+    if (width > 0 || height > 0) {
+        Camera::m_proj = Camera::getProjMatrix(width, height, FOVY, NEAR_PLANE, FAR_PLANE);
+    }
     OpenGLBackend::gbuffer.resize(static_cast<int>(width), static_cast<int>(height));
 }
 
@@ -167,6 +172,15 @@ void OpenGLRenderer::renderFrame() {
         unbindVAO();
     }
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+    static Shader* postProcessingShader = OpenGLRenderer::getShaderByName("post-processing");
+	postProcessingShader->use();
+	glDispatchCompute(
+		(Backend::getWinWidth() + 15) / 16,
+		(Backend::getWinHeight() + 15) / 16,
+		1
+	);
+	glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
 
     static Shader* shader = g_shaders["screen"];
     shader->use();

@@ -1,6 +1,7 @@
 {
     "Game Objects": [
         {
+            "Name": "Nurse Guy",
             "Model Name": "nurseGuy",
             "Position": [
                 2.264322280883789,
@@ -19,6 +20,7 @@
             ]
         },
         {
+            "Name": "Mushroom",
             "Model Name": "mushroom",
             "Position": [
                 3.2674975395202637,
@@ -37,6 +39,7 @@
             ]
         },
         {
+            "Name": "Plane0",
             "Model Name": "cube",
             "Position": [
                 1.8428840637207031,
@@ -55,6 +58,7 @@
             ]
         },
         {
+            "Name": "Plane1",
             "Model Name": "cube",
             "Position": [
                 1.8370658159255981,
@@ -73,6 +77,7 @@
             ]
         },
         {
+            "Name": "Plane2",
             "Model Name": "cube",
             "Position": [
                 -3.6321089267730713,
@@ -91,6 +96,7 @@
             ]
         },
         {
+            "Name": "Plane3",
             "Model Name": "cube",
             "Position": [
                 1.9438523054122925,
@@ -109,6 +115,7 @@
             ]
         },
         {
+            "Name": "Plane4",
             "Model Name": "cube",
             "Position": [
                 7.331659317016602,
@@ -127,6 +134,7 @@
             ]
         },
         {
+            "Name": "Plane5",
             "Model Name": "cube",
             "Position": [
                 1.8422551155090332,

@@ -13,6 +13,77 @@
 
 
 
+void SetEditorTheme() {
+    ImGuiStyle& style = ImGui::GetStyle();
+    ImVec4* colors = style.Colors;
+
+    // Backgrounds
+    colors[ImGuiCol_WindowBg]            = ImVec4(0.08f, 0.08f, 0.08f, 1.00f); // Very dark gray
+    colors[ImGuiCol_ChildBg]             = ImVec4(0.10f, 0.10f, 0.10f, 1.00f); // Slightly lighter
+    colors[ImGuiCol_PopupBg]             = ImVec4(0.12f, 0.12f, 0.12f, 1.00f); // Popup menus
+
+    // Borders
+    colors[ImGuiCol_Border]              = ImVec4(0.18f, 0.18f, 0.18f, 1.00f); // Dark border
+    colors[ImGuiCol_BorderShadow]        = ImVec4(0.00f, 0.00f, 0.00f, 0.00f); // No shadow
+
+    // Text
+    colors[ImGuiCol_Text]                = ImVec4(0.90f, 0.90f, 0.90f, 1.00f); // Light gray text
+    colors[ImGuiCol_TextDisabled]        = ImVec4(0.50f, 0.50f, 0.50f, 1.00f); // Muted gray for disabled text
+
+    // Headers
+    colors[ImGuiCol_Header]              = ImVec4(0.15f, 0.15f, 0.15f, 1.00f); // Darker header
+    colors[ImGuiCol_HeaderHovered]       = ImVec4(0.18f, 0.18f, 0.18f, 1.00f); // Slightly lighter hover
+    colors[ImGuiCol_HeaderActive]        = ImVec4(0.22f, 0.22f, 0.22f, 1.00f); // Active header
+
+    // Buttons
+    colors[ImGuiCol_Button]              = ImVec4(0.22f, 0.22f, 0.22f, 1.00f); // Dark button
+    colors[ImGuiCol_ButtonHovered]       = ImVec4(0.26f, 0.26f, 0.26f, 1.00f); // Button hover
+    colors[ImGuiCol_ButtonActive]        = ImVec4(0.30f, 0.30f, 0.30f, 1.00f); // Active button state
+
+    // Frame (Input boxes, sliders)
+    colors[ImGuiCol_FrameBg]             = ImVec4(0.14f, 0.14f, 0.14f, 1.00f); // Dark input boxes
+    colors[ImGuiCol_FrameBgHovered]      = ImVec4(0.18f, 0.18f, 0.18f, 1.00f); // Hover effect
+    colors[ImGuiCol_FrameBgActive]       = ImVec4(0.22f, 0.22f, 0.22f, 1.00f); // Active state
+
+    // Tabs
+    colors[ImGuiCol_Tab]                 = ImVec4(0.10f, 0.10f, 0.10f, 1.00f); // Dark tab
+    colors[ImGuiCol_TabHovered]          = ImVec4(0.15f, 0.15f, 0.15f, 1.00f); // Hover effect on tab
+    colors[ImGuiCol_TabActive]           = ImVec4(0.18f, 0.18f, 0.18f, 1.00f); // Active tab
+    colors[ImGuiCol_TabUnfocused]        = ImVec4(0.12f, 0.12f, 0.12f, 1.00f); // Unfocused tab
+    colors[ImGuiCol_TabUnfocusedActive]  = ImVec4(0.15f, 0.15f, 0.15f, 1.00f); // Unfocused active tab
+
+    // Titles
+    colors[ImGuiCol_TitleBg]             = ImVec4(0.08f, 0.08f, 0.08f, 1.00f); // Title bar background
+    colors[ImGuiCol_TitleBgActive]       = ImVec4(0.18f, 0.18f, 0.18f, 1.00f); // Active title
+    colors[ImGuiCol_TitleBgCollapsed]    = ImVec4(0.08f, 0.08f, 0.08f, 0.75f); // Collapsed state
+
+    // Scrollbar
+    colors[ImGuiCol_ScrollbarBg]         = ImVec4(0.10f, 0.10f, 0.10f, 1.00f); // Dark scrollbar background
+    colors[ImGuiCol_ScrollbarGrab]       = ImVec4(0.18f, 0.18f, 0.18f, 1.00f); // Scrollbar grab color
+    colors[ImGuiCol_ScrollbarGrabHovered] = ImVec4(0.22f, 0.22f, 0.22f, 1.00f); // Hover effect on scrollbar
+    colors[ImGuiCol_ScrollbarGrabActive] = ImVec4(0.26f, 0.26f, 0.26f, 1.00f); // Active state of scrollbar
+
+    // Resize Grip
+    colors[ImGuiCol_ResizeGrip]          = ImVec4(0.20f, 0.20f, 0.20f, 1.00f); // Resize grip
+    colors[ImGuiCol_ResizeGripHovered]   = ImVec4(0.24f, 0.24f, 0.24f, 1.00f); // Hover effect
+    colors[ImGuiCol_ResizeGripActive]    = ImVec4(0.28f, 0.28f, 0.28f, 1.00f); // Active state
+
+    // Misc
+    colors[ImGuiCol_CheckMark]           = ImVec4(0.50f, 0.50f, 0.50f, 1.00f); // Muted gray checkmark
+    colors[ImGuiCol_SliderGrab]          = ImVec4(0.18f, 0.18f, 0.18f, 1.00f); // Slider grab
+    colors[ImGuiCol_SliderGrabActive]    = ImVec4(0.22f, 0.22f, 0.22f, 1.00f); // Active slider grab
+    colors[ImGuiCol_Separator]           = ImVec4(0.18f, 0.18f, 0.18f, 1.00f); // Separator line
+    colors[ImGuiCol_SeparatorHovered]    = ImVec4(0.22f, 0.22f, 0.22f, 1.00f); // Hover effect on separator
+    colors[ImGuiCol_SeparatorActive]     = ImVec4(0.26f, 0.26f, 0.26f, 1.00f); // Active separator
+
+    // Style tweaks
+    style.FrameRounding = 4.0f;  // Rounded edges
+    style.WindowRounding = 6.0f; // Slightly rounded windows
+    style.GrabRounding = 4.0f;   // Rounded sliders/buttons
+}
+
+
+
 namespace Editor {
 
 	struct ClipBoard {
@@ -22,6 +93,10 @@ namespace Editor {
 
 	DebugMode debugMode = DebugMode::NONE;
 	int g_selectionIndex;
+	bool sceneViewportHasfocus;
+	ImVec2 sceneViewport;
+	ImVec2 sceneViewportOffset;
+	ImVec2 sceneCursorPos;
 
 
 
@@ -33,7 +108,8 @@ namespace Editor {
 		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 		io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
 
-		ImGui::StyleColorsDark();
+		io.Fonts->AddFontFromFileTTF((ROOT_DIR + "res/fonts/Merriweather Sans/regular.ttf").c_str(), 16.0f);
+		SetEditorTheme();
 		ImGui_ImplGlfw_InitForOpenGL(Backend::getWindowPointer(), true);
 		ImGui_ImplOpenGL3_Init("#version 460 core");
 
@@ -43,7 +119,7 @@ namespace Editor {
 	}
 
 	void update() {
-		if (Input::mouseButtonDown(SIN_MOUSE_BUTTON_RIGHT)) {
+		if (Input::mouseButtonDown(SIN_MOUSE_BUTTON_RIGHT) && sceneViewportHasfocus) {
 	        Input::disableCursor();
 	        Camera::update();
 	    }
@@ -63,7 +139,7 @@ namespace Editor {
 			debugMode = (DebugMode)(((int)debugMode + 1) % 2);
 		}
 
-		if (Input::mouseButtonPressed(SIN_MOUSE_BUTTON_LEFT) && !Gizmo::hasHover())
+		if (Input::mouseButtonPressed(SIN_MOUSE_BUTTON_LEFT) && !Gizmo::hasHover() && sceneViewportHasfocus)
 		{
 			float nearestDistance = std::numeric_limits<float>::max();
 			int closestObjectIndex = -1;
@@ -96,8 +172,11 @@ namespace Editor {
 		}
 
 		// adding game objects
+		static int i = 0;
 		if (Input::keyPressed(SIN_KEY_INSERT)) {
+			i += 1;
 			GameObject newObj("cube");
+			newObj.name = "Cube" + std::to_string(i);
 			newObj.transform.setPosition(Camera::m_position + Camera::_forward * 3.0f);
 			Game::scene.add(newObj);
 		}
@@ -105,6 +184,7 @@ namespace Editor {
 		if (Input::keyDown(SIN_KEY_LEFT_CONTROL) && Input::keyPressed(SIN_KEY_C)) {
 			if (g_selectionIndex != -1) {
 				g_clipBoard.gameObject = Game::scene.gameObjects[g_selectionIndex];
+				g_clipBoard.gameObject.name += std::to_string(i);
 				g_clipBoard.copied = true;
 			}
 		}
@@ -121,7 +201,6 @@ namespace Editor {
 };
 
 void Editor::draw() {
-	// static ImVec2 previousContentSize(0, 0);
 	static GBuffer& gbuffer = OpenGLBackend::gbuffer;
 	gbuffer.bind();
 	OpenGLRenderer::beginFrame();
@@ -148,15 +227,24 @@ void Editor::draw() {
 		OpenGLRenderer::unbindVAO();
 	}
 
-	// if (g_selectionIndex != -1) Gizmo::draw(glm::vec2(previousContentSize.x, previousContentSize.y));
-	if (g_selectionIndex != -1) Gizmo::draw(glm::vec2(static_cast<float>(Backend::getWinWidth()), static_cast<float>(Backend::getWinHeight())));
+	static Shader* postProcessingShader = OpenGLRenderer::getShaderByName("post-processing");
+	postProcessingShader->use();
+	glDispatchCompute(
+		(Backend::getWinWidth() + 15) / 16,
+		(Backend::getWinHeight() + 15) / 16,
+		1
+	);
+	glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
+
+	if (g_selectionIndex != -1) Gizmo::draw(glm::vec2(sceneViewport.x, sceneViewport.y));
+	// if (g_selectionIndex != -1) Gizmo::draw(glm::vec2(static_cast<float>(Backend::getWinWidth()), static_cast<float>(Backend::getWinHeight())));
 	if (debugMode == DebugMode::AABB) {
 		OpenGLRenderer::debugAABBs();
 	}
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-	/*
+	
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplGlfw_NewFrame();
 	ImGui::NewFrame();
@@ -186,23 +274,44 @@ void Editor::draw() {
 		if (ImGui::BeginMenuBar()) {
 			if (ImGui::BeginMenu("File")) {
 				if (ImGui::MenuItem("Exit")) {
+					Backend::forceCloseWindow();
 				}
 				ImGui::EndMenu();
 			}
 			ImGui::EndMenuBar();
 		}
 
-		ImGui::Begin("GameWindow");
+		ImGui::Begin("Scene Viewport");
 		{
 			ImVec2 contentSize = ImGui::GetContentRegionAvail();
+			sceneViewportHasfocus = ImGui::IsWindowFocused();
+			sceneViewportOffset = ImGui::GetWindowPos();
+			sceneCursorPos = ImGui::GetCursorScreenPos();
 
 			if (contentSize.x > 0 && contentSize.y > 0 &&
-				(contentSize.x != previousContentSize.x || contentSize.y != previousContentSize.y)) {
+				(contentSize.x != sceneViewport.x || contentSize.y != sceneViewport.y)) {
 				OpenGLRenderer::onResize(contentSize.x, contentSize.y);
-				previousContentSize = contentSize;
+				sceneViewport = contentSize;
 			}
 
 			ImGui::Image((ImTextureID)gbuffer.screen, contentSize, ImVec2(0, 1), ImVec2(1, 0));
+		}
+		ImGui::End();
+
+		ImGui::Begin("Scene Hierarchy");
+		{
+			ImGui::Spacing();
+			for (int i = 0; i < Game::scene.gameObjects.size(); i++) {
+				if (ImGui::Selectable((Game::scene.gameObjects[i].name).c_str(), g_selectionIndex == i)) {
+					g_selectionIndex = i;
+				}
+			}
+		}
+        ImGui::End();
+
+		ImGui::Begin("Properties");
+		{
+			ImGui::Text("There are all the properties");
 		}
 		ImGui::End();
 	}
@@ -217,15 +326,8 @@ void Editor::draw() {
 		ImGui::RenderPlatformWindowsDefault();
 		glfwMakeContextCurrent(backupCurrentContext);
 	}
-	*/
-	static Shader* postProcessingShader = OpenGLRenderer::getShaderByName("post-processing");
-	postProcessingShader->use();
-	glDispatchCompute(
-		(Backend::getWinWidth() + 15) / 16,
-		(Backend::getWinHeight() + 15) / 16,
-		1
-	);
-	glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
+	/*
+	
 
 	static Shader* shader = OpenGLRenderer::g_shaders["screen"];
     shader->use();
@@ -237,4 +339,5 @@ void Editor::draw() {
     glDrawArrays(GL_TRIANGLES, 0, 6);
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
+	*/
 }

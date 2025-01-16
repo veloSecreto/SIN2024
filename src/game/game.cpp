@@ -15,10 +15,14 @@ void Game::init() {
     for (unsigned int i = 0; i < sceneData["Game Objects"].size(); i++) {
         auto& data = sceneData["Game Objects"][i];
         GameObject newObj(data["Model Name"]);
+        newObj.name = data["Name"];
         newObj.transform.setPosition(glm::vec3(data["Position"][0].get<float>(), data["Position"][1].get<float>(), data["Position"][2].get<float>()));
         newObj.transform.setRotation(glm::vec3(data["Rotation"][0].get<float>(), data["Rotation"][1].get<float>(), data["Rotation"][2].get<float>()));
         newObj.transform.setScale(glm::vec3(data["Scale"][0].get<float>(), data["Scale"][1].get<float>(), data["Scale"][2].get<float>()));
-        scene.add(newObj);
+        try { scene.add(newObj); }
+        catch (const std::exception& e) {
+            std::cerr << "Error adding GameObject: " << e.what() << std::endl;
+        }
     }
 
     for (unsigned int i = 0; i < sceneData["Lights"].size(); i++) {

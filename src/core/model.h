@@ -7,12 +7,12 @@
 #include <assimp/postprocess.h>
 #include "../physics/aabb.hpp"
 
-class Model {
+struct Model {
     public:
         std::vector<Mesh> meshes;
         AABB localAABB;
 
-        Model();
+        Model() = default;
         Model(const std::string& path);
         
         void setMaterial(int meshIndex, const Material& material);

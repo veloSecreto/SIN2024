@@ -8,6 +8,7 @@
 
 struct GameObject {
     public:
+        std::string name;
         std::string _modelName;
         Model model;
         Shader* shader;

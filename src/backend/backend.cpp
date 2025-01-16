@@ -12,8 +12,8 @@ namespace Backend {
 
     WindowMode _windowMode = WindowMode::WINDOWED;
 
-    int _width = 800;
-    int _height = 600;
+    int _width = 1200;
+    int _height = 728;
 
     bool _forceClose = false;
 
@@ -24,7 +24,7 @@ namespace Backend {
         
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
-        glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+        glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_COMPAT_PROFILE);
         glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, true);
 
         _monitor = glfwGetPrimaryMonitor();

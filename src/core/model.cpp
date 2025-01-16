@@ -2,8 +2,6 @@
 #include "../physics/physics.h"
 
 
-Model::Model() = default;
-
 Model::Model(const std::string& path) {
     loadModel(path);
 }

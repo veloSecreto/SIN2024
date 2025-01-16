@@ -16,8 +16,8 @@ namespace Gizmo {
     inline bool _inUse = false;
 
     inline void cleanUp() {
-
-        Im3d::GetContext();
+        glDeleteBuffers(1, &g_Im3dVertexBuffer);
+        glDeleteVertexArrays(1, &g_Im3dVertexArray);
     }
 
 
@@ -53,6 +53,10 @@ namespace Gizmo {
         glEnableVertexAttribArray(1);
         glVertexAttribPointer(1, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(Im3d::VertexData), (GLvoid*)offsetof(Im3d::VertexData, m_color));
         glBindVertexArray(0);
+
+        Im3d::Context& ctx = Im3d::GetContext();
+        ctx.m_gizmoHeightPixels = 50;
+        ctx.m_gizmoSizePixels = 6;
     }
 
 #define if_likely(e)   if(!!(e))
@@ -84,11 +88,6 @@ namespace Gizmo {
     }
 
     inline void update(Transform& transform) {
-
-        Im3d::Context& ctx = Im3d::GetContext();
-        ctx.m_gizmoHeightPixels = 50;
-        ctx.m_gizmoSizePixels = 6;
-
         if (Input::keyPressed(SIN_KEY_NUMPAD_1)) {
             Im3d::GetContext().m_gizmoMode = Im3d::GizmoMode::GizmoMode_Translation;
         }
@@ -193,10 +192,7 @@ namespace Gizmo {
 
             glBindVertexArray(g_Im3dVertexArray);
             glBindBuffer(GL_ARRAY_BUFFER, g_Im3dVertexBuffer);
-
-            glBufferData(GL_ARRAY_BUFFER, (GLsizeiptr)drawList.m_vertexCount * sizeof(Im3d::VertexData),
-                (GLvoid*)drawList.m_vertexData, GL_STREAM_DRAW);
-
+            glBufferData(GL_ARRAY_BUFFER, (GLsizeiptr)drawList.m_vertexCount * sizeof(Im3d::VertexData), (GLvoid*)drawList.m_vertexData, GL_STREAM_DRAW);
             shader->use();
             shader->setVec2("uViewport", viewport);
 

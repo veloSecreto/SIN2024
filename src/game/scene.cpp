@@ -7,7 +7,7 @@ Scene::Scene(std::string skyboxPath, std::string skyboxFileFormat)
     skybox = Skybox(skyboxPath, skyboxFileFormat);
 }
 
-void Scene::add(const GameObject& object) {
+void Scene::add(GameObject object) {
     gameObjects.push_back(object);
 }
 
