@@ -95,8 +95,6 @@ namespace Editor {
 	int g_selectionIndex;
 	bool sceneViewportHasfocus;
 	ImVec2 sceneViewport;
-	ImVec2 sceneViewportOffset;
-	ImVec2 sceneCursorPos;
 
 
 
@@ -285,8 +283,6 @@ void Editor::draw() {
 		{
 			ImVec2 contentSize = ImGui::GetContentRegionAvail();
 			sceneViewportHasfocus = ImGui::IsWindowFocused();
-			sceneViewportOffset = ImGui::GetWindowPos();
-			sceneCursorPos = ImGui::GetCursorScreenPos();
 
 			if (contentSize.x > 0 && contentSize.y > 0 &&
 				(contentSize.x != sceneViewport.x || contentSize.y != sceneViewport.y)) {
