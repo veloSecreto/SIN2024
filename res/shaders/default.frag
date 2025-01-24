@@ -20,6 +20,14 @@ struct Material {
     sampler2D ao;
 };
 
+struct InstanceData {
+    mat4 m_model;
+    int albedoID;
+    int roughnessID;
+    int metallicID;
+    int aoID;
+};
+
 layout (std430, binding = 0) buffer LightBuffer {
     Light lights[];
 };
@@ -28,13 +36,16 @@ layout (std430, binding = 1) buffer CameraBuffer {
     Camera camera;
 };
 
+layout (std430, binding = 2) buffer InstanceBuffer {
+    InstanceData instances[];
+};
+
 in vec3 position;
 in vec3 normal;
 in vec2 texCoord;
+in flat int index;
 
 out vec4 fragColor;
-
-uniform Material material;
 
 const float gamma = 2.4;
 const float PI = 3.14159265359;
@@ -70,14 +81,18 @@ vec3 fresnelSchlick(float cosTheta, vec3 F0) {
     return F0 + (1.0 - F0) * pow(clamp(1.0 - cosTheta, 0.0, 1.0), 5.0);
 }
 
+uniform sampler2DArray textureArray;
+
 void main() {
+    InstanceData instance = instances[index];
+
     vec3 normalDir = normalize(normal);
     vec3 viewDir = normalize(camera.position - position);
 
-    float roughness = texture(material.roughness, texCoord).r;
-    float metallic =  texture(material.metallic, texCoord).r;
-    float ao =  texture(material.ao, texCoord).r;
-    vec3 albedo = texture(material.albedo, texCoord).rgb;
+    float roughness = texture(textureArray, vec3(texCoord, instance.roughnessID)).r;
+    float metallic =  texture(textureArray, vec3(texCoord, instance.metallicID)).r;
+    float ao =  texture(textureArray, vec3(texCoord, instance.aoID)).r;
+    vec3 albedo = texture(textureArray, vec3(texCoord, instance.albedoID)).rgb;
     albedo = pow(albedo, vec3(gamma));
 
     vec3 F0 = vec3(0.04);
@@ -123,4 +138,5 @@ void main() {
     wildColor += albedo * 0.25;
     fragColor = vec4(wildColor, 1.0);
     */
+    fragColor = vec4(1);
 }

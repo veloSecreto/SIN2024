@@ -117,7 +117,7 @@ namespace Editor {
 	}
 
 	void update() {
-		if (Input::mouseButtonDown(SIN_MOUSE_BUTTON_RIGHT) && sceneViewportHasfocus) {
+		if (Input::mouseButtonDown(SIN_MOUSE_BUTTON_RIGHT)) {
 	        Input::disableCursor();
 	        Camera::update();
 	    }
@@ -137,7 +137,7 @@ namespace Editor {
 			debugMode = (DebugMode)(((int)debugMode + 1) % 2);
 		}
 
-		if (Input::mouseButtonPressed(SIN_MOUSE_BUTTON_LEFT) && !Gizmo::hasHover() && sceneViewportHasfocus)
+		if (Input::mouseButtonPressed(SIN_MOUSE_BUTTON_LEFT) && !Gizmo::hasHover())
 		{
 			float nearestDistance = std::numeric_limits<float>::max();
 			int closestObjectIndex = -1;
@@ -224,25 +224,43 @@ void Editor::draw() {
 		Game::scene.skybox.render();
 		OpenGLRenderer::unbindVAO();
 	}
+	
+	// static Shader* horizontalBlurShader = OpenGLRenderer::getShaderByName("horizontal_blur");
+	// horizontalBlurShader->use();
+	// glDispatchCompute(
+	// 	(Backend::getWinWidth() + 7) / 8,
+	// 	(Backend::getWinHeight() + 7) / 8,
+	// 	1
+	// );
+	// glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
 
-	static Shader* postProcessingShader = OpenGLRenderer::getShaderByName("post-processing");
-	postProcessingShader->use();
-	glDispatchCompute(
-		(Backend::getWinWidth() + 15) / 16,
-		(Backend::getWinHeight() + 15) / 16,
-		1
-	);
-	glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
+	// static Shader* verticalBlurShader = OpenGLRenderer::getShaderByName("vertical_blur");
+	// verticalBlurShader->use();
+	// glDispatchCompute(
+	// 	(Backend::getWinWidth() + 7) / 8,
+	// 	(Backend::getWinHeight() + 7) / 8,
+	// 	1
+	// );
+	// glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
 
-	if (g_selectionIndex != -1) Gizmo::draw(glm::vec2(sceneViewport.x, sceneViewport.y));
-	// if (g_selectionIndex != -1) Gizmo::draw(glm::vec2(static_cast<float>(Backend::getWinWidth()), static_cast<float>(Backend::getWinHeight())));
+	// static Shader* postProcessingShader = OpenGLRenderer::getShaderByName("post-processing");
+	// postProcessingShader->use();
+	// glDispatchCompute(
+	// 	(Backend::getWinWidth() + 7) / 8,
+	// 	(Backend::getWinHeight() + 7) / 8,
+	// 	1
+	// );
+	// glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
+
+	// if (g_selectionIndex != -1) Gizmo::draw(glm::vec2(sceneViewport.x, sceneViewport.y));
+	if (g_selectionIndex != -1) Gizmo::draw(glm::vec2(static_cast<float>(Backend::getWinWidth()), static_cast<float>(Backend::getWinHeight())));
 	if (debugMode == DebugMode::AABB) {
 		OpenGLRenderer::debugAABBs();
 	}
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-	
+	/*	
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplGlfw_NewFrame();
 	ImGui::NewFrame();
@@ -322,9 +340,8 @@ void Editor::draw() {
 		ImGui::RenderPlatformWindowsDefault();
 		glfwMakeContextCurrent(backupCurrentContext);
 	}
-	/*
+	*/
 	
-
 	static Shader* shader = OpenGLRenderer::g_shaders["screen"];
     shader->use();
     glActiveTexture(GL_TEXTURE0);
@@ -335,5 +352,4 @@ void Editor::draw() {
     glDrawArrays(GL_TRIANGLES, 0, 6);
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
-	*/
 }

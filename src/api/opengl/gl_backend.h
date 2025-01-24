@@ -3,7 +3,9 @@
 #include "../../core/vertex.hpp"
 #include "../../core/drawCommand.hpp"
 #include "types/ssbo.hpp"
+#include "types/instance_data.h"
 #include "types/g_buffer.hpp"
+#include "types/texture_array.hpp"
 #include <vector>
 
 namespace OpenGLBackend {
@@ -12,13 +14,16 @@ namespace OpenGLBackend {
     extern std::vector<DrawElementsIndirectCommand> drawCommands;
     extern std::vector<Vertex> debugVertices;
     extern std::unordered_map<std::string, SSBO> g_ssbos;
+    extern std::vector<InstanceData> instances;
     extern GBuffer gbuffer;
+    extern TextureArray textureArray;
 
     void initMinimum();
     void createSSBOs();
     void uploadSSBOsToGPU();
-    void updateSSBObyName(const std::string& name, const void* data, GLsizeiptr size);
     void update();
-    void configureFBOs();
-    void uploadMeshData(std::vector<Vertex>& vertices, std::vector<uint32_t>& indices, DrawElementsIndirectCommand& drawCommand);
+    void configureFramebuffers();
+    void uploadMeshData(const std::vector<Vertex>& vertices, const std::vector<uint32_t>& indices);
+    void configureTextureArray();
+    void upload();
 };

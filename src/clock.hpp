@@ -1,6 +1,6 @@
 #pragma once
 
-#include <glfw/glfw3.h>
+#include <GLFW/glfw3.h>
 
 namespace Clock {
     inline float time = 0.0f, _lastTime = 0.0f, _lastFrame = 0.0f, dt = 0.0f;

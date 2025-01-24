@@ -15,7 +15,7 @@ struct GBuffer {
         uint32_t position = { 0 };
         uint32_t normal = { 0 };
         uint32_t rma = { 0 };
-        uint32_t blur = { 0 };
+        uint32_t emissive = { 0 };
         uint32_t rbo = { 0 };
 
         uint32_t VAO;

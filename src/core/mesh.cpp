@@ -11,26 +11,22 @@ Mesh::Mesh(std::vector<Vertex>& vertices, std::vector<uint32_t>& indices) {
     drawCommand.baseVertex = OpenGLBackend::globalVertices.size();
     drawCommand.baseInstance = 0;
 
-    OpenGLBackend::uploadMeshData(vertices, indices, drawCommand);
+    OpenGLBackend::uploadMeshData(vertices, indices);
 }
 
 void Mesh::render(Shader* shader) {
 	
 	shader->setInt("material.albedo", 0);
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, material.albedo.ID);
+	glBindTextureUnit(0, material.albedo.ID);
 
 	shader->setInt("material.roughness", 1);
-	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, material.roughness.ID);
+	glBindTextureUnit(1, material.roughness.ID);
 
 	shader->setInt("material.metallic", 2);
-	glActiveTexture(GL_TEXTURE2);
-	glBindTexture(GL_TEXTURE_2D, material.metallic.ID);
+	glBindTextureUnit(2, material.metallic.ID);
 
 	shader->setInt("material.ao", 3);
-	glActiveTexture(GL_TEXTURE3);
-	glBindTexture(GL_TEXTURE_2D, material.ao.ID);
-
+	glBindTextureUnit(3, material.ao.ID);
+	
 	OpenGLRenderer::renderMesh(drawCommand);
 }

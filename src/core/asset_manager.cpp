@@ -1,4 +1,5 @@
 #include "asset_manager.h"
+#include "../api/opengl/gl_backend.h"
 
 // todo: need more improvement
 
@@ -6,6 +7,7 @@ std::unordered_map<std::string, Model> AssetManager::g_models;
 std::unordered_map<std::string, Texture> AssetManager::g_textures;
 
 void AssetManager::loadAll() {
+    OpenGLBackend::configureTextureArray();
     findAllAssetPaths();
     loadModels();
 }

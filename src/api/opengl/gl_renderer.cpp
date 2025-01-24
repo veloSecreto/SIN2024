@@ -27,6 +27,8 @@ void OpenGLRenderer::createShaders() {
     g_shaders["lighting"] = new Shader("lighting.vert", "lighting.frag");
     g_shaders["g-buffer"] = new Shader("g-buffer.vert", "g-buffer.frag");
     g_shaders["post-processing"] = new Shader("post-processing.comp");
+    g_shaders["horizontal_blur"] = new Shader("horizontal_blur.comp");
+    g_shaders["vertical_blur"] = new Shader("vertical_blur.comp");
     g_shaders["light"] = new Shader("light.vert", "light.frag");
     g_shaders["solid_color"] = new Shader("solid_color.vert", "solid_color.frag");
     g_shaders["skybox"] = new Shader("skybox.vert", "skybox.frag");
@@ -61,6 +63,8 @@ void OpenGLRenderer::hotLoadShaders() {
     g_shaders["lighting"]->load("lighting.vert", "lighting.frag");
     g_shaders["g-buffer"]->load("g-buffer.vert", "g-buffer.frag");
     g_shaders["post-processing"]->load("post-processing.comp");
+    g_shaders["horizontal_blur"]->load("horizontal_blur.comp");
+    g_shaders["vertical_blur"]->load("vertical_blur.comp");
     g_shaders["light"]->load("light.vert", "light.frag");
     g_shaders["solid_color"]->load("solid_color.vert", "solid_color.frag");
     g_shaders["skybox"]->load("skybox.vert", "skybox.frag");
@@ -122,7 +126,7 @@ void OpenGLRenderer::renderMesh(DrawElementsIndirectCommand& command) {
 }
 
 void OpenGLRenderer::beginFrame() {
-    glClearColor(BG_COLOR, 1.0f);
+    glClearColor(0, 0, 0, 1);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
@@ -144,54 +148,76 @@ void OpenGLRenderer::unbindVAO() {
 
 void OpenGLRenderer::renderFrame() {
     // deferred rendering
-    static GBuffer& gbuffer = OpenGLBackend::gbuffer;
-    gbuffer.bind();
-    beginFrame();
+    // static GBuffer& gbuffer = OpenGLBackend::gbuffer;
+    // gbuffer.bind();
+    // beginFrame();
+    // OpenGLBackend::update();
+    // if (renderMode == RenderMode::DEFERRED)
+    // {
+    //     bindVAO();
+    //     Game::render();
+    //     for (const auto& light : Game::scene.lights) {
+    //         light.render();
+    //     }
+    //     Game::scene.skybox.render();
+    //     unbindVAO();
+    //     gbuffer.draw();
+    //     glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    // }
+    // // forward rendering
+    // else if (renderMode == RenderMode::FORWARD)
+    // {
+    //     bindVAO();
+    //     Game::render();
+    //     for (const auto& light : Game::scene.lights) {
+    //         light.render();
+    //     }
+    //     Game::scene.skybox.render();
+    //     unbindVAO();
+    // }
+    // glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+    // static Shader* postProcessingShader = OpenGLRenderer::getShaderByName("post-processing");
+	// postProcessingShader->use();
+	// glDispatchCompute(
+	// 	(Backend::getWinWidth() + 7) / 8,
+	// 	(Backend::getWinHeight() + 7) / 8,
+	// 	1
+	// );
+	// glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
+
+    // static Shader* shader = g_shaders["screen"];
+    // shader->use();
+    // glActiveTexture(GL_TEXTURE0);
+    // glBindTexture(GL_TEXTURE_2D, gbuffer.screen);
+    // glDisable(GL_CULL_FACE);
+    // glDisable(GL_DEPTH_TEST);
+    // glBindVertexArray(gbuffer.VAO);
+    // glDrawArrays(GL_TRIANGLES, 0, 6);
+    // glEnable(GL_DEPTH_TEST);
+    // glEnable(GL_CULL_FACE);
+    
+
     OpenGLBackend::update();
-    if (renderMode == RenderMode::DEFERRED)
-    {
-        bindVAO();
-        Game::render();
-        for (const auto& light : Game::scene.lights) {
-            light.render();
-        }
-        Game::scene.skybox.render();
-        unbindVAO();
-        gbuffer.draw();
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    }
-    // forward rendering
-    else if (renderMode == RenderMode::FORWARD)
-    {
-        bindVAO();
-        Game::render();
-        for (const auto& light : Game::scene.lights) {
-            light.render();
-        }
-        Game::scene.skybox.render();
-        unbindVAO();
-    }
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    beginFrame();
+    bindVAO();
+    static Shader* shader = g_shaders["default"];
+    // shader->use();
+    // static auto& material = AssetManager::getModelByName("house").meshes[0].material;
+    // shader->setInt("material.albedo", 0);
+	// glBindTextureUnit(0, material.albedo.ID);
 
-    static Shader* postProcessingShader = OpenGLRenderer::getShaderByName("post-processing");
-	postProcessingShader->use();
-	glDispatchCompute(
-		(Backend::getWinWidth() + 15) / 16,
-		(Backend::getWinHeight() + 15) / 16,
-		1
-	);
-	glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
+	// shader->setInt("material.roughness", 1);
+	// glBindTextureUnit(1, material.roughness.ID);
 
-    static Shader* shader = g_shaders["screen"];
-    shader->use();
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, gbuffer.screen);
-    glDisable(GL_CULL_FACE);
-    glDisable(GL_DEPTH_TEST);
-    glBindVertexArray(gbuffer.VAO);
-    glDrawArrays(GL_TRIANGLES, 0, 6);
-    glEnable(GL_DEPTH_TEST);
-    glEnable(GL_CULL_FACE);
+	// shader->setInt("material.metallic", 2);
+	// glBindTextureUnit(2, material.metallic.ID);
+
+	// shader->setInt("material.ao", 3);
+	// glBindTextureUnit(3, material.ao.ID);
+    glBindTextureUnit(3, OpenGLBackend::textureArray.ID);
+    glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, nullptr, OpenGLBackend::drawCommands.size(), 0);
+    unbindVAO();
 }
 
 void OpenGLRenderer::debugAABBs() {

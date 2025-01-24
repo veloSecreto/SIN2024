@@ -6,8 +6,16 @@ struct Camera {
     vec3 position;
 };
 
+struct InstanceData {
+    mat4 m_model;
+};
+
 layout (std430, binding = 1) buffer CameraBuffer {
     Camera camera;
+};
+
+layout (std430, binding = 2) buffer InstanceBuffer {
+    InstanceData instances[];
 };
 
 layout (location = 0) in vec3 in_position;
@@ -18,12 +26,12 @@ out vec3 position;
 out vec3 normal;
 out vec2 texCoord;
 
-uniform mat4 m_model;
-
 void main()
 {
-    position = vec3(m_model * vec4(in_position, 1.0));
-    normal = normalize(mat3(transpose(inverse(m_model))) * in_normal);
+    uint index = gl_DrawID + gl_InstanceID + gl_BaseInstance;
+    InstanceData instance = instances[index];
+    position = vec3(instance.m_model * vec4(in_position, 1.0));
+    normal = normalize(mat3(transpose(inverse(instance.m_model))) * in_normal);
     texCoord = in_texCoord;
-    gl_Position = camera.projection * camera.view * m_model * vec4(in_position, 1.0);
+    gl_Position = camera.projection * camera.view * instance.m_model * vec4(in_position, 1.0);
 }

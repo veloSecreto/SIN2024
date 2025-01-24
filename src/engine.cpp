@@ -10,7 +10,7 @@
 #include "file/file_system.h"
 
 namespace Engine {
-    Mode mode = Mode::Editing;
+    Mode mode = Mode::Playing;
 
     // Initializes the BackEnd and all other subsytems along with modifications
     // ------------------------------------------------------------------------
@@ -20,10 +20,8 @@ namespace Engine {
         Game::init();
         Editor::init();
         
+        OpenGLBackend::upload();
         OpenGLRenderer::uploadBuffersToGPU();
-        OpenGLBackend::createSSBOs();
-        OpenGLBackend::uploadSSBOsToGPU();
-        OpenGLBackend::configureFBOs();
         
         Backend::show();
         Input::init();

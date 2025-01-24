@@ -41,7 +41,9 @@ std::vector<Vertex>                         OpenGLBackend::debugVertices;
 std::vector<uint32_t>                       OpenGLBackend::globalIndices;
 std::vector<DrawElementsIndirectCommand>    OpenGLBackend::drawCommands;
 std::unordered_map<std::string, SSBO>       OpenGLBackend::g_ssbos;
+std::vector<InstanceData>                   OpenGLBackend::instances;
 GBuffer                                     OpenGLBackend::gbuffer;
+TextureArray                                OpenGLBackend::textureArray;
 // struct for passing camera data to ssbo
 struct CameraData {
     glm::mat4 proj;
@@ -82,15 +84,19 @@ void OpenGLBackend::initMinimum() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
-void OpenGLBackend::uploadMeshData(std::vector<Vertex>& vertices, std::vector<uint32_t>& indices, DrawElementsIndirectCommand& drawCommand) {
+void OpenGLBackend::uploadMeshData(const std::vector<Vertex>& vertices, const std::vector<uint32_t>& indices) {
     globalVertices.insert(globalVertices.end(), vertices.begin(), vertices.end());
     globalIndices.insert(globalIndices.end(), indices.begin(), indices.end());
-    drawCommands.push_back(drawCommand);
+}
+
+void OpenGLBackend::configureTextureArray() {
+    textureArray = TextureArray(1024, 1024);
 }
 
 void OpenGLBackend::createSSBOs() {
     g_ssbos["lights"] = SSBO();
     g_ssbos["camera"] = SSBO();
+    g_ssbos["instances"] = SSBO();
     std::cout << "SSBO creation process has been completed\n";
 }
 
@@ -99,19 +105,49 @@ void OpenGLBackend::uploadSSBOsToGPU() {
     // camera
     CameraData cameraData = { Camera::m_proj, Camera::m_view, Camera::m_position };
     g_ssbos["camera"].create(&cameraData, sizeof(CameraData), 1);
+    g_ssbos["instances"].create(instances.data(), instances.size() * sizeof(InstanceData), 2);
 }
 
-void OpenGLBackend::updateSSBObyName(const std::string& name, const void* data, GLsizeiptr size) {
-    g_ssbos[name].update(data, size);
-}
-
-void OpenGLBackend::configureFBOs() {
+void OpenGLBackend::configureFramebuffers() {
     gbuffer.configure(Backend::getWinWidth(), Backend::getWinHeight());
 }
 
 void OpenGLBackend::update() {
+    drawCommands.clear();
+    instances.clear();
+    for (int i = 0; i < Game::scene.gameObjects.size(); ++i) {
+        InstanceData instance;
+        instance.m_model = Game::scene.gameObjects[i].transform.to_mat4();
+        for (int j = 0; j < Game::scene.gameObjects[i].model.meshes.size(); ++j) {
+            drawCommands.push_back(Game::scene.gameObjects[i].model.meshes[j].drawCommand);
+            instances.push_back(instance);
+        }
+    }
+
     g_ssbos["lights"].update(Game::scene.lights.data(), Game::scene.lights.size() * sizeof(Light));
-    // camera data
     CameraData cameraData = { Camera::m_proj, Camera::m_view, Camera::m_position };
     g_ssbos["camera"].update(&cameraData, sizeof(CameraData));
+    g_ssbos["instances"].update(instances.data(), instances.size() * sizeof(InstanceData));
+}
+
+void OpenGLBackend::upload() {
+    drawCommands.clear();
+    instances.clear();
+    for (int i = 0; i < Game::scene.gameObjects.size(); ++i) {
+        InstanceData instance;
+        instance.m_model = Game::scene.gameObjects[i].transform.to_mat4();
+        for (int j = 0; j < Game::scene.gameObjects[i].model.meshes.size(); ++j) {
+            const Mesh& mesh = Game::scene.gameObjects[i].model.meshes[j];
+            drawCommands.push_back(mesh.drawCommand);
+            instance.albedoIndex = mesh.material.albedo.ID;
+            instance.albedoIndex = mesh.material.roughness.ID;
+            instance.albedoIndex = mesh.material.metallic.ID;
+            instance.albedoIndex = mesh.material.ao.ID;
+            instances.push_back(instance);
+        }
+    }
+
+    createSSBOs();
+    uploadSSBOsToGPU();
+    configureFramebuffers();
 }
