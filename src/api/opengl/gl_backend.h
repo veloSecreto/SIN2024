@@ -5,7 +5,6 @@
 #include "types/ssbo.hpp"
 #include "types/instance_data.h"
 #include "types/g_buffer.hpp"
-#include "types/texture_array.hpp"
 #include <vector>
 
 namespace OpenGLBackend {
@@ -16,7 +15,6 @@ namespace OpenGLBackend {
     extern std::unordered_map<std::string, SSBO> g_ssbos;
     extern std::vector<InstanceData> instances;
     extern GBuffer gbuffer;
-    extern TextureArray textureArray;
 
     void initMinimum();
     void createSSBOs();
@@ -24,6 +22,5 @@ namespace OpenGLBackend {
     void update();
     void configureFramebuffers();
     void uploadMeshData(const std::vector<Vertex>& vertices, const std::vector<uint32_t>& indices);
-    void configureTextureArray();
     void upload();
 };

@@ -43,7 +43,8 @@ std::vector<DrawElementsIndirectCommand>    OpenGLBackend::drawCommands;
 std::unordered_map<std::string, SSBO>       OpenGLBackend::g_ssbos;
 std::vector<InstanceData>                   OpenGLBackend::instances;
 GBuffer                                     OpenGLBackend::gbuffer;
-TextureArray                                OpenGLBackend::textureArray;
+
+
 // struct for passing camera data to ssbo
 struct CameraData {
     glm::mat4 proj;
@@ -87,10 +88,6 @@ void OpenGLBackend::initMinimum() {
 void OpenGLBackend::uploadMeshData(const std::vector<Vertex>& vertices, const std::vector<uint32_t>& indices) {
     globalVertices.insert(globalVertices.end(), vertices.begin(), vertices.end());
     globalIndices.insert(globalIndices.end(), indices.begin(), indices.end());
-}
-
-void OpenGLBackend::configureTextureArray() {
-    textureArray = TextureArray(1024, 1024);
 }
 
 void OpenGLBackend::createSSBOs() {

@@ -202,20 +202,7 @@ void OpenGLRenderer::renderFrame() {
     beginFrame();
     bindVAO();
     static Shader* shader = g_shaders["default"];
-    // shader->use();
-    // static auto& material = AssetManager::getModelByName("house").meshes[0].material;
-    // shader->setInt("material.albedo", 0);
-	// glBindTextureUnit(0, material.albedo.ID);
-
-	// shader->setInt("material.roughness", 1);
-	// glBindTextureUnit(1, material.roughness.ID);
-
-	// shader->setInt("material.metallic", 2);
-	// glBindTextureUnit(2, material.metallic.ID);
-
-	// shader->setInt("material.ao", 3);
-	// glBindTextureUnit(3, material.ao.ID);
-    glBindTextureUnit(3, OpenGLBackend::textureArray.ID);
+    shader->use();
     glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, nullptr, OpenGLBackend::drawCommands.size(), 0);
     unbindVAO();
 }

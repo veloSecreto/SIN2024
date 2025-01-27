@@ -3,7 +3,6 @@
 #include "../core/asset_manager.h"
 #include "../api/opengl/gl_renderer.h"
 #include "../physics/transform.hpp"
-#include "_camera.h"
 #include "../clock.hpp"
 
 
