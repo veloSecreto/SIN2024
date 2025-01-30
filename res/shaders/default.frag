@@ -13,13 +13,6 @@ struct Camera {
     vec3 position;
 };
 
-struct Material {
-    sampler2D albedo;
-    sampler2D roughness;
-    sampler2D metallic;
-    sampler2D ao;
-};
-
 struct InstanceData {
     mat4 m_model;
     int albedoID;
@@ -89,18 +82,11 @@ void main() {
     vec3 normalDir = normalize(normal);
     vec3 viewDir = normalize(camera.position - position);
     
-    vec3 fuckingColor = vec3(1);
-    float roughness = 0.2;
-    float metallic =  0.7; 
-    float ao =  1;
-    vec3 albedo = fuckingColor;
-    /*
     float roughness = texture(textureArray, vec3(texCoord, instance.roughnessID)).r;
     float metallic = texture(textureArray, vec3(texCoord, instance.metallicID)).r;
     float ao = texture(textureArray, vec3(texCoord, instance.aoID)).r;
     vec3 albedo = texture(textureArray, vec3(texCoord, instance.albedoID)).rgb;
     albedo = pow(albedo, vec3(gamma));
-    */
 
     vec3 F0 = vec3(0.04);
     F0 = mix(F0, albedo, metallic);
@@ -138,12 +124,4 @@ void main() {
 
     finalColor = pow(finalColor + GI, vec3(1 / gamma));
     fragColor = vec4(finalColor * ao, 1.0);
-    /*
-    vec3 wildColor = vec3(normal.g, normal.r, normal.r);
-    wildColor *= wildColor;
-    wildColor *= wildColor;
-    wildColor += albedo * 0.25;
-    fragColor = vec4(wildColor, 1.0);
-    */
-    fragColor = texture(textureArray, vec3(texCoord, 0));
 }

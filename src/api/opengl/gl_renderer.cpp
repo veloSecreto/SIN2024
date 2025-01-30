@@ -148,34 +148,31 @@ void OpenGLRenderer::unbindVAO() {
 
 void OpenGLRenderer::renderFrame() {
     // deferred rendering
-    // static GBuffer& gbuffer = OpenGLBackend::gbuffer;
-    // gbuffer.bind();
-    // beginFrame();
-    // OpenGLBackend::update();
-    // if (renderMode == RenderMode::DEFERRED)
-    // {
-    //     bindVAO();
-    //     Game::render();
-    //     for (const auto& light : Game::scene.lights) {
-    //         light.render();
-    //     }
-    //     Game::scene.skybox.render();
-    //     unbindVAO();
-    //     gbuffer.draw();
-    //     glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    // }
-    // // forward rendering
-    // else if (renderMode == RenderMode::FORWARD)
-    // {
-    //     bindVAO();
-    //     Game::render();
-    //     for (const auto& light : Game::scene.lights) {
-    //         light.render();
-    //     }
-    //     Game::scene.skybox.render();
-    //     unbindVAO();
-    // }
-    // glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    static GBuffer& gbuffer = OpenGLBackend::gbuffer;
+    gbuffer.bind();
+    beginFrame();
+    OpenGLBackend::update();
+    if (renderMode == RenderMode::DEFERRED)
+    {
+        bindVAO();
+        static Shader* shader = g_shaders["g-buffer"];
+        shader->use();
+        OpenGLBackend::g_textureArray.bind(0);
+        glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, nullptr, OpenGLBackend::drawCommands.size(), 0);
+        unbindVAO();
+        gbuffer.draw();
+    }
+    // forward rendering
+    else if (renderMode == RenderMode::FORWARD)
+    {
+        bindVAO();
+        static Shader* shader = g_shaders["default"];
+        shader->use();
+        OpenGLBackend::g_textureArray.bind(0);
+        glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, nullptr, OpenGLBackend::drawCommands.size(), 0);
+        unbindVAO();
+    }
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
     // static Shader* postProcessingShader = OpenGLRenderer::getShaderByName("post-processing");
 	// postProcessingShader->use();
@@ -186,25 +183,16 @@ void OpenGLRenderer::renderFrame() {
 	// );
 	// glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
 
-    // static Shader* shader = g_shaders["screen"];
-    // shader->use();
-    // glActiveTexture(GL_TEXTURE0);
-    // glBindTexture(GL_TEXTURE_2D, gbuffer.screen);
-    // glDisable(GL_CULL_FACE);
-    // glDisable(GL_DEPTH_TEST);
-    // glBindVertexArray(gbuffer.VAO);
-    // glDrawArrays(GL_TRIANGLES, 0, 6);
-    // glEnable(GL_DEPTH_TEST);
-    // glEnable(GL_CULL_FACE);
-    
-
-    OpenGLBackend::update();
-    beginFrame();
-    bindVAO();
-    static Shader* shader = g_shaders["default"];
+    static Shader* shader = g_shaders["screen"];
     shader->use();
-    glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, nullptr, OpenGLBackend::drawCommands.size(), 0);
-    unbindVAO();
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, gbuffer.screen);
+    glDisable(GL_CULL_FACE);
+    glDisable(GL_DEPTH_TEST);
+    glBindVertexArray(gbuffer.VAO);
+    glDrawArrays(GL_TRIANGLES, 0, 6);
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_CULL_FACE);
 }
 
 void OpenGLRenderer::debugAABBs() {

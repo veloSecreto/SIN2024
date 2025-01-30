@@ -25,6 +25,12 @@ struct SSBO {
             return;
         }
 
+        static GLsizeiptr allocatedSize = 0;
+        if (size > allocatedSize) {
+            glNamedBufferData(ID, size, nullptr, GL_DYNAMIC_DRAW);
+            allocatedSize = size;
+        }
+
         glNamedBufferSubData(ID, 0, size, data);
     }
 

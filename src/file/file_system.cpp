@@ -41,6 +41,7 @@ namespace FileSystem {
 				const auto& pos = obj.transform.getPosition();
 				const auto& rot = obj.transform.getRotation();
 				const auto& scale = obj.transform.getScale();
+				sceneData["Game Objects"][i]["Name"] = obj.name;
 				sceneData["Game Objects"][i]["Model Name"] = obj._modelName;
 				sceneData["Game Objects"][i]["Position"] = { pos.x, pos.y, pos.z };
 				sceneData["Game Objects"][i]["Rotation"] = { rot.x, rot.y, rot.z };

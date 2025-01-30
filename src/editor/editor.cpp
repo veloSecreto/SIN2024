@@ -199,30 +199,27 @@ namespace Editor {
 };
 
 void Editor::draw() {
+	OpenGLBackend::update();
 	static GBuffer& gbuffer = OpenGLBackend::gbuffer;
 	gbuffer.bind();
 	OpenGLRenderer::beginFrame();
-	OpenGLBackend::update();
 
 	if (OpenGLRenderer::renderMode == RenderMode::DEFERRED) {
 		OpenGLRenderer::bindVAO();
-		Game::render();
-		for (const auto& light : Game::scene.lights) {
-			light.render();
-		}
-		Game::scene.skybox.render();
-		OpenGLRenderer::unbindVAO();
-
-		gbuffer.draw();
+        static Shader* shader = OpenGLRenderer::getShaderByName("g-buffer");
+        shader->use();
+        OpenGLBackend::g_textureArray.bind(0);
+        glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, nullptr, OpenGLBackend::drawCommands.size(), 0);
+        OpenGLRenderer::unbindVAO();
+        gbuffer.draw();
 	}
 	else if (OpenGLRenderer::renderMode == RenderMode::FORWARD) {
 		OpenGLRenderer::bindVAO();
-		Game::render();
-		for (const auto& light : Game::scene.lights) {
-			light.render();
-		}
-		Game::scene.skybox.render();
-		OpenGLRenderer::unbindVAO();
+        static Shader* shader = OpenGLRenderer::getShaderByName("default");
+        shader->use();
+        OpenGLBackend::g_textureArray.bind(0);
+        glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, nullptr, OpenGLBackend::drawCommands.size(), 0);
+        OpenGLRenderer::unbindVAO();
 	}
 	
 	// static Shader* horizontalBlurShader = OpenGLRenderer::getShaderByName("horizontal_blur");
@@ -260,7 +257,7 @@ void Editor::draw() {
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-	/*	
+	/*
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplGlfw_NewFrame();
 	ImGui::NewFrame();
@@ -325,7 +322,12 @@ void Editor::draw() {
 
 		ImGui::Begin("Properties");
 		{
-			ImGui::Text("There are all the properties");
+			if (g_selectionIndex != -1) {
+
+			}
+			else {
+				
+			}
 		}
 		ImGui::End();
 	}

@@ -1,4 +1,5 @@
 #include "gl_backend.h"
+#include "gl_renderer.h"
 #include "../../backend/backend.h"
 #include "../../game/game.h"
 #include "../../game/_camera.h"
@@ -43,6 +44,7 @@ std::vector<DrawElementsIndirectCommand>    OpenGLBackend::drawCommands;
 std::unordered_map<std::string, SSBO>       OpenGLBackend::g_ssbos;
 std::vector<InstanceData>                   OpenGLBackend::instances;
 GBuffer                                     OpenGLBackend::gbuffer;
+TextureArray                                OpenGLBackend::g_textureArray;
 
 
 // struct for passing camera data to ssbo
@@ -113,14 +115,22 @@ void OpenGLBackend::update() {
     drawCommands.clear();
     instances.clear();
     for (int i = 0; i < Game::scene.gameObjects.size(); ++i) {
+        GameObject& gameObject = Game::scene.gameObjects[i];
+        gameObject.update();
         InstanceData instance;
-        instance.m_model = Game::scene.gameObjects[i].transform.to_mat4();
-        for (int j = 0; j < Game::scene.gameObjects[i].model.meshes.size(); ++j) {
-            drawCommands.push_back(Game::scene.gameObjects[i].model.meshes[j].drawCommand);
+        instance.m_model = gameObject.transform.to_mat4();
+        for (int j = 0; j < gameObject.model.meshes.size(); ++j) {
+            const Mesh& mesh = gameObject.model.meshes[j];
+            drawCommands.push_back(mesh.drawCommand);
+            instance.albedoIndex = mesh.material.albedo.ID;
+            instance.roughnessIndex = mesh.material.roughness.ID;
+            instance.metallicIndex = mesh.material.metallic.ID;
+            instance.aoIndex = mesh.material.ao.ID;
             instances.push_back(instance);
         }
     }
-
+    glBindBuffer(GL_DRAW_INDIRECT_BUFFER, OpenGLRenderer::globalIBO);
+    glBufferSubData(GL_DRAW_INDIRECT_BUFFER, 0, drawCommands.size() * sizeof(DrawElementsIndirectCommand), drawCommands.data());
     g_ssbos["lights"].update(Game::scene.lights.data(), Game::scene.lights.size() * sizeof(Light));
     CameraData cameraData = { Camera::m_proj, Camera::m_view, Camera::m_position };
     g_ssbos["camera"].update(&cameraData, sizeof(CameraData));
@@ -131,15 +141,17 @@ void OpenGLBackend::upload() {
     drawCommands.clear();
     instances.clear();
     for (int i = 0; i < Game::scene.gameObjects.size(); ++i) {
+        GameObject& gameObject = Game::scene.gameObjects[i];
+        gameObject.update();
         InstanceData instance;
-        instance.m_model = Game::scene.gameObjects[i].transform.to_mat4();
-        for (int j = 0; j < Game::scene.gameObjects[i].model.meshes.size(); ++j) {
-            const Mesh& mesh = Game::scene.gameObjects[i].model.meshes[j];
+        instance.m_model = gameObject.transform.to_mat4();
+        for (int j = 0; j < gameObject.model.meshes.size(); ++j) {
+            const Mesh& mesh = gameObject.model.meshes[j];
             drawCommands.push_back(mesh.drawCommand);
             instance.albedoIndex = mesh.material.albedo.ID;
-            instance.albedoIndex = mesh.material.roughness.ID;
-            instance.albedoIndex = mesh.material.metallic.ID;
-            instance.albedoIndex = mesh.material.ao.ID;
+            instance.roughnessIndex = mesh.material.roughness.ID;
+            instance.metallicIndex = mesh.material.metallic.ID;
+            instance.aoIndex = mesh.material.ao.ID;
             instances.push_back(instance);
         }
     }

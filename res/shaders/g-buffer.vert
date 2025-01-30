@@ -8,6 +8,10 @@ struct Camera {
 
 struct InstanceData {
     mat4 m_model;
+    int albedoID;
+    int roughnessID;
+    int metallicID;
+    int aoID;
 };
 
 layout (std430, binding = 1) buffer CameraBuffer {
@@ -25,10 +29,11 @@ layout (location = 2) in vec2 in_texCoord;
 out vec3 position;
 out vec3 normal;
 out vec2 texCoord;
+out flat int index;
 
 void main()
 {
-    uint index = gl_DrawID + gl_InstanceID + gl_BaseInstance;
+    index = gl_DrawID + gl_InstanceID + gl_BaseInstance;
     InstanceData instance = instances[index];
     position = vec3(instance.m_model * vec4(in_position, 1.0));
     normal = normalize(mat3(transpose(inverse(instance.m_model))) * in_normal);
