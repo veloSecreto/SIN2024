@@ -1,5 +1,5 @@
 #include "asset_manager.h"
-#include "../api/opengl/gl_backend.h"
+#include <filesystem>
 
 // todo: need more improvement
 
@@ -70,17 +70,11 @@ void AssetManager::loadModels() {
     g_models["cube"] = Model(ROOT_DIR + "res/models/cube.obj");
     // cube materialls
     {
-        /*Material cubeMat;
+        Material cubeMat;
         cubeMat.setParameter(TextureType::ALBEDO, "Floorboards_ALB");
         cubeMat.setParameter(TextureType::ROUGHNESS, "Floorboards_R");
         cubeMat.setParameter(TextureType::METALLIC, "metalic_blank");
-        cubeMat.setParameter(TextureType::AO, "Floorboards_AO");*/
-
-        Material cubeMat;
-        cubeMat.setParameter(TextureType::ALBEDO, "Ceiling2_ALB");
-        cubeMat.setParameter(TextureType::ROUGHNESS, "Ceiling2_ALB");
-        cubeMat.setParameter(TextureType::METALLIC, "metalic_blank");
-        cubeMat.setParameter(TextureType::AO, "Ceiling2_ALB");
+        cubeMat.setParameter(TextureType::AO, "Floorboards_AO");
 
         g_models["cube"].setMaterial(0, cubeMat);
     }

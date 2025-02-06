@@ -87,7 +87,7 @@ namespace Gizmo {
         return ret;
     }
 
-    inline void update(Transform& transform) {
+    inline void update(Transform& transform, const glm::vec3& mouseRay) {
         if (Input::keyPressed(SIN_KEY_NUMPAD_1)) {
             Im3d::GetContext().m_gizmoMode = Im3d::GizmoMode::GizmoMode_Translation;
         }
@@ -111,7 +111,6 @@ namespace Gizmo {
         // World space cursor ray from mouse position
         auto& mousePos = Input::getMousePos();
         Im3d::Vec2 cursorPos = { mousePos.x, mousePos.y };
-        glm::vec3 mouseRay = Input::getMouseRay();
         cursorPos.x = (cursorPos.x / ad.m_viewportSize.x) * 2.0f - 1.0f;
         cursorPos.y = (cursorPos.y / ad.m_viewportSize.y) * 2.0f - 1.0f;
         cursorPos.y = -cursorPos.y; // window origin is top-left, ndc is bottom-left

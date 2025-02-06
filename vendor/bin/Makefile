@@ -14,8 +14,8 @@ INCLUDE = -I../include
 LIBS = -L../lib -lglfw3dll -lassimp
 
 # Compilers
-CXX = clang++
-CC = clang
+CXX = g++
+CC = g++
 
 # Compiler and linker flags
 CXXFLAGS = -g --std=c++20 -MMD -MP $(INCLUDE)  # Add -MMD -MP

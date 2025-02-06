@@ -58,12 +58,6 @@ Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene) {
     return Mesh(vertices, indices);
 }
 
-void Model::render(Shader* shader) {
-    for (auto& mesh : meshes) {
-        mesh.render(shader);
-    }
-}
-
 void Model::setMaterial(int meshIndex, const Material& material) {
     if (meshIndex >= 0 && meshIndex < meshes.size())
     {

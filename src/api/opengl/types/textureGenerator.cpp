@@ -1,6 +1,7 @@
 #include "textureGenerator.h"
 #include "../gl_backend.h"
 #include <stb_image/stb_image.h>
+#include <stb_image/stb_image_resize.h>
 #include <glad/glad.h>
 
 
@@ -10,12 +11,30 @@ uint32_t generateTextureFromPath(const std::string& path) {
     unsigned char* data = stbi_load(path.c_str(), &width, &height, &nrComponents, 0);
     int index = -1;
 
+    int resizedSize = 1024 * 1024 * nrComponents;
+    unsigned char* resizedData = new unsigned char[resizedSize];
+    if (width != 1024 || height != 1024) {
+        stbir_resize_uint8(data, width, height, 0, resizedData, 1024, 1024, 0, nrComponents);
+        data = resizedData;
+    }
+
+    GLenum format;
+    if (nrComponents == 1) {
+        format = GL_RED;
+    }
+    else if (nrComponents == 3) {
+        format = GL_RGB;
+    }
+    else if (nrComponents == 4) {
+        format = GL_RGBA;
+    }
+
     if (data) {
         TextureArray& textureArray = OpenGLBackend::g_textureArray;
         if (textureArray.handle == -1) {
             textureArray = TextureArray(1024, 1024, 124);
         }
-        index = textureArray.getAllocatedSlot(data, width, height, nrComponents);
+        index = textureArray.getAllocatedSlot(data, format);
         stbi_image_free(data);
     }
     else {
@@ -40,6 +59,6 @@ uint32_t generateColorTexture(float r, float g, float b) {
     if (textureArray.handle == -1) {
         textureArray = TextureArray(1024, 1024, 124);
     }
-    index = textureArray.getAllocatedSlot(color.data(), 1024, 1024, 4);
+    index = textureArray.getAllocatedSlot(color.data(), GL_RGBA);
     return index;
 }

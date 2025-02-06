@@ -7,5 +7,4 @@ namespace Game {
     
     void init();
     void update();
-    void render();
 };

@@ -44,22 +44,6 @@ Welcome to the SIN2024 repository! This project is a C++ game engine designed to
 
 3. Run the `main.exe` application in the `vendor/bin` path.
 
-## Screenshots
-
-Captured some enthusiastic moments while developing the engine. The engine is growing very fast.
-
-### Kernel Visualization
-![Kernel](res/screenshots/kernal.jpg)
-
-### Old-School Grain Effect
-![Old School Grain Effect](res/screenshots/effect.jpg)
-
-### Enhanced Grain Effect
-![Old School Grain Effect Black and White](res/screenshots/effect2.jpg)
-
-### G-Buffer Rendering
-![G-Buffer](res/screenshots/lighting.jpg)
-
 ## Contributing
 
 We welcome contributions to improve the SIN2024 engine. You need to be a member of the SIN Development Department of Enigma Publishers Ltd for Contribution. If you'd like to contribute:

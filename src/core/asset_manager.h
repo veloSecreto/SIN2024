@@ -1,10 +1,8 @@
 #pragma once
 
-#include "../common.h"
 #include "model.h"
 #include "texture.hpp"
-#include <vector>
-#include <filesystem>
+#include <unordered_map>
 
 namespace AssetManager {
     extern std::unordered_map<std::string, Model> g_models;

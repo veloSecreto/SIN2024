@@ -5,13 +5,13 @@
 
 struct Texture {
 public:
-    uint32_t ID = -1;
+    uint32_t handle = -1;
     TextureType type;
 
     Texture() = default;
 
     Texture(const std::string& directory, TextureType type) {
         this->type = type;
-        this->ID = generateTextureFromPath(directory);
+        this->handle = generateTextureFromPath(directory);
     }
 };

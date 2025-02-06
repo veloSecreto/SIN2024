@@ -24,30 +24,13 @@ TextureArray::TextureArray(int _width, int _height, int _layers) {
     glTextureParameterf(handle, GL_TEXTURE_MAX_ANISOTROPY, maxAniso);
 }
 
-int TextureArray::getAllocatedSlot(unsigned char* data, int texWidth, int texHeight, int nrComponents) {
+int TextureArray::getAllocatedSlot(unsigned char* data, unsigned int format) {
     if (slot >= layers) {
         expand(layers + 64);
     }
 
-    std::vector<unsigned char> resizedData(width * height * nrComponents);
-    if (texWidth != width || texHeight != height) {
-        resizeImage(data, texWidth, texHeight, resizedData.data(), width, height, nrComponents);
-        data = resizedData.data();
-    }
-
-    GLenum format;
-    if (nrComponents == 1) {
-        format = GL_RED;
-    }
-    else if (nrComponents == 3) {
-        format = GL_RGB;
-    }
-    else if (nrComponents == 4) {
-        format = GL_RGBA;
-    }
-
     glBindTextureUnit(0, handle);
-    glTextureSubImage3D(handle, 0, 0, 0, slot, width, height, 1, format, GL_UNSIGNED_BYTE, data);
+    glTextureSubImage3D(handle, 0, 0, 0, slot, width, height, 1, (GLenum)format, GL_UNSIGNED_BYTE, data);
     glGenerateTextureMipmap(handle);
 
     return slot++;
@@ -75,24 +58,24 @@ void TextureArray::resizeImage(unsigned char* data, int width, int height, unsig
 }
 
 void TextureArray::expand(int newLayers) {
-    // if (newLayers <= layers) {
-    //     std::cerr << "New maxLayers must be greater than current maxLayers." << std::endl;
-    //     return;
-    // }
+    if (newLayers <= layers) {
+        std::cerr << "New maxLayers must be greater than current maxLayers." << std::endl;
+        return;
+    }
 
-    // uint32_t _handle;
-    // glCreateTextures(GL_TEXTURE_2D_ARRAY, 1, &_handle);
-    // glTextureStorage3D(_handle, 1 + std::floor(std::log2(std::max(width, height))), GL_RGBA8, width, height, newLayers);
+    uint32_t _handle;
+    glCreateTextures(GL_TEXTURE_2D_ARRAY, 1, &_handle);
+    glTextureStorage3D(_handle, 1 + std::floor(std::log2(std::max(width, height))), GL_RGBA8, width, height, newLayers);
 
-    // for (int layer = 0; layer < slot; ++layer) {
-    //     glCopyImageSubData(handle, GL_TEXTURE_2D_ARRAY, 0, 0, 0, layer,
-    //                     _handle, GL_TEXTURE_2D_ARRAY, 0, 0, 0, layer,
-    //                     width, height, 1);
-    // }
+    for (int layer = 0; layer < slot; ++layer) {
+        glCopyImageSubData(handle, GL_TEXTURE_2D_ARRAY, 0, 0, 0, layer,
+                        _handle, GL_TEXTURE_2D_ARRAY, 0, 0, 0, layer,
+                        width, height, 1);
+    }
 
-    // glDeleteTextures(1, &handle);
-    // handle = _handle;
-    // layers = newLayers;
+    glDeleteTextures(1, &handle);
+    handle = _handle;
+    layers = newLayers;
 
     std::cout << "Expanded texture array to " << layers << " layers." << std::endl;
 }

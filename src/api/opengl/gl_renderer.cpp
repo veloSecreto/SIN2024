@@ -13,6 +13,7 @@ uint32_t OpenGLRenderer::globalIBO;
 uint32_t OpenGLRenderer::debugVAO;
 uint32_t OpenGLRenderer::debugVBO;
 std::unordered_map<std::string, Shader*> OpenGLRenderer::g_shaders;
+ShadowMap OpenGLRenderer::g_shadowMap;
 
 // Specs
 RenderMode OpenGLRenderer::renderMode;
@@ -20,6 +21,7 @@ RenderMode OpenGLRenderer::renderMode;
 // shits
 bool OpenGLRenderer::_renderModeChanged;
 bool OpenGLRenderer::_debugging;
+GLuint quadVAO;
 
 
 void OpenGLRenderer::createShaders() {
@@ -78,6 +80,7 @@ void OpenGLRenderer::init() {
     renderMode = RenderMode::FORWARD;
     _renderModeChanged = false;
     createShaders();
+    g_shadowMap.init(10);
 }
 
 
@@ -118,6 +121,28 @@ void OpenGLRenderer::uploadBuffersToGPU() {
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
     glBindVertexArray(0);
 
+    float __quadVertices[] = {
+    //  pos              texCoord
+        1, -1,           1, 0,
+       -1, -1,           0, 0,
+       -1,  1,           0, 1,
+        1,  1,           1, 1,
+        1, -1,           1, 0,
+       -1,  1,           0, 1
+    };
+
+    uint32_t _vbo;
+    glGenVertexArrays(1, &quadVAO);
+    glBindVertexArray(quadVAO);
+    glGenBuffers(1, &_vbo);
+    glBindBuffer(GL_ARRAY_BUFFER, _vbo);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(__quadVertices), &__quadVertices, GL_STATIC_DRAW);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
+    glBindVertexArray(0);
+
     std::cout << "All global buffers and Global Vertex Array has been uploaded to the GPU\n";
 }
 
@@ -146,53 +171,107 @@ void OpenGLRenderer::unbindVAO() {
     glBindVertexArray(0);
 }
 
+void ShadowMapPass();
+void RenderPass();
+void DrawQuad();
+
 void OpenGLRenderer::renderFrame() {
-    // deferred rendering
-    static GBuffer& gbuffer = OpenGLBackend::gbuffer;
-    gbuffer.bind();
-    beginFrame();
-    OpenGLBackend::update();
-    if (renderMode == RenderMode::DEFERRED)
-    {
-        bindVAO();
-        static Shader* shader = g_shaders["g-buffer"];
-        shader->use();
-        OpenGLBackend::g_textureArray.bind(0);
-        glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, nullptr, OpenGLBackend::drawCommands.size(), 0);
-        unbindVAO();
-        gbuffer.draw();
-    }
-    // forward rendering
-    else if (renderMode == RenderMode::FORWARD)
-    {
-        bindVAO();
-        static Shader* shader = g_shaders["default"];
-        shader->use();
-        OpenGLBackend::g_textureArray.bind(0);
-        glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, nullptr, OpenGLBackend::drawCommands.size(), 0);
-        unbindVAO();
-    }
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-    // static Shader* postProcessingShader = OpenGLRenderer::getShaderByName("post-processing");
-	// postProcessingShader->use();
-	// glDispatchCompute(
-	// 	(Backend::getWinWidth() + 7) / 8,
-	// 	(Backend::getWinHeight() + 7) / 8,
-	// 	1
-	// );
-	// glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
-
+    ShadowMapPass();
+    RenderPass();
     static Shader* shader = g_shaders["screen"];
     shader->use();
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, gbuffer.screen);
+    glBindTexture(GL_TEXTURE_2D, OpenGLBackend::gbuffer.screen);
+    DrawQuad();
+}
+
+void RenderPass() {
+    // deferred rendering
+    static GBuffer& gbuffer = OpenGLBackend::gbuffer;
+    gbuffer.bind();
+    OpenGLRenderer::beginFrame();
+    OpenGLBackend::update();
+    if (OpenGLRenderer::renderMode == RenderMode::DEFERRED)
+    {
+        OpenGLRenderer::bindVAO();
+        static Shader* shader = OpenGLRenderer::g_shaders["g-buffer"];
+        shader->use();
+        OpenGLBackend::g_textureArray.bind(0);
+        glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, nullptr, OpenGLBackend::drawCommands.size(), 0);
+        OpenGLRenderer::unbindVAO();
+        gbuffer.draw();
+    }
+    // forward rendering
+    else if (OpenGLRenderer::renderMode == RenderMode::FORWARD)
+    {
+        OpenGLRenderer::bindVAO();
+        static Shader* shader = OpenGLRenderer::g_shaders["default"];
+        shader->use();
+        OpenGLBackend::g_textureArray.bind(0);
+        glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, nullptr, OpenGLBackend::drawCommands.size(), 0);
+        OpenGLRenderer::unbindVAO();
+    }
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+void DrawQuad() {
     glDisable(GL_CULL_FACE);
     glDisable(GL_DEPTH_TEST);
-    glBindVertexArray(gbuffer.VAO);
+    glBindVertexArray(quadVAO);
     glDrawArrays(GL_TRIANGLES, 0, 6);
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
+}
+
+void ShadowMapPass() {
+    
+}
+
+void OpenGLRenderer::debugAABB(const AABB& aabb, const glm::vec3& color) {
+    std::vector<float> vertices;
+
+    static Shader* shader = g_shaders["solid_color"];
+    shader->use();
+    shader->setVec3("color", color);
+    shader->setMat4x4("m_model", glm::mat4(1));
+    glPointSize(3);
+    glLineWidth(1);
+    glDisable(GL_DEPTH_TEST);
+    glBindVertexArray(debugVAO);
+    float minX = aabb.min.x, minY = aabb.min.y, minZ = aabb.min.z;
+    float maxX = aabb.max.x, maxY = aabb.max.y, maxZ = aabb.max.z;
+
+    vertices.push_back(minX); vertices.push_back(minY); vertices.push_back(minZ);
+    vertices.push_back(maxX); vertices.push_back(minY); vertices.push_back(minZ);
+    vertices.push_back(maxX); vertices.push_back(minY); vertices.push_back(minZ);
+    vertices.push_back(maxX); vertices.push_back(minY); vertices.push_back(maxZ);
+    vertices.push_back(maxX); vertices.push_back(minY); vertices.push_back(maxZ);
+    vertices.push_back(minX); vertices.push_back(minY); vertices.push_back(maxZ);
+    vertices.push_back(minX); vertices.push_back(minY); vertices.push_back(maxZ);
+    vertices.push_back(minX); vertices.push_back(minY); vertices.push_back(minZ);
+
+    vertices.push_back(minX); vertices.push_back(maxY); vertices.push_back(minZ);
+    vertices.push_back(maxX); vertices.push_back(maxY); vertices.push_back(minZ);
+    vertices.push_back(maxX); vertices.push_back(maxY); vertices.push_back(minZ);
+    vertices.push_back(maxX); vertices.push_back(maxY); vertices.push_back(maxZ);
+    vertices.push_back(maxX); vertices.push_back(maxY); vertices.push_back(maxZ);
+    vertices.push_back(minX); vertices.push_back(maxY); vertices.push_back(maxZ);
+    vertices.push_back(minX); vertices.push_back(maxY); vertices.push_back(maxZ);
+    vertices.push_back(minX); vertices.push_back(maxY); vertices.push_back(minZ);
+
+    vertices.push_back(minX); vertices.push_back(minY); vertices.push_back(minZ);
+    vertices.push_back(minX); vertices.push_back(maxY); vertices.push_back(minZ);
+    vertices.push_back(maxX); vertices.push_back(minY); vertices.push_back(minZ);
+    vertices.push_back(maxX); vertices.push_back(maxY); vertices.push_back(minZ);
+    vertices.push_back(maxX); vertices.push_back(minY); vertices.push_back(maxZ);
+    vertices.push_back(maxX); vertices.push_back(maxY); vertices.push_back(maxZ);
+    vertices.push_back(minX); vertices.push_back(minY); vertices.push_back(maxZ);
+    vertices.push_back(minX); vertices.push_back(maxY); vertices.push_back(maxZ);
+    glBindBuffer(GL_ARRAY_BUFFER, debugVBO);
+    glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), vertices.data(), GL_DYNAMIC_DRAW);
+    glDrawArrays(GL_LINES, 0, vertices.size() / 3);
+    glBindVertexArray(0);
+    glEnable(GL_DEPTH_TEST);
 }
 
 void OpenGLRenderer::debugAABBs() {

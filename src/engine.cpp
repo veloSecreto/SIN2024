@@ -10,7 +10,7 @@
 #include "file/file_system.h"
 
 namespace Engine {
-    Mode mode = Mode::Playing;
+    Mode mode = Mode::Editing;
 
     // Initializes the BackEnd and all other subsytems along with modifications
     // ------------------------------------------------------------------------

@@ -14,9 +14,7 @@ struct Model {
 
         Model() = default;
         Model(const std::string& path);
-        
         void setMaterial(int meshIndex, const Material& material);
-        void render(Shader* shader);
 
     private:
         void loadModel(const std::string& path);

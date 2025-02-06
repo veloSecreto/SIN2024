@@ -11,6 +11,8 @@
 
 // constantss here
 const std::string ROOT_DIR = "../../";
+const int SHADOW_MAP_WIDTH = 1024;
+const int SHADOW_MAP_HEIGHT = 1024;
 
 // enums here
 enum class API { UNDEFINED, OPENGL, VULKAN };

@@ -122,15 +122,24 @@ void OpenGLBackend::update() {
         for (int j = 0; j < gameObject.model.meshes.size(); ++j) {
             const Mesh& mesh = gameObject.model.meshes[j];
             drawCommands.push_back(mesh.drawCommand);
-            instance.albedoIndex = mesh.material.albedo.ID;
-            instance.roughnessIndex = mesh.material.roughness.ID;
-            instance.metallicIndex = mesh.material.metallic.ID;
-            instance.aoIndex = mesh.material.ao.ID;
+            instance.albedoIndex = mesh.material.albedo.handle;
+            instance.roughnessIndex = mesh.material.roughness.handle;
+            instance.metallicIndex = mesh.material.metallic.handle;
+            instance.aoIndex = mesh.material.ao.handle;
             instances.push_back(instance);
         }
     }
+    static size_t old_size = 0;
+    if (drawCommands.size() > old_size) {
+        glDeleteBuffers(1, &OpenGLRenderer::globalIBO);
+        glGenBuffers(1, &OpenGLRenderer::globalIBO);
+        glBindBuffer(GL_DRAW_INDIRECT_BUFFER, OpenGLRenderer::globalIBO);
+        glBufferData(GL_DRAW_INDIRECT_BUFFER, OpenGLBackend::drawCommands.size() * sizeof(DrawElementsIndirectCommand), OpenGLBackend::drawCommands.data(), GL_DYNAMIC_DRAW);
+        old_size = drawCommands.size();
+    }
     glBindBuffer(GL_DRAW_INDIRECT_BUFFER, OpenGLRenderer::globalIBO);
     glBufferSubData(GL_DRAW_INDIRECT_BUFFER, 0, drawCommands.size() * sizeof(DrawElementsIndirectCommand), drawCommands.data());
+
     g_ssbos["lights"].update(Game::scene.lights.data(), Game::scene.lights.size() * sizeof(Light));
     CameraData cameraData = { Camera::m_proj, Camera::m_view, Camera::m_position };
     g_ssbos["camera"].update(&cameraData, sizeof(CameraData));
@@ -148,10 +157,10 @@ void OpenGLBackend::upload() {
         for (int j = 0; j < gameObject.model.meshes.size(); ++j) {
             const Mesh& mesh = gameObject.model.meshes[j];
             drawCommands.push_back(mesh.drawCommand);
-            instance.albedoIndex = mesh.material.albedo.ID;
-            instance.roughnessIndex = mesh.material.roughness.ID;
-            instance.metallicIndex = mesh.material.metallic.ID;
-            instance.aoIndex = mesh.material.ao.ID;
+            instance.albedoIndex = mesh.material.albedo.handle;
+            instance.roughnessIndex = mesh.material.roughness.handle;
+            instance.metallicIndex = mesh.material.metallic.handle;
+            instance.aoIndex = mesh.material.ao.handle;
             instances.push_back(instance);
         }
     }

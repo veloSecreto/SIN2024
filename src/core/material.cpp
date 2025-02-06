@@ -9,19 +9,19 @@ void Material::setParameter(const TextureType& type, float r, float g, float b)
 
 	switch (type) {
 		case TextureType::ALBEDO:
-			albedo.ID = texID;
+			albedo.handle = texID;
 			break;
 
 		case TextureType::ROUGHNESS:
-			roughness.ID = texID;
+			roughness.handle = texID;
 			break;
 
 		case TextureType::METALLIC:
-			metallic.ID = texID;
+			metallic.handle = texID;
 			break;
 
 		case TextureType::AO:
-			ao.ID = texID;
+			ao.handle = texID;
 			break;
 		default:
 			std::cout << "Invalid texture type, couldn't set parameter for material instance" << std::endl;
@@ -37,23 +37,23 @@ void Material::setParameter(const TextureType& type, const glm::vec3& color)
 
 void Material::setParameter(const TextureType& type, const std::string& name)
 {
-	uint32_t texID = AssetManager::getTextureByName(name).ID;
+	uint32_t texID = AssetManager::getTextureByName(name).handle;
 
 	switch (type) {
 		case TextureType::ALBEDO:
-			albedo.ID = texID;
+			albedo.handle = texID;
 			break;
 
 		case TextureType::ROUGHNESS:
-			roughness.ID = texID;
+			roughness.handle = texID;
 			break;
 
 		case TextureType::METALLIC:
-			metallic.ID = texID;
+			metallic.handle = texID;
 			break;
 
 		case TextureType::AO:
-			ao.ID = texID;
+			ao.handle = texID;
 			break;
 		default:
 			std::cout << "Invalid texture type, couldn't set parameter for material instance" << std::endl;

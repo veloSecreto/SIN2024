@@ -18,5 +18,4 @@ class Scene {
         void add(GameObject object);
         void add(const Light& light);
         void update();
-        void render();
 };

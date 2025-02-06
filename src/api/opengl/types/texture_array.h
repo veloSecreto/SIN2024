@@ -9,7 +9,7 @@ struct TextureArray {
 
     TextureArray() = default;
     TextureArray(int _width, int _height, int _layers);
-    int getAllocatedSlot(unsigned char* data, int texWidth, int texHeight, int nrComponents);
+    int getAllocatedSlot(unsigned char* data, unsigned int format);
     void bind(int _slot);
 
 private:

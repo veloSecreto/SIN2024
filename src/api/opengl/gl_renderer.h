@@ -3,6 +3,8 @@
 #include "../../defines.h"
 #include "types/shader.h"
 #include "../../core/drawCommand.hpp"
+#include "../../physics/aabb.hpp"
+#include "types/shadow_map.h"
 
 namespace OpenGLRenderer {
     extern uint32_t globalVAO;
@@ -13,6 +15,7 @@ namespace OpenGLRenderer {
     extern uint32_t debugVBO;
     extern std::unordered_map<std::string, Shader*> g_shaders;
     extern RenderMode renderMode;
+    extern ShadowMap g_shadowMap;
 
     // shits
     extern bool _renderModeChanged;
@@ -23,6 +26,7 @@ namespace OpenGLRenderer {
     void renderMesh(DrawElementsIndirectCommand& command);
     void renderFrame();
     void debugAABBs();
+    void debugAABB(const AABB& aabb, const glm::vec3& color);
     void bindVAO();
     void unbindVAO();
     void beginFrame();

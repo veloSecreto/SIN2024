@@ -12,7 +12,6 @@
 #include <imgui/imgui_impl_opengl3.h>
 
 
-
 void SetEditorTheme() {
     ImGuiStyle& style = ImGui::GetStyle();
     ImVec4* colors = style.Colors;
@@ -82,7 +81,7 @@ void SetEditorTheme() {
     style.GrabRounding = 4.0f;   // Rounded sliders/buttons
 }
 
-
+glm::vec3 mouseRayDirection;
 
 namespace Editor {
 
@@ -93,6 +92,7 @@ namespace Editor {
 
 	DebugMode debugMode = DebugMode::NONE;
 	int g_selectionIndex;
+	int g_hoveredIndex;
 	bool sceneViewportHasfocus;
 	ImVec2 sceneViewport;
 
@@ -112,7 +112,7 @@ namespace Editor {
 		ImGui_ImplOpenGL3_Init("#version 460 core");
 
 		Gizmo::init();
-		g_selectionIndex = -1;
+		g_hoveredIndex = g_selectionIndex = -1;
 		std::cout << "Editor is initialized" << std::endl;
 	}
 
@@ -137,14 +137,14 @@ namespace Editor {
 			debugMode = (DebugMode)(((int)debugMode + 1) % 2);
 		}
 
-		if (Input::mouseButtonPressed(SIN_MOUSE_BUTTON_LEFT) && !Gizmo::hasHover())
+		// Hover
+		Ray mouseRay = { Camera::m_position, mouseRayDirection };
+		if (!Gizmo::hasHover())
 		{
 			float nearestDistance = std::numeric_limits<float>::max();
 			int closestObjectIndex = -1;
 
 			for (unsigned int i = 0; i < Game::scene.gameObjects.size(); ++i) {
-
-				Ray mouseRay = { Camera::m_position, Input::getMouseRay() };
 				AABB& aabb = Game::scene.gameObjects[i].aabb;
 				float tMin;
 
@@ -155,7 +155,12 @@ namespace Editor {
 				}
 			}
 			
-			g_selectionIndex = closestObjectIndex;
+			g_hoveredIndex = closestObjectIndex;
+		}
+
+		if (Input::mouseButtonPressed(SIN_MOUSE_BUTTON_LEFT) && !Gizmo::hasHover())
+		{
+			g_selectionIndex = g_hoveredIndex;
 		}
 
 		// saving scene data
@@ -172,9 +177,8 @@ namespace Editor {
 		// adding game objects
 		static int i = 0;
 		if (Input::keyPressed(SIN_KEY_INSERT)) {
-			i += 1;
 			GameObject newObj("cube");
-			newObj.name = "Cube" + std::to_string(i);
+			newObj.name = "Cube" + std::to_string(i++);
 			newObj.transform.setPosition(Camera::m_position + Camera::_forward * 3.0f);
 			Game::scene.add(newObj);
 		}
@@ -193,7 +197,7 @@ namespace Editor {
 
 		if (g_selectionIndex != -1)
 		{
-			Gizmo::update(Game::scene.gameObjects[g_selectionIndex].transform);
+			Gizmo::update(Game::scene.gameObjects[g_selectionIndex].transform, mouseRayDirection);
 		}
 	}
 };
@@ -221,43 +225,22 @@ void Editor::draw() {
         glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, nullptr, OpenGLBackend::drawCommands.size(), 0);
         OpenGLRenderer::unbindVAO();
 	}
-	
-	// static Shader* horizontalBlurShader = OpenGLRenderer::getShaderByName("horizontal_blur");
-	// horizontalBlurShader->use();
-	// glDispatchCompute(
-	// 	(Backend::getWinWidth() + 7) / 8,
-	// 	(Backend::getWinHeight() + 7) / 8,
-	// 	1
-	// );
-	// glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
 
-	// static Shader* verticalBlurShader = OpenGLRenderer::getShaderByName("vertical_blur");
-	// verticalBlurShader->use();
-	// glDispatchCompute(
-	// 	(Backend::getWinWidth() + 7) / 8,
-	// 	(Backend::getWinHeight() + 7) / 8,
-	// 	1
-	// );
-	// glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
-
-	// static Shader* postProcessingShader = OpenGLRenderer::getShaderByName("post-processing");
-	// postProcessingShader->use();
-	// glDispatchCompute(
-	// 	(Backend::getWinWidth() + 7) / 8,
-	// 	(Backend::getWinHeight() + 7) / 8,
-	// 	1
-	// );
-	// glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
-
-	// if (g_selectionIndex != -1) Gizmo::draw(glm::vec2(sceneViewport.x, sceneViewport.y));
-	if (g_selectionIndex != -1) Gizmo::draw(glm::vec2(static_cast<float>(Backend::getWinWidth()), static_cast<float>(Backend::getWinHeight())));
+	if (g_selectionIndex != -1) { 
+		Gizmo::draw(glm::vec2(sceneViewport.x, sceneViewport.y));
+		// Gizmo::draw(glm::vec2(static_cast<float>(Backend::getWinWidth()), static_cast<float>(Backend::getWinHeight())));
+		OpenGLRenderer::debugAABB(Game::scene.gameObjects[g_selectionIndex].aabb, glm::vec3(1, 0.2, 0));
+	}
+	if (g_hoveredIndex != -1 && g_hoveredIndex != g_selectionIndex) {
+		OpenGLRenderer::debugAABB(Game::scene.gameObjects[g_hoveredIndex].aabb, glm::vec3(0.65f));
+	}
 	if (debugMode == DebugMode::AABB) {
 		OpenGLRenderer::debugAABBs();
 	}
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-	/*
+	
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplGlfw_NewFrame();
 	ImGui::NewFrame();
@@ -299,6 +282,18 @@ void Editor::draw() {
 			ImVec2 contentSize = ImGui::GetContentRegionAvail();
 			sceneViewportHasfocus = ImGui::IsWindowFocused();
 
+			ImVec2 mousePos = ImGui::GetMousePos();
+			ImVec2 windowPos = ImGui::GetWindowPos();
+			ImVec2 windowSize = ImGui::GetWindowSize();
+			ImVec2 mousePosInWindow = { mousePos.x - windowPos.x, mousePos.y - windowPos.y };
+			float ndcX = (2.0f * mousePosInWindow.x / windowSize.x) - 1.0f;
+			float ndcY = 1.0f - (2.0f * mousePosInWindow.y / windowSize.y);
+			float ndcZ = 1.0f;
+			glm::vec4 ndc(ndcX, ndcY, ndcZ, 1.0f);
+			glm::vec4 worldPos = glm::inverse(Camera::m_proj * Camera::m_view) * ndc;
+			worldPos /= worldPos.w;
+			mouseRayDirection = glm::normalize(glm::vec3(worldPos));
+
 			if (contentSize.x > 0 && contentSize.y > 0 &&
 				(contentSize.x != sceneViewport.x || contentSize.y != sceneViewport.y)) {
 				OpenGLRenderer::onResize(contentSize.x, contentSize.y);
@@ -322,6 +317,7 @@ void Editor::draw() {
 
 		ImGui::Begin("Properties");
 		{
+			ImGui::Text(("FPS: " + std::to_string(Clock::fps)).c_str());
 			if (g_selectionIndex != -1) {
 
 			}
@@ -342,8 +338,8 @@ void Editor::draw() {
 		ImGui::RenderPlatformWindowsDefault();
 		glfwMakeContextCurrent(backupCurrentContext);
 	}
-	*/
 	
+	/*
 	static Shader* shader = OpenGLRenderer::g_shaders["screen"];
     shader->use();
     glActiveTexture(GL_TEXTURE0);
@@ -354,4 +350,5 @@ void Editor::draw() {
     glDrawArrays(GL_TRIANGLES, 0, 6);
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
+	*/
 }
