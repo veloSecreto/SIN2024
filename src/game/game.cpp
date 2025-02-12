@@ -8,7 +8,7 @@ Scene Game::scene;
 void Game::init() {
     Camera::init();
     AssetManager::loadAll();
-    scene = Scene(ROOT_DIR + "res/skyboxes/dark", "png");
+    scene = Scene(ROOT_DIR + "res/skyboxes/Clouds", "jpg");
 
     auto& sceneData = FileSystem::Repository::getSceneData();
 

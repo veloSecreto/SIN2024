@@ -80,8 +80,28 @@ void GBuffer::configure(const unsigned int& width, const unsigned int& height) {
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
+        float __quadVertices[] = {
+        //  pos              texCoord
+            1, -1,           1, 0,
+           -1, -1,           0, 0,
+           -1,  1,           0, 1,
+            1,  1,           1, 1,
+            1, -1,           1, 0,
+           -1,  1,           0, 1
+        };
 
-    
+        uint32_t _vbo;
+        glGenVertexArrays(1, &VAO);
+        glBindVertexArray(VAO);
+        glGenBuffers(1, &_vbo);
+        glBindBuffer(GL_ARRAY_BUFFER, _vbo);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(__quadVertices), &__quadVertices, GL_STATIC_DRAW);
+        glEnableVertexAttribArray(0);
+        glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
+        glEnableVertexAttribArray(1);
+        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
+        glBindVertexArray(0);
+
 
     static Shader* shader = OpenGLRenderer::getShaderByName("lighting");
     shader->use();
@@ -98,6 +118,9 @@ void GBuffer::configure(const unsigned int& width, const unsigned int& height) {
     shader->setInt("rma", 4);
     glActiveTexture(GL_TEXTURE4);
     glBindTexture(GL_TEXTURE_2D, rma);
+    shader->setInt("shadowMapArray", 5);
+    glActiveTexture(GL_TEXTURE5);
+    glBindTexture(GL_TEXTURE_CUBE_MAP_ARRAY, OpenGLRenderer::g_shadowMap.m_depthTexture);
 
     std::cout << "Geometry Framebuffer configuration has been completed" << std::endl;
 }
@@ -147,6 +170,9 @@ void GBuffer::draw() const {
     shader->setInt("rma", 4);
     glActiveTexture(GL_TEXTURE4);
     glBindTexture(GL_TEXTURE_2D, rma);
+    shader->setInt("shadowMapArray", 5);
+    glActiveTexture(GL_TEXTURE5);
+    glBindTexture(GL_TEXTURE_CUBE_MAP_ARRAY, OpenGLRenderer::g_shadowMap.m_depthTexture);
 
     glDisable(GL_CULL_FACE);
     glDisable(GL_DEPTH_TEST);

@@ -4,6 +4,7 @@
 #include "../../backend/backend.h"
 #include <filesystem>
 #include "../../input/input.h"
+#include "render_passes/render_passes.h"
 
 // Raw Array and Buffers
 uint32_t OpenGLRenderer::globalVAO;
@@ -21,7 +22,6 @@ RenderMode OpenGLRenderer::renderMode;
 // shits
 bool OpenGLRenderer::_renderModeChanged;
 bool OpenGLRenderer::_debugging;
-GLuint quadVAO;
 
 
 void OpenGLRenderer::createShaders() {
@@ -38,6 +38,7 @@ void OpenGLRenderer::createShaders() {
     g_shaders["im3d_triangles"] = new Shader("im3d_triangles.vert", "im3d_triangles.frag");
     g_shaders["im3d_lines"] = new Shader("im3d_lines.vert", "im3d_lines.frag", "im3d_lines.geom");
     g_shaders["im3d_points"] = new Shader("im3d_points.vert", "im3d_points.frag");
+    g_shaders["shadow pass"] = new Shader("shadow pass.vert", "shadow pass.frag");
 }
 
 void OpenGLRenderer::onResize()
@@ -74,6 +75,7 @@ void OpenGLRenderer::hotLoadShaders() {
     g_shaders["im3d_triangles"]->load("im3d_triangles.vert", "im3d_triangles.frag");
     g_shaders["im3d_lines"]->load("im3d_lines.vert", "im3d_lines.frag", "im3d_lines.geom");
     g_shaders["im3d_points"]->load("im3d_points.vert", "im3d_points.frag");
+    g_shaders["shadow pass"]->load("shadow pass.vert", "shadow pass.frag");
 }
 
 void OpenGLRenderer::init() {
@@ -121,28 +123,6 @@ void OpenGLRenderer::uploadBuffersToGPU() {
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
     glBindVertexArray(0);
 
-    float __quadVertices[] = {
-    //  pos              texCoord
-        1, -1,           1, 0,
-       -1, -1,           0, 0,
-       -1,  1,           0, 1,
-        1,  1,           1, 1,
-        1, -1,           1, 0,
-       -1,  1,           0, 1
-    };
-
-    uint32_t _vbo;
-    glGenVertexArrays(1, &quadVAO);
-    glBindVertexArray(quadVAO);
-    glGenBuffers(1, &_vbo);
-    glBindBuffer(GL_ARRAY_BUFFER, _vbo);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(__quadVertices), &__quadVertices, GL_STATIC_DRAW);
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
-    glBindVertexArray(0);
-
     std::cout << "All global buffers and Global Vertex Array has been uploaded to the GPU\n";
 }
 
@@ -151,7 +131,7 @@ void OpenGLRenderer::renderMesh(DrawElementsIndirectCommand& command) {
 }
 
 void OpenGLRenderer::beginFrame() {
-    glClearColor(0, 0, 0, 1);
+    glClearColor(BG_COLOR, 1);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
@@ -171,11 +151,8 @@ void OpenGLRenderer::unbindVAO() {
     glBindVertexArray(0);
 }
 
-void ShadowMapPass();
-void RenderPass();
-void DrawQuad();
-
 void OpenGLRenderer::renderFrame() {
+    OpenGLBackend::update();
     ShadowMapPass();
     RenderPass();
     static Shader* shader = g_shaders["screen"];
@@ -183,48 +160,6 @@ void OpenGLRenderer::renderFrame() {
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, OpenGLBackend::gbuffer.screen);
     DrawQuad();
-}
-
-void RenderPass() {
-    // deferred rendering
-    static GBuffer& gbuffer = OpenGLBackend::gbuffer;
-    gbuffer.bind();
-    OpenGLRenderer::beginFrame();
-    OpenGLBackend::update();
-    if (OpenGLRenderer::renderMode == RenderMode::DEFERRED)
-    {
-        OpenGLRenderer::bindVAO();
-        static Shader* shader = OpenGLRenderer::g_shaders["g-buffer"];
-        shader->use();
-        OpenGLBackend::g_textureArray.bind(0);
-        glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, nullptr, OpenGLBackend::drawCommands.size(), 0);
-        OpenGLRenderer::unbindVAO();
-        gbuffer.draw();
-    }
-    // forward rendering
-    else if (OpenGLRenderer::renderMode == RenderMode::FORWARD)
-    {
-        OpenGLRenderer::bindVAO();
-        static Shader* shader = OpenGLRenderer::g_shaders["default"];
-        shader->use();
-        OpenGLBackend::g_textureArray.bind(0);
-        glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, nullptr, OpenGLBackend::drawCommands.size(), 0);
-        OpenGLRenderer::unbindVAO();
-    }
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-}
-
-void DrawQuad() {
-    glDisable(GL_CULL_FACE);
-    glDisable(GL_DEPTH_TEST);
-    glBindVertexArray(quadVAO);
-    glDrawArrays(GL_TRIANGLES, 0, 6);
-    glEnable(GL_DEPTH_TEST);
-    glEnable(GL_CULL_FACE);
-}
-
-void ShadowMapPass() {
-    
 }
 
 void OpenGLRenderer::debugAABB(const AABB& aabb, const glm::vec3& color) {

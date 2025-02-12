@@ -28,6 +28,7 @@ uniform sampler2D albedo;
 uniform sampler2D position;
 uniform sampler2D normal;
 uniform sampler2D rma;
+uniform samplerCubeArray shadowMapArray;
 
 const float gamma = 2.4;
 const float PI = 3.14159265359;
@@ -68,6 +69,31 @@ float GeometrySmith(vec3 N, vec3 V, vec3 L, float roughness) {
     return ggx1 * ggx2;
 }
 
+float ShadowCalculation(int lightIndex, vec3 fragPos, vec3 lightPos)
+{
+    vec3 fragToLight = fragPos - lightPos;
+    float currentDepth = length(fragToLight);
+    
+    float bias = 0.05;
+    float shadow = 0.0;
+    int kernelSize = 4;
+    float offset = 0.008;
+
+    for (int x = -kernelSize / 2; x < kernelSize / 2; ++x)
+    {
+        for (int y = -kernelSize / 2; y < kernelSize / 2; ++y)
+        {
+            vec2 texOffset = vec2(x, y) * offset;
+            float closestDepth = texture(shadowMapArray, vec4(fragToLight.xy + texOffset, fragToLight.z, lightIndex)).r;
+            closestDepth *= 100;
+            shadow += (currentDepth - bias > closestDepth) ? 1.0 : 0.0;
+        }
+    }
+
+    shadow /= float(kernelSize * kernelSize);
+    return 1.0 - shadow;
+}
+
 void main() {
     vec3 fragPos = texture(position, texCoord).xyz;
     vec3 normalDir = normalize(texture(normal, texCoord).xyz);
@@ -82,7 +108,7 @@ void main() {
     vec3 F0 = mix(vec3(0.04), diffuseColor, metallic);
 
     vec3 finalColor = vec3(0.0);
-    vec3 GI = diffuseColor * 0.05;
+    vec3 GI = diffuseColor * 0.01;
 
     
     for (int i = 0; i < lights.length(); ++i) {
@@ -107,7 +133,8 @@ void main() {
 
         vec3 diffuse = kD * diffuseColor / PI;
 
-        vec3 lightContribution = (diffuse + specular) * NdotL * lights[i].color * lights[i].strength * attenuation;
+        float shadow = ShadowCalculation(i, fragPos, lights[i].position);
+        vec3 lightContribution = (diffuse + specular) * NdotL * lights[i].color * lights[i].strength * attenuation * shadow;
 
         finalColor += lightContribution;
     }

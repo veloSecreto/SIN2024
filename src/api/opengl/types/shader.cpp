@@ -1,4 +1,5 @@
 #include "shader.h"
+#include "../../../defines.h"
 #include <glad/glad.h>
 #include <fstream>
 #include <sstream>

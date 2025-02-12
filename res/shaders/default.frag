@@ -43,6 +43,9 @@ out vec4 fragColor;
 const float gamma = 2.4;
 const float PI = 3.14159265359;
 
+uniform sampler2DArray textureArray;
+uniform samplerCubeArray shadowMapArray;
+
 float DistributionGGX(vec3 N, vec3 H, float roughness) {
     float a = roughness * roughness;
     float a2 = a * a;
@@ -74,7 +77,30 @@ vec3 fresnelSchlick(float cosTheta, vec3 F0) {
     return F0 + (1.0 - F0) * pow(clamp(1.0 - cosTheta, 0.0, 1.0), 5.0);
 }
 
-uniform sampler2DArray textureArray;
+float ShadowCalculation(int lightIndex, vec3 fragPos, vec3 lightPos)
+{
+    vec3 fragToLight = fragPos - lightPos;
+    float currentDepth = length(fragToLight);
+    
+    float bias = 0.05;
+    float shadow = 0.0;
+    int kernelSize = 4;
+    float offset = 0.008;
+
+    for (int x = -kernelSize / 2; x < kernelSize / 2; ++x)
+    {
+        for (int y = -kernelSize / 2; y < kernelSize / 2; ++y)
+        {
+            vec2 texOffset = vec2(x, y) * offset;
+            float closestDepth = texture(shadowMapArray, vec4(fragToLight.xy + texOffset, fragToLight.z, lightIndex)).r;
+            closestDepth *= 100;
+            shadow += (currentDepth - bias > closestDepth) ? 1.0 : 0.0;
+        }
+    }
+
+    shadow /= float(kernelSize * kernelSize);
+    return 1.0 - shadow;
+}
 
 void main() {
     InstanceData instance = instances[index];
@@ -92,7 +118,7 @@ void main() {
     F0 = mix(F0, albedo, metallic);
 
     vec3 finalColor = vec3(0.0);
-    vec3 GI = albedo * 0.05;
+    vec3 GI = albedo * 0.01;
 
     for (int i = 0; i < lights.length(); ++i) {
         vec3 lightDir = normalize(lights[i].position - position);
@@ -117,7 +143,8 @@ void main() {
 
         vec3 diffuse = kD * albedo / PI;
 
-        vec3 lightContribution = (diffuse + specular) * NdotL * lights[i].color * lights[i].strength * attenuation;
+        float shadow = ShadowCalculation(i, position, lights[i].position);
+        vec3 lightContribution = (diffuse + specular) * NdotL * lights[i].color * lights[i].strength * attenuation * shadow;
 
         finalColor += lightContribution;
     }

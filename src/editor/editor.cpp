@@ -7,9 +7,146 @@
 #include "gizmo.hpp"
 #include "../physics/physics.h"
 #include "../file/file_system.h"
+#include "../api/opengl/render_passes/render_passes.h"
 #include <imgui/imgui.h>
 #include <imgui/imgui_impl_glfw.h>
 #include <imgui/imgui_impl_opengl3.h>
+
+
+void SetEditorTheme();
+void GizmoAndOtherStuffs();
+void EditorUserInterfacePass();
+
+glm::vec3 mouseRayDirection;
+
+namespace Editor {
+
+	struct ClipBoard {
+		bool copied = false;
+		GameObject gameObject;
+	} g_clipBoard;
+
+	DebugMode debugMode = DebugMode::NONE;
+	int g_selectionIndex;
+	int g_hoveredIndex;
+	bool sceneViewportHasfocus;
+	ImVec2 sceneViewport;
+
+
+
+	void init() {
+		IMGUI_CHECKVERSION();
+		ImGui::CreateContext();
+		ImGuiIO& io = ImGui::GetIO();
+		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+		io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
+
+		io.Fonts->AddFontFromFileTTF((ROOT_DIR + "res/fonts/Merriweather Sans/regular.ttf").c_str(), 16.0f);
+		SetEditorTheme();
+		ImGui_ImplGlfw_InitForOpenGL(Backend::getWindowPointer(), true);
+		ImGui_ImplOpenGL3_Init("#version 460 core");
+
+		Gizmo::init();
+		g_hoveredIndex = g_selectionIndex = -1;
+		std::cout << "Editor is initialized" << std::endl;
+	}	
+};
+
+
+
+void Editor::update() {
+	if (Input::mouseButtonDown(SIN_MOUSE_BUTTON_RIGHT)) {
+		Input::disableCursor();
+		Camera::update();
+	}
+	else {
+		Input::unhideCursor();
+	}
+
+	if (Input::keyPressed(SIN_KEY_R))
+	{
+		OpenGLRenderer::_renderModeChanged = true;
+		OpenGLRenderer::renderMode = OpenGLRenderer::renderMode == RenderMode::FORWARD ? RenderMode::DEFERRED : RenderMode::FORWARD;
+		std::cout << "Render Mode switched to " << (OpenGLRenderer::renderMode == RenderMode::FORWARD ? "Forward" : "Deferred") << " rendering" << std::endl;
+	}
+	else OpenGLRenderer::_renderModeChanged = false;
+
+	if (Input::keyPressed(SIN_KEY_L)) {
+		debugMode = (DebugMode)(((int)debugMode + 1) % 2);
+	}
+
+	// Hover
+	Ray mouseRay = { Camera::m_position, mouseRayDirection };
+	if (!Gizmo::hasHover())
+	{
+		float nearestDistance = std::numeric_limits<float>::max();
+		int closestObjectIndex = -1;
+
+		for (unsigned int i = 0; i < Game::scene.gameObjects.size(); ++i) {
+			AABB& aabb = Game::scene.gameObjects[i].aabb;
+			float tMin;
+
+			bool hit = Physics::intersection(mouseRay, aabb, tMin);
+			if (hit && tMin < nearestDistance) {
+				nearestDistance = tMin;
+				closestObjectIndex = i;
+			}
+		}
+		
+		g_hoveredIndex = closestObjectIndex;
+	}
+
+	if (Input::mouseButtonPressed(SIN_MOUSE_BUTTON_LEFT) && !Gizmo::hasHover())
+	{
+		g_selectionIndex = g_hoveredIndex;
+	}
+
+	// saving scene data
+	if (Input::keyDown(SIN_KEY_LEFT_CONTROL) && Input::keyDown(SIN_KEY_LEFT_SHIFT) && Input::keyPressed(SIN_KEY_S)) {
+		FileSystem::Repository::saveSceneData();
+	}
+
+	// deleting game objects
+	if (Input::keyPressed(SIN_KEY_DELETE) && g_selectionIndex != -1) {
+		Game::scene.gameObjects.erase(Game::scene.gameObjects.begin() + g_selectionIndex);
+		g_selectionIndex = -1;
+	}
+
+	// adding game objects
+	static int i = 0;
+	if (Input::keyPressed(SIN_KEY_INSERT)) {
+		GameObject newObj("cube");
+		newObj.name = "Cube" + std::to_string(i++);
+		newObj.transform.setPosition(Camera::m_position + Camera::_forward * 3.0f);
+		Game::scene.add(newObj);
+	}
+
+	if (Input::keyDown(SIN_KEY_LEFT_CONTROL) && Input::keyPressed(SIN_KEY_C)) {
+		if (g_selectionIndex != -1) {
+			g_clipBoard.gameObject = Game::scene.gameObjects[g_selectionIndex];
+			g_clipBoard.gameObject.name += std::to_string(i);
+			g_clipBoard.copied = true;
+		}
+	}
+
+	if (Input::keyDown(SIN_KEY_LEFT_CONTROL) && Input::keyPressed(SIN_KEY_V) && g_clipBoard.copied) {
+		Game::scene.add(g_clipBoard.gameObject);
+	}
+
+	if (g_selectionIndex != -1)
+	{
+		Gizmo::update(Game::scene.gameObjects[g_selectionIndex].transform, mouseRayDirection);
+	}
+}
+
+void Editor::draw() {
+	OpenGLBackend::update();
+	ShadowMapPass();
+	RenderPass();
+	GizmoAndOtherStuffs();
+	EditorUserInterfacePass();
+}
 
 
 void SetEditorTheme() {
@@ -81,166 +218,23 @@ void SetEditorTheme() {
     style.GrabRounding = 4.0f;   // Rounded sliders/buttons
 }
 
-glm::vec3 mouseRayDirection;
-
-namespace Editor {
-
-	struct ClipBoard {
-		bool copied = false;
-		GameObject gameObject;
-	} g_clipBoard;
-
-	DebugMode debugMode = DebugMode::NONE;
-	int g_selectionIndex;
-	int g_hoveredIndex;
-	bool sceneViewportHasfocus;
-	ImVec2 sceneViewport;
-
-
-
-	void init() {
-		IMGUI_CHECKVERSION();
-		ImGui::CreateContext();
-		ImGuiIO& io = ImGui::GetIO();
-		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
-		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
-		io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
-
-		io.Fonts->AddFontFromFileTTF((ROOT_DIR + "res/fonts/Merriweather Sans/regular.ttf").c_str(), 16.0f);
-		SetEditorTheme();
-		ImGui_ImplGlfw_InitForOpenGL(Backend::getWindowPointer(), true);
-		ImGui_ImplOpenGL3_Init("#version 460 core");
-
-		Gizmo::init();
-		g_hoveredIndex = g_selectionIndex = -1;
-		std::cout << "Editor is initialized" << std::endl;
-	}
-
-	void update() {
-		if (Input::mouseButtonDown(SIN_MOUSE_BUTTON_RIGHT)) {
-	        Input::disableCursor();
-	        Camera::update();
-	    }
-	    else {
-	        Input::unhideCursor();
-	    }
-
-		if (Input::keyPressed(SIN_KEY_R))
-		{
-			OpenGLRenderer::_renderModeChanged = true;
-			OpenGLRenderer::renderMode = OpenGLRenderer::renderMode == RenderMode::FORWARD ? RenderMode::DEFERRED : RenderMode::FORWARD;
-			std::cout << "Render Mode switched to " << (OpenGLRenderer::renderMode == RenderMode::FORWARD ? "Forward" : "Deferred") << " rendering" << std::endl;
-		}
-		else OpenGLRenderer::_renderModeChanged = false;
-
-		if (Input::keyPressed(SIN_KEY_L)) {
-			debugMode = (DebugMode)(((int)debugMode + 1) % 2);
-		}
-
-		// Hover
-		Ray mouseRay = { Camera::m_position, mouseRayDirection };
-		if (!Gizmo::hasHover())
-		{
-			float nearestDistance = std::numeric_limits<float>::max();
-			int closestObjectIndex = -1;
-
-			for (unsigned int i = 0; i < Game::scene.gameObjects.size(); ++i) {
-				AABB& aabb = Game::scene.gameObjects[i].aabb;
-				float tMin;
-
-				bool hit = Physics::intersection(mouseRay, aabb, tMin);
-				if (hit && tMin < nearestDistance) {
-					nearestDistance = tMin;
-					closestObjectIndex = i;
-				}
-			}
-			
-			g_hoveredIndex = closestObjectIndex;
-		}
-
-		if (Input::mouseButtonPressed(SIN_MOUSE_BUTTON_LEFT) && !Gizmo::hasHover())
-		{
-			g_selectionIndex = g_hoveredIndex;
-		}
-
-		// saving scene data
-		if (Input::keyDown(SIN_KEY_LEFT_CONTROL) && Input::keyDown(SIN_KEY_LEFT_SHIFT) && Input::keyPressed(SIN_KEY_S)) {
-			FileSystem::Repository::saveSceneData();
-		}
-
-		// deleting game objects
-		if (Input::keyPressed(SIN_KEY_DELETE) && g_selectionIndex != -1) {
-			Game::scene.gameObjects.erase(Game::scene.gameObjects.begin() + g_selectionIndex);
-			g_selectionIndex = -1;
-		}
-
-		// adding game objects
-		static int i = 0;
-		if (Input::keyPressed(SIN_KEY_INSERT)) {
-			GameObject newObj("cube");
-			newObj.name = "Cube" + std::to_string(i++);
-			newObj.transform.setPosition(Camera::m_position + Camera::_forward * 3.0f);
-			Game::scene.add(newObj);
-		}
-
-		if (Input::keyDown(SIN_KEY_LEFT_CONTROL) && Input::keyPressed(SIN_KEY_C)) {
-			if (g_selectionIndex != -1) {
-				g_clipBoard.gameObject = Game::scene.gameObjects[g_selectionIndex];
-				g_clipBoard.gameObject.name += std::to_string(i);
-				g_clipBoard.copied = true;
-			}
-		}
-
-		if (Input::keyDown(SIN_KEY_LEFT_CONTROL) && Input::keyPressed(SIN_KEY_V) && g_clipBoard.copied) {
-			Game::scene.add(g_clipBoard.gameObject);
-		}
-
-		if (g_selectionIndex != -1)
-		{
-			Gizmo::update(Game::scene.gameObjects[g_selectionIndex].transform, mouseRayDirection);
-		}
-	}
-};
-
-void Editor::draw() {
-	OpenGLBackend::update();
-	static GBuffer& gbuffer = OpenGLBackend::gbuffer;
-	gbuffer.bind();
-	OpenGLRenderer::beginFrame();
-
-	if (OpenGLRenderer::renderMode == RenderMode::DEFERRED) {
-		OpenGLRenderer::bindVAO();
-        static Shader* shader = OpenGLRenderer::getShaderByName("g-buffer");
-        shader->use();
-        OpenGLBackend::g_textureArray.bind(0);
-        glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, nullptr, OpenGLBackend::drawCommands.size(), 0);
-        OpenGLRenderer::unbindVAO();
-        gbuffer.draw();
-	}
-	else if (OpenGLRenderer::renderMode == RenderMode::FORWARD) {
-		OpenGLRenderer::bindVAO();
-        static Shader* shader = OpenGLRenderer::getShaderByName("default");
-        shader->use();
-        OpenGLBackend::g_textureArray.bind(0);
-        glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, nullptr, OpenGLBackend::drawCommands.size(), 0);
-        OpenGLRenderer::unbindVAO();
-	}
-
-	if (g_selectionIndex != -1) { 
-		Gizmo::draw(glm::vec2(sceneViewport.x, sceneViewport.y));
+void GizmoAndOtherStuffs() {
+	OpenGLBackend::gbuffer.bind();
+	if (Editor::g_selectionIndex != -1) { 
+		Gizmo::draw(glm::vec2(Editor::sceneViewport.x, Editor::sceneViewport.y));
 		// Gizmo::draw(glm::vec2(static_cast<float>(Backend::getWinWidth()), static_cast<float>(Backend::getWinHeight())));
-		OpenGLRenderer::debugAABB(Game::scene.gameObjects[g_selectionIndex].aabb, glm::vec3(1, 0.2, 0));
+		OpenGLRenderer::debugAABB(Game::scene.gameObjects[Editor::g_selectionIndex].aabb, glm::vec3(1, 0.2, 0));
 	}
-	if (g_hoveredIndex != -1 && g_hoveredIndex != g_selectionIndex) {
-		OpenGLRenderer::debugAABB(Game::scene.gameObjects[g_hoveredIndex].aabb, glm::vec3(0.65f));
+	if (Editor::g_hoveredIndex != -1 && Editor::g_hoveredIndex != Editor::g_selectionIndex) {
+		OpenGLRenderer::debugAABB(Game::scene.gameObjects[Editor::g_hoveredIndex].aabb, glm::vec3(0.65f));
 	}
-	if (debugMode == DebugMode::AABB) {
+	if (Editor::debugMode == DebugMode::AABB) {
 		OpenGLRenderer::debugAABBs();
 	}
-
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
 
-	
+void EditorUserInterfacePass() {
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplGlfw_NewFrame();
 	ImGui::NewFrame();
@@ -280,7 +274,7 @@ void Editor::draw() {
 		ImGui::Begin("Scene Viewport");
 		{
 			ImVec2 contentSize = ImGui::GetContentRegionAvail();
-			sceneViewportHasfocus = ImGui::IsWindowFocused();
+			Editor::sceneViewportHasfocus = ImGui::IsWindowFocused();
 
 			ImVec2 mousePos = ImGui::GetMousePos();
 			ImVec2 windowPos = ImGui::GetWindowPos();
@@ -295,12 +289,12 @@ void Editor::draw() {
 			mouseRayDirection = glm::normalize(glm::vec3(worldPos));
 
 			if (contentSize.x > 0 && contentSize.y > 0 &&
-				(contentSize.x != sceneViewport.x || contentSize.y != sceneViewport.y)) {
+				(contentSize.x != Editor::sceneViewport.x || contentSize.y != Editor::sceneViewport.y)) {
 				OpenGLRenderer::onResize(contentSize.x, contentSize.y);
-				sceneViewport = contentSize;
+				Editor::sceneViewport = contentSize;
 			}
 
-			ImGui::Image((ImTextureID)gbuffer.screen, contentSize, ImVec2(0, 1), ImVec2(1, 0));
+			ImGui::Image((ImTextureID)OpenGLBackend::gbuffer.screen, contentSize, ImVec2(0, 1), ImVec2(1, 0));
 		}
 		ImGui::End();
 
@@ -308,8 +302,8 @@ void Editor::draw() {
 		{
 			ImGui::Spacing();
 			for (int i = 0; i < Game::scene.gameObjects.size(); i++) {
-				if (ImGui::Selectable((Game::scene.gameObjects[i].name).c_str(), g_selectionIndex == i)) {
-					g_selectionIndex = i;
+				if (ImGui::Selectable((Game::scene.gameObjects[i].name).c_str(), Editor::g_selectionIndex == i)) {
+					Editor::g_selectionIndex = i;
 				}
 			}
 		}
@@ -317,12 +311,58 @@ void Editor::draw() {
 
 		ImGui::Begin("Properties");
 		{
-			ImGui::Text(("FPS: " + std::to_string(Clock::fps)).c_str());
-			if (g_selectionIndex != -1) {
+			if (Editor::g_selectionIndex != -1) {
+				GameObject& gameObject = Game::scene.gameObjects[Editor::g_selectionIndex];
+				
+				ImGui::Text("Game Object Properties");
+				ImGui::Separator();
+				
+				// Name
+				char buffer[256];
+				memset(buffer, 0, sizeof(buffer));
+				strncpy(buffer, gameObject.name.c_str(), sizeof(buffer) - 1);
+				if (ImGui::InputText("Name", buffer, sizeof(buffer))) {
+					if (buffer != "") gameObject.name = buffer;
+				}
+				
+				// Model Name
+				memset(buffer, 0, sizeof(buffer));
+				strncpy(buffer, gameObject._modelName.c_str(), sizeof(buffer) - 1);
+				if (ImGui::InputText("Model", buffer, sizeof(buffer))) {
+					if (AssetManager::g_models.contains(buffer)) {
+						gameObject._modelName = buffer;
+						gameObject.model = AssetManager::getModelByName(gameObject._modelName);
+						gameObject.transform.dirty = true;
+					}
+				}
+				
+				// Transform - Position
+				ImGui::Text("Transform");
+				glm::vec3 position = gameObject.transform.getPosition();
+				glm::vec3 rotation = gameObject.transform.getRotation();
+				glm::vec3 scale = gameObject.transform.getScale();
 
+				// Modify them via ImGui
+				if (ImGui::DragFloat3("Position", glm::value_ptr(position), 0.1f)) {
+					gameObject.transform.setPosition(position);
+					gameObject.transform.dirty = true;
+				}
+				if (ImGui::DragFloat3("Rotation", glm::value_ptr(rotation), 0.1f)) {
+					gameObject.transform.setRotation(rotation);
+					gameObject.transform.dirty = true;
+				}
+				if (ImGui::DragFloat3("Scale", glm::value_ptr(scale), 0.1f, 0.01f, 100.0f)) {
+					gameObject.transform.setScale(scale);
+					gameObject.transform.dirty = true;
+				}
+				
+				// AABB (For Debugging)
+				ImGui::Text("AABB");
+				ImGui::Text("Min: (%.2f, %.2f, %.2f)", gameObject.aabb.min.x, gameObject.aabb.min.y, gameObject.aabb.min.z);
+				ImGui::Text("Max: (%.2f, %.2f, %.2f)", gameObject.aabb.max.x, gameObject.aabb.max.y, gameObject.aabb.max.z);
 			}
 			else {
-				
+				ImGui::Text("Select a Game Object to View Properties");
 			}
 		}
 		ImGui::End();

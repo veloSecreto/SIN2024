@@ -2,7 +2,7 @@
 
 in vec3 position;
 
-layout (location = 5) out vec4 fragColor;
+out vec4 fragColor;
 
 uniform vec3 color;
 
