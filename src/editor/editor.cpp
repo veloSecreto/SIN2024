@@ -283,10 +283,19 @@ void EditorUserInterfacePass() {
 			float ndcX = (2.0f * mousePosInWindow.x / windowSize.x) - 1.0f;
 			float ndcY = 1.0f - (2.0f * mousePosInWindow.y / windowSize.y);
 			float ndcZ = 1.0f;
+			glm::vec3 ray_nds = glm::vec3(ndcX, ndcY, ndcZ);
+			glm::vec4 ray_clip = glm::vec4(ray_nds.x, ray_nds.y, -1.0, 1.0);
+			glm::vec4 ray_eye = glm::inverse(Camera::m_proj) * ray_clip;
+			ray_eye = glm::vec4(ray_eye.x, ray_eye.y, -1.0, 0.0);
+			mouseRayDirection = glm::vec3(glm::inverse(Camera::m_view) * ray_eye);
+			mouseRayDirection = glm::normalize(mouseRayDirection);
+
+			/*
 			glm::vec4 ndc(ndcX, ndcY, ndcZ, 1.0f);
 			glm::vec4 worldPos = glm::inverse(Camera::m_proj * Camera::m_view) * ndc;
 			worldPos /= worldPos.w;
 			mouseRayDirection = glm::normalize(glm::vec3(worldPos));
+			*/
 
 			if (contentSize.x > 0 && contentSize.y > 0 &&
 				(contentSize.x != Editor::sceneViewport.x || contentSize.y != Editor::sceneViewport.y)) {
@@ -332,7 +341,6 @@ void EditorUserInterfacePass() {
 					if (AssetManager::g_models.contains(buffer)) {
 						gameObject._modelName = buffer;
 						gameObject.model = AssetManager::getModelByName(gameObject._modelName);
-						gameObject.transform.dirty = true;
 					}
 				}
 				
@@ -345,15 +353,12 @@ void EditorUserInterfacePass() {
 				// Modify them via ImGui
 				if (ImGui::DragFloat3("Position", glm::value_ptr(position), 0.1f)) {
 					gameObject.transform.setPosition(position);
-					gameObject.transform.dirty = true;
 				}
 				if (ImGui::DragFloat3("Rotation", glm::value_ptr(rotation), 0.1f)) {
 					gameObject.transform.setRotation(rotation);
-					gameObject.transform.dirty = true;
 				}
 				if (ImGui::DragFloat3("Scale", glm::value_ptr(scale), 0.1f, 0.01f, 100.0f)) {
 					gameObject.transform.setScale(scale);
-					gameObject.transform.dirty = true;
 				}
 				
 				// AABB (For Debugging)

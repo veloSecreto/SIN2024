@@ -30,8 +30,17 @@ uniform sampler2D normal;
 uniform sampler2D rma;
 uniform samplerCubeArray shadowMapArray;
 
-const float gamma = 2.4;
+const float gamma = 2.2;
 const float PI = 3.14159265359;
+
+vec3 Tonemap_ACES(const vec3 x) { // Narkowicz 2015, "ACES Filmic Tone Mapping Curve"
+    const float a = 2.51;
+    const float b = 0.03;
+    const float c = 2.43;
+    const float d = 0.59;
+    const float e = 0.14;
+    return (x * (a * x + b)) / (x * (c * x + d) + e);
+}
 
 vec3 fresnelSchlick(float cosTheta, vec3 F0) {
     return F0 + (1.0 - F0) * pow(1.0 - cosTheta, 5.0);
@@ -139,6 +148,7 @@ void main() {
         finalColor += lightContribution;
     }
 
-    finalColor = pow(finalColor + GI, vec3(1.0 / gamma));
+    finalColor = pow(finalColor, vec3(1.0 / gamma));
+    finalColor = Tonemap_ACES(finalColor);
     fragColor = vec4(finalColor * ao, 1.0);
 }

@@ -40,11 +40,20 @@ in flat int index;
 
 out vec4 fragColor;
 
-const float gamma = 2.4;
+const float gamma = 2.2;
 const float PI = 3.14159265359;
 
 uniform sampler2DArray textureArray;
 uniform samplerCubeArray shadowMapArray;
+
+vec3 Tonemap_ACES(const vec3 x) { // Narkowicz 2015, "ACES Filmic Tone Mapping Curve"
+    const float a = 2.51;
+    const float b = 0.03;
+    const float c = 2.43;
+    const float d = 0.59;
+    const float e = 0.14;
+    return (x * (a * x + b)) / (x * (c * x + d) + e);
+}
 
 float DistributionGGX(vec3 N, vec3 H, float roughness) {
     float a = roughness * roughness;
@@ -118,7 +127,6 @@ void main() {
     F0 = mix(F0, albedo, metallic);
 
     vec3 finalColor = vec3(0.0);
-    vec3 GI = albedo * 0.01;
 
     for (int i = 0; i < lights.length(); ++i) {
         vec3 lightDir = normalize(lights[i].position - position);
@@ -149,6 +157,7 @@ void main() {
         finalColor += lightContribution;
     }
 
-    finalColor = pow(finalColor + GI, vec3(1 / gamma));
+    finalColor = pow(finalColor, vec3(1 / gamma));
+    finalColor = Tonemap_ACES(finalColor);
     fragColor = vec4(finalColor * ao, 1.0);
 }
