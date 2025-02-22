@@ -24,6 +24,11 @@ void ShadowMapPass() {
 
     for (size_t i = 0; i < Game::scene.lights.size(); i++) {
         Light& light = Game::scene.lights[i];
+        
+        if (!light.dirty) {
+            continue;
+        }
+
         glm::vec3 lightPos = light.position;
 
         std::vector<glm::mat4> shadowTransforms = {
@@ -49,6 +54,7 @@ void ShadowMapPass() {
                 glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, nullptr, OpenGLBackend::drawCommands.size(), 0);
             }
         }
+        light.dirty = false;
     }
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);

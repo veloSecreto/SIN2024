@@ -26,7 +26,7 @@ namespace Physics {
 	AABB calculateOBB(AABB aabb, Transform& transform) {
 		glm::vec3 obbCenter = (aabb.min + aabb.max) * 0.5f;
 		glm::vec3 obbExtent = (aabb.max - aabb.min) * 0.5f;
-		const auto& m_model = transform.to_mat4();
+		auto m_model = transform.to_mat4();
 		glm::vec3 right = glm::vec3(m_model[0]);
 		glm::vec3 up = glm::vec3(m_model[1]);
 		glm::vec3 forward = glm::vec3(m_model[2]);

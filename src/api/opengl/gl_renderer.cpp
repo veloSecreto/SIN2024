@@ -29,8 +29,6 @@ void OpenGLRenderer::createShaders() {
     g_shaders["lighting"] = new Shader("lighting.vert", "lighting.frag");
     g_shaders["g-buffer"] = new Shader("g-buffer.vert", "g-buffer.frag");
     g_shaders["post-processing"] = new Shader("post-processing.comp");
-    g_shaders["horizontal_blur"] = new Shader("horizontal_blur.comp");
-    g_shaders["vertical_blur"] = new Shader("vertical_blur.comp");
     g_shaders["light"] = new Shader("light.vert", "light.frag");
     g_shaders["solid_color"] = new Shader("solid_color.vert", "solid_color.frag");
     g_shaders["skybox"] = new Shader("skybox.vert", "skybox.frag");
@@ -39,12 +37,14 @@ void OpenGLRenderer::createShaders() {
     g_shaders["im3d_lines"] = new Shader("im3d_lines.vert", "im3d_lines.frag", "im3d_lines.geom");
     g_shaders["im3d_points"] = new Shader("im3d_points.vert", "im3d_points.frag");
     g_shaders["shadow pass"] = new Shader("shadow pass.vert", "shadow pass.frag");
+    g_shaders["up sample"] = new Shader("up-sample.vert", "up-sample.frag");
+    g_shaders["down sample"] = new Shader("down-sample.vert", "down-sample.frag");
 }
 
 void OpenGLRenderer::onResize()
 {
     glViewport(0, 0, Backend::getWinWidth(), Backend::getWinHeight());
-    if (Backend::getWinWidth() > 0 || Backend::getWinHeight() > 0)
+    if (Backend::getWinWidth() > 0 && Backend::getWinHeight() > 0)
     {
         Camera::m_proj = Camera::getProjMatrix();
     }
@@ -54,7 +54,7 @@ void OpenGLRenderer::onResize()
 void OpenGLRenderer::onResize(float width, float height)
 {
     glViewport(0, 0, static_cast<int>(width), static_cast<int>(height));
-    if (width > 0 || height > 0) {
+    if (width > 0 && height > 0) {
         Camera::m_proj = Camera::getProjMatrix(width, height, FOVY, NEAR_PLANE, FAR_PLANE);
     }
     OpenGLBackend::gbuffer.resize(static_cast<int>(width), static_cast<int>(height));
@@ -66,8 +66,6 @@ void OpenGLRenderer::hotLoadShaders() {
     g_shaders["lighting"]->load("lighting.vert", "lighting.frag");
     g_shaders["g-buffer"]->load("g-buffer.vert", "g-buffer.frag");
     g_shaders["post-processing"]->load("post-processing.comp");
-    g_shaders["horizontal_blur"]->load("horizontal_blur.comp");
-    g_shaders["vertical_blur"]->load("vertical_blur.comp");
     g_shaders["light"]->load("light.vert", "light.frag");
     g_shaders["solid_color"]->load("solid_color.vert", "solid_color.frag");
     g_shaders["skybox"]->load("skybox.vert", "skybox.frag");
@@ -76,6 +74,8 @@ void OpenGLRenderer::hotLoadShaders() {
     g_shaders["im3d_lines"]->load("im3d_lines.vert", "im3d_lines.frag", "im3d_lines.geom");
     g_shaders["im3d_points"]->load("im3d_points.vert", "im3d_points.frag");
     g_shaders["shadow pass"]->load("shadow pass.vert", "shadow pass.frag");
+    g_shaders["up sample"]->load("up-sample.vert", "up-sample.frag");
+    g_shaders["down sample"]->load("down-sample.vert", "down-sample.frag");
 }
 
 void OpenGLRenderer::init() {
@@ -155,7 +155,8 @@ void OpenGLRenderer::renderFrame() {
     OpenGLBackend::update();
     ShadowMapPass();
     RenderPass();
-    static Shader* shader = g_shaders["screen"];
+    PostProcessingPass();
+    static Shader* shader = OpenGLRenderer::g_shaders["screen"];
     shader->use();
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, OpenGLBackend::gbuffer.screen);

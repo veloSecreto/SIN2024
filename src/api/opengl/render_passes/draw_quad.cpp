@@ -17,7 +17,7 @@ void DrawQuad() {
             -1,  1,           0, 1
         };
     
-        uint32_t _vbo;
+        GLuint _vbo;
         glGenVertexArrays(1, &quadVAO);
         glBindVertexArray(quadVAO);
         glGenBuffers(1, &_vbo);

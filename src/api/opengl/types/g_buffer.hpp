@@ -7,9 +7,10 @@
 struct GBuffer {
     private:
         uint32_t ID = { 0 };
-        uint32_t width = { 0 }, height = { 0 };
-
+        
     public:
+        uint32_t width = { 0 }, height = { 0 };
+        
         uint32_t screen = { 0 };
         uint32_t albedo = { 0 };
         uint32_t position = { 0 };

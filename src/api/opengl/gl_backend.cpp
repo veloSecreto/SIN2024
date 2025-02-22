@@ -116,6 +116,16 @@ void OpenGLBackend::update() {
     instances.clear();
     for (int i = 0; i < Game::scene.gameObjects.size(); ++i) {
         GameObject& gameObject = Game::scene.gameObjects[i];
+        if (gameObject.transform.dirty) {
+            for (auto& light : Game::scene.lights) {
+                if (light.dirty) {
+                    continue;
+                }
+                if (glm::distance(gameObject.transform.getPosition(), light.position) <= light.radius + 2) {
+                    light.dirty = true;
+                }
+            }
+        }
         gameObject.update();
         InstanceData instance;
         instance.m_model = gameObject.transform.to_mat4();

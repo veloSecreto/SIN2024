@@ -1,33 +1,14 @@
 #version 460 core
 
-layout (local_size_x = 8, local_size_y = 8, local_size_z = 1) in;
-
-layout (binding = 0, rgba32f) uniform image2D screen;
-layout (binding = 5, rgba32f) uniform image2D emissive;
-
-const float weights[25] = float[](
-    0.001599, 0.003294, 0.005537, 0.008439, 0.011740,
-    0.015286, 0.018859, 0.022256, 0.025292, 0.027767,
-    0.029478, 0.030263, 0.029478, 0.027767, 0.025292,
-    0.022256, 0.018859, 0.015286, 0.011740, 0.008439,
-    0.005537, 0.003294, 0.001599, 0.000612, 0.000188
-);
+layout (local_size_x = 8, local_size_y = 8) in;
+layout (rgba8, binding = 0) uniform image2D screen;
 
 void main() {
-    ivec2 coord = ivec2(gl_GlobalInvocationID.xy);
-//     vec2 texSize = imageSize(emissive);
-//     vec4 color = vec4(0.0);
-
-//     for (int i = -12; i <= 12; i++) {
-//         vec2 offset = vec2(i, 0.0) / texSize.x;
-//         color += imageLoad(emissive, coord + ivec2(offset * texSize)) * weights[i + 12];
-//     }
-
-//     for (int i = -12; i <= 12; i++) {
-//         vec2 offset = vec2(0.0, i) / texSize.y;
-//         color += imageLoad(emissive, coord + ivec2(offset * texSize)) * weights[i + 12];
-//     }
+    ivec2 texCoord = ivec2(gl_GlobalInvocationID.xy);
+    vec3 color = imageLoad(screen, texCoord).rgb;
+    float brightness = dot(color, vec3(0.2126, 0.7152, 0.0722));
     
-//     vec4 finalColor = imageLoad(screen, coord) + vec4(color.rgb, 1);
-//     imageStore(screen, coord, finalColor);
+    // Apply a threshold to extract only bright areas
+    // color = brightness > 1 ? color : vec3(0.0);
+    imageStore(screen, texCoord, vec4(color, 1));
 }

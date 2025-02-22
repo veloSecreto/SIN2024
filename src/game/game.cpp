@@ -6,6 +6,7 @@
 void createSceneFromFile();
 void createIdoloScene();
 void createRandomizedScene();
+void createTestScene();
 
 Scene Game::scene;
 
@@ -13,7 +14,7 @@ void Game::init() {
     Camera::init();
     AssetManager::loadAll();
     scene = Scene(ROOT_DIR + "res/skyboxes/Clouds", "jpg");
-    createIdoloScene();
+    createTestScene();
 }
 
 void Game::update() {
@@ -68,7 +69,24 @@ void createIdoloScene() {
     scene.add(Light(glm::vec3(5, 3, 0))); // room on the left
     scene.add(Light(glm::vec3(0, 3, 0), glm::vec3(1, 0, 0))); // dinning room light, should be red like my one
     scene.add(Light(glm::vec3(0, 3, 5))); // forward side bed room
+}
 
+void createTestScene() {
+    Scene& scene = Game::scene;
+    
+    GameObject plane("cube");
+    plane.name = "plane";
+    plane.transform.setScale(glm::vec3(10, 0.001, 10));
+    plane.transform.setPosition(glm::vec3(0));
+    scene.add(plane);
+
+    GameObject cube("cube");
+    cube.name = "cube";
+    cube.transform.setScale(glm::vec3(0.5));
+    scene.add(cube);
+
+    Light light(glm::vec3(0, 5, 0), glm::vec3(1), 5, 10);
+    scene.add(light);
 }
 
 void createRandomizedScene() {

@@ -86,28 +86,32 @@ vec3 fresnelSchlick(float cosTheta, vec3 F0) {
     return F0 + (1.0 - F0) * pow(clamp(1.0 - cosTheta, 0.0, 1.0), 5.0);
 }
 
-float ShadowCalculation(int lightIndex, vec3 fragPos, vec3 lightPos)
-{
+vec3 gridSamplingDisk[20] = vec3[](
+   vec3(1, 1,  1), vec3( 1, -1,  1), vec3(-1, -1,  1), vec3(-1, 1,  1),
+   vec3(1, 1, -1), vec3( 1, -1, -1), vec3(-1, -1, -1), vec3(-1, 1, -1),
+   vec3(1, 1,  0), vec3( 1, -1,  0), vec3(-1, -1,  0), vec3(-1, 1,  0),
+   vec3(1, 0,  1), vec3(-1,  0,  1), vec3( 1,  0, -1), vec3(-1, 0, -1),
+   vec3(0, 1,  1), vec3( 0, -1,  1), vec3( 0, -1, -1), vec3( 0, 1, -1)
+);
+
+float ShadowCalculation(int lightIndex, vec3 lightPos, float lightRadius, vec3 fragPos, vec3 viewPos, vec3 Normal) {
     vec3 fragToLight = fragPos - lightPos;
     float currentDepth = length(fragToLight);
-    
-    float bias = 0.05;
     float shadow = 0.0;
-    int kernelSize = 4;
-    float offset = 0.008;
-
-    for (int x = -kernelSize / 2; x < kernelSize / 2; ++x)
-    {
-        for (int y = -kernelSize / 2; y < kernelSize / 2; ++y)
-        {
-            vec2 texOffset = vec2(x, y) * offset;
-            float closestDepth = texture(shadowMapArray, vec4(fragToLight.xy + texOffset, fragToLight.z, lightIndex)).r;
-            closestDepth *= 100;
-            shadow += (currentDepth - bias > closestDepth) ? 1.0 : 0.0;
+    vec3 lightDir = normalize(fragToLight);
+    float bias = max(0.0125 * (1.0 - dot(Normal, lightDir)), 0.00125);
+    float far_plane = 100.5;
+    int samples = 20;
+    float viewDistance = length(viewPos - fragPos);
+    float diskRadius = (1.0 + (viewDistance / far_plane)) / 200.0;
+    for (int i = 0; i < samples; ++i) {
+        float closestDepth = texture(shadowMapArray, vec4(fragToLight + gridSamplingDisk[i] * diskRadius, lightIndex)).r;
+        closestDepth *= far_plane;
+        if (currentDepth - bias > closestDepth) {
+            shadow += 1.0;
         }
     }
-
-    shadow /= float(kernelSize * kernelSize);
+    shadow /= float(samples);
     return 1.0 - shadow;
 }
 
@@ -130,10 +134,10 @@ void main() {
 
     for (int i = 0; i < lights.length(); ++i) {
         vec3 lightDir = normalize(lights[i].position - position);
-        float distance = length(lights[i].position - position);
+        float dis = length(lights[i].position - position);
 
-        float attenuation = 1.0 / (1.0 + distance * distance / (lights[i].radius * lights[i].radius));
-        // float attenuation = 1.0 / (distance * distance);
+        // float attenuation = 1.0 / (1.0 + dis * dis / (lights[i].radius * lights[i].radius)); // Old one
+        float attenuation = smoothstep(lights[i].radius, 0, dis); // New one
 
         vec3 H = normalize(viewDir + lightDir);
         float NDF = DistributionGGX(normalDir, H, roughness);
@@ -151,7 +155,7 @@ void main() {
 
         vec3 diffuse = kD * albedo / PI;
 
-        float shadow = ShadowCalculation(i, position, lights[i].position);
+        float shadow = ShadowCalculation(i, lights[i].position, lights[i].radius, position, camera.position, normal);
         vec3 lightContribution = (diffuse + specular) * NdotL * lights[i].color * lights[i].strength * attenuation * shadow;
 
         finalColor += lightContribution;

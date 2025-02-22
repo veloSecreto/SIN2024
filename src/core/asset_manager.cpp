@@ -71,10 +71,10 @@ void AssetManager::loadModels() {
     // cube materialls
     {
         Material cubeMat;
-        cubeMat.setParameter(TextureType::ALBEDO, "Floorboards_ALB");
-        cubeMat.setParameter(TextureType::ROUGHNESS, "Floorboards_R");
+        cubeMat.setParameter(TextureType::ALBEDO, "Ceiling_ALB");
+        cubeMat.setParameter(TextureType::ROUGHNESS, "Ceiling_R");
         cubeMat.setParameter(TextureType::METALLIC, "metalic_blank");
-        cubeMat.setParameter(TextureType::AO, "Floorboards_AO");
+        cubeMat.setParameter(TextureType::AO, "Ceiling_AO");
 
         g_models["cube"].setMaterial(0, cubeMat);
     }

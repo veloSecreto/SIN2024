@@ -31,9 +31,9 @@ namespace Editor {
 	int g_hoveredIndex;
 	bool sceneViewportHasfocus;
 	ImVec2 sceneViewport;
-
-
-
+	
+	
+	
 	void init() {
 		IMGUI_CHECKVERSION();
 		ImGui::CreateContext();
@@ -144,6 +144,7 @@ void Editor::draw() {
 	OpenGLBackend::update();
 	ShadowMapPass();
 	RenderPass();
+	PostProcessingPass();
 	GizmoAndOtherStuffs();
 	EditorUserInterfacePass();
 }
@@ -365,6 +366,10 @@ void EditorUserInterfacePass() {
 				ImGui::Text("AABB");
 				ImGui::Text("Min: (%.2f, %.2f, %.2f)", gameObject.aabb.min.x, gameObject.aabb.min.y, gameObject.aabb.min.z);
 				ImGui::Text("Max: (%.2f, %.2f, %.2f)", gameObject.aabb.max.x, gameObject.aabb.max.y, gameObject.aabb.max.z);
+
+				ImGui::Separator();
+				auto fps = std::to_string(Clock::fps);
+				ImGui::Text(fps.c_str());
 			}
 			else {
 				ImGui::Text("Select a Game Object to View Properties");

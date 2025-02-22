@@ -10,7 +10,7 @@ void ShadowMap::init(unsigned int numberOfCubemaps) {
     glBindTexture(GL_TEXTURE_CUBE_MAP_ARRAY, m_depthTexture);
 
     // Allocate storage for cubemap array
-    glTexStorage3D(GL_TEXTURE_CUBE_MAP_ARRAY, 1, GL_DEPTH_COMPONENT16, SHADOW_MAP_WIDTH, SHADOW_MAP_HEIGHT, 6 * m_numberOfCubemaps);
+    glTexStorage3D(GL_TEXTURE_CUBE_MAP_ARRAY, 1, GL_DEPTH_COMPONENT32F, SHADOW_MAP_WIDTH, SHADOW_MAP_HEIGHT, 6 * m_numberOfCubemaps);
 
     // Set texture parameters
     glTexParameteri(GL_TEXTURE_CUBE_MAP_ARRAY, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -35,7 +35,7 @@ void ShadowMap::init(unsigned int numberOfCubemaps) {
         m_textureView,                  // The texture view handle
         GL_TEXTURE_2D_ARRAY,            // Alias it as a 2D texture array
         m_depthTexture,                 // The original cubemap array texture
-        GL_DEPTH_COMPONENT16,           // Format matches the original
+        GL_DEPTH_COMPONENT32F,           // Format matches the original
         0,                              // Mip level start
         1,                              // Number of mipmap levels
         0,                              // First layer (start from the first layer)
